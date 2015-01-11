@@ -2,7 +2,7 @@
 
 namespace Glad;
 
-use GladProvider;
+use Glad\GladProvider;
 
 /**
  * Dependency injection class
@@ -12,11 +12,14 @@ use GladProvider;
  */
 class Injector {
   
-    private static $gladProvider;
+    protected static $gladProvider;
+    protected static $container;
 
     public function __construct()
     {
-        static::$gladProvider = GladProvider::register();   
+        static::$gladProvider = GladProvider::register();
+
+        // var_dump(static::$gladProvider);
     }
 
     public static function get()
@@ -24,7 +27,7 @@ class Injector {
         if(is_null(static::$gladProvider)){
             self::__construct();
         }
-    }
 
-    return static::$gladProvider;
+        return static::$gladProvider;
+    }
 }
