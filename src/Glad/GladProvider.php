@@ -7,12 +7,9 @@ class GladProvider {
 	public static function register()
 	{
 		return array(
-    		'store' => 'Driver\Repository\NativeSession\Session',
-
-
-
-
-    		'auth' => 'Driver\Authentication\GladAuth\Author',
+    		'RepositoryInterface' 	=> 'Glad\Driver\Repository\NativeSession\Session',
+    		'AuthorInterface' 		=> 'Glad\Driver\Authentication\GladAuth\Author',
+    		'Test'					=> 'Glad\Test'
     	);
   	}
 }

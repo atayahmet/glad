@@ -3,15 +3,22 @@
 namespace Glad;
 
 use Glad\Driver\Repository\RepositoryInterface;
+use Glad\Driver\Repository\Redis\RedisRepository;
+use Glad\Test;
 
 class Author {
-	public function __construct(RepositoryInterface $std)
+	public function __construct(Test $repo)
 	{
-
+		 var_dump($repo);
 	}
 	
-	public function getIdentity(RepositoryInterface $std, AuthorInterface $auth)
+	public function getIdentity(RepositoryInterface $auth, RepositoryInterface $authh)
 	{
-		var_dump($std);
+		$auth->get('hello');
+	}
+
+	public function logged()
+	{
+
 	}
 }

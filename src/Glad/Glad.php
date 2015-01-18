@@ -3,46 +3,37 @@
 namespace Glad;
 
 use Glad\Injector;
-use Glad\Author;
-use ReflectionMethod;
-use ReflectionClass;
-use stdClass;
-use Glad\Driver\Repository\NativeSession\Session;
 
 /**
  * Glad authentication container class
  *
  * @author Ahmet ATAY
+ * @category Authentication
+ * @package Glad
+ * @copyright 2015
+ * @license http://opensource.org/licenses/MIT MIT license
+ * @link https://github.com/atayahmet/glad
  */
 class Glad {
     
+    /**
+    * Injector
+    *
+    * @var object
+    */
     private static $injector;
   
+    /**
+    * Constructor
+    */
     public function __construct()
     {
         static::$injector = new Injector();
-
-        $refParam = new \ReflectionParameter(array('Glad\Author', 'getIdentity'), 1);
-exit($refParam->name);
-$export = \ReflectionParameter::export(
-   array(
-      $refParam->getDeclaringClass()->name, 
-      $refParam->getDeclaringFunction()->name
-   ), 
-   $refParam->name, 
-   true
-);
-exit(var_dump($refParam));
-$type = preg_replace('/.*?(\w+)\s+\$'.$refParam->name.'.*/', '\\1', $export);
-exit($type);
-
-
-        
     }
 
     public function logged()
     {
-
+        static::$injector->inject('Glad\Author','getIdentity');
     }
     
     public static function __callStatic($w, $x)
@@ -52,7 +43,7 @@ exit($type);
 
     public function __call($x, $y)
     {
-      $this->injector->get();
+      
       exit;
       exit(var_dump(func_get_args()));
     }
