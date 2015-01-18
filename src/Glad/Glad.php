@@ -22,6 +22,13 @@ class Glad {
     * @var object
     */
     private static $injector;
+
+    /**
+    * Author class name
+    *
+    * @var string
+    */
+    private static $author = 'Glad\Author';
   
     /**
     * Constructor
@@ -31,9 +38,35 @@ class Glad {
         static::$injector = new Injector();
     }
 
+    public function login( array $parm = null)
+    {
+        return static::$injector->inject(static::$author, __METHOD__, $parm);
+    }
+
+    public function register()
+    {
+
+    }
+
+    public function is()
+    {
+
+    }
+
+    public function check()
+    {
+
+    }
+
+    public function guest()
+    {
+        static::$injector->inject(static::$author, 'destroy');
+    }
+
+
     public function logged()
     {
-        static::$injector->inject('Glad\Author','getIdentity');
+        static::$injector->inject(static::$author, 'getIdentity');
     }
     
     public static function __callStatic($w, $x)
