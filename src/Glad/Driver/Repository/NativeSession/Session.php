@@ -6,9 +6,9 @@ use Glad\Driver\Repository\RepositoryInterface;
 
 class Session implements RepositoryInterface {
 	
-	public static function set()
+	public static function set($key)
 	{
-
+		echo $key;
 	}
 
 	public static function get($key)

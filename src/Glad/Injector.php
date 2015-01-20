@@ -59,35 +59,34 @@ class Injector {
                     $t = preg_split('/ /',$in);
                     $i = end(preg_split("/\\\\/", $t[2]));
 
-                    if(isset(static::$container[$i])){
-                        $injects[] = static::$container[$i];
+                    if($i == 'array'){
+                        foreach($parm as $_parm){
+                            $injects[] = $_parm;
+                        }
                     }else{
-                        $new = new static::$gladProvider[$i];
-                        static::$container[$i] = $new;
-                        $injects[] = $new;
+                        if(isset(static::$container[$i])){
+                            $injects[] = static::$container[$i];
+                        }else{
+                            if(isset(static::$gladProvider[$i])){
+                                $new = new static::$gladProvider[$i];
+                                static::$container[$i] = $new;
+                                $injects[] = $new;
+                            }
+                        }
                     }
                 }
 
-                if (is_null($instance)) {
-                    $instance = static::newInstanceCurrentClass($class, $injects);
+                if(method_exists($class, '__construct') && is_null($instance)){
+                    $c = new ReflectionClass($class);
+                    $instance = $c->newInstanceArgs($injects);
                 }else{
+                    $instance = new $class();
+
                     $reflectionMethod = new ReflectionMethod($class, $m);
-                    $reflectionMethod->invokeArgs($instance, $injects);
+
+                    return $reflectionMethod->invokeArgs($instance, $injects);
                 }
             }
-        
         }
-    }
-
-    private static function newInstanceCurrentClass($class, $injects = null)
-    {
-        if(method_exists($class, '__construct')){
-            $c = new ReflectionClass($class);
-            $instance = $c->newInstanceArgs($injects);
-        }else{
-            $instance = new $class();
-        }
-
-        return $instance;
     }
 }

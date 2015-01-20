@@ -38,10 +38,7 @@ class Glad {
         static::$injector = new Injector();
     }
 
-    public function login( array $parm = null, $remember = false)
-    {
-        return static::$injector->inject(static::$author, __METHOD__, $parm);
-    }
+    
 
     public function register()
     {
@@ -73,10 +70,8 @@ class Glad {
       exit(var_dump(func_get_args()));
     }
 
-    public function __call($x, $y)
+    public function __call($method, $parm)
     {
-      
-      exit;
-      exit(var_dump(func_get_args()));
+        return static::$injector->inject(static::$author, $method, $parm);
     }
 }
