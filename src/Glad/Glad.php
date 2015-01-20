@@ -38,7 +38,7 @@ class Glad {
         static::$injector = new Injector();
     }
 
-    public function login( array $parm = null)
+    public function login( array $parm = null, $remember = false)
     {
         return static::$injector->inject(static::$author, __METHOD__, $parm);
     }
@@ -62,7 +62,6 @@ class Glad {
     {
         static::$injector->inject(static::$author, 'destroy');
     }
-
 
     public function logged()
     {

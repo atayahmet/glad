@@ -13,9 +13,9 @@ class Author {
 		 var_dump($repo);
 	}
 	
-	public function getIdentity(RepositoryInterface $auth, RepositoryInterface $authh)
+	public function getIdentity(RepositoryInterface $session, RepositoryInterface $authh)
 	{
-		$auth->get('hello');
+		$session->get('hello');
 	}
 
 	public function getRepository(RepositoryInterface $repository)
