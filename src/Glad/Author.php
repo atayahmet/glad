@@ -38,9 +38,9 @@ class Author implements AuthorInterface {
 		//static::$author = $author;
 	}
 
-	public static function register(array $credentials, GladModelInterface $orm)
+	public static function register(array $credentials, GladModelInterface $model)
 	{
-		$orm->newUser($credentials);
+		$model->newUser($credentials);
 	}
 
 	public function login(array $user, $remember, RepositoryInterface $repository)

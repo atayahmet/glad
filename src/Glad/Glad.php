@@ -68,7 +68,12 @@ class Glad {
             exit('non model');
         }
 
-        static::$injector->add('GladModelInterface', static::$model);
+        self::modelAddToInjector(static::$model);
+    }
+
+    protected static function modelAddToInjector($model)
+    {
+        static::$injector->add('GladModelInterface', $model);
     }
 
     public static function model(GladModelInterface $model)
@@ -76,8 +81,7 @@ class Glad {
         static::$model = $model;
 
         self::init();
-
-        static::$injector->add('OrmInterface', $model);
+        self::modelAddToInjector(static::$model);
     }
 
     public static function userTableField(array $fields)
