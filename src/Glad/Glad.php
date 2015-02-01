@@ -22,43 +22,89 @@ class Glad {
     *
     * @var object
     */
-    private static $injector;
+    protected static $injector;
 
     /**
     * Author class name
     *
-    * @var string
+    * @var object
     */
-    private static $author;
+    protected static $author;
   
     /**
-    * Constructor
+    * Author class name
+    *
+    * @var object
+    */
+    protected static $model;
+
+    /**
+    * Database connection
+    *
+    * @var array
+    */
+    protected static $connection;
+
+    /**
+    * Users table fields
+    *
+    * @var array
+    */
+    protected static $fields;
+   
+
+    /**
+    * Class constructor
+    *
+    * @return void
     */
     public function __construct()
     {
-        static::$injector = new Injector();
-
-        static::$author = GladProvider::$author;
-    }
-
-
-    public function guest()
-    {
-        static::$injector->inject(static::$author, 'destroy');
-    }
-
-    public function logged()
-    {
-        static::$injector->inject(static::$author, 'getIdentity');
+        self::init();
     }
     
-    public static function __callStatic($w, $x)
+    protected static function init()
     {
-      exit(var_dump(func_get_args()));
+        if(is_null(static::$injector)){
+            static::$injector = new Injector();
+            static::$author = GladProvider::$author;
+        }
+
+        if(is_null(static::$model)){
+            static::$model = new MiniOrm(static::$connection);
+            static::$injector->add('OrmInterface', static::$model);
+        }
+    }
+
+    public static function model(OrmInterface $model)
+    {
+        self::init();
+
+        static::$model = $model;
+        static::$injector->add('OrmInterface', $model);
+    }
+
+    public static function connection(array $connection)
+    {
+        static::$connection = $connection;
+    }
+
+    public static function userTableField(array $fields)
+    {
+        static::$fields = $fields;
+    }
+
+    public static function __callStatic($method, $parm)
+    {
+        self::init();
+
+        return static::$injector->inject(static::$author, $method, $parm);
     }
 
     public function __call($method, $parm)
     {
+        self::init();
+
         return static::$injector->inject(static::$author, $method, $parm);
     }
 }

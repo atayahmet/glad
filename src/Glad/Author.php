@@ -30,11 +30,11 @@ class Author implements AuthorInterface {
     *
     * @return void
     */ 
-	public function __construct(RepositoryInterface $repository, AuthorInterface $author)
+	public function __construct(RepositoryInterface $repository)
 	{
 		static::$repository = $repository;
 
-		static::$author = $author;
+		//static::$author = $author;
 	}
 
 	public function getIdentity(RepositoryInterface $session, RepositoryInterface $auth)
@@ -47,9 +47,14 @@ class Author implements AuthorInterface {
 		return $repository;
 	}
 
+	public static function register(array $credentials, OrmInterface $orm)
+	{
+		exit(var_dump($orm));
+	}
+
 	public function login(array $user, $remember, RepositoryInterface $repository)
 	{
-		return $user;
+		return $repository;
 	}
 
 	public function check()

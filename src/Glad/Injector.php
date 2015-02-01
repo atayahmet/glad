@@ -57,6 +57,11 @@ class Injector {
         return static::setInjectsParameters($class, $method, $parm);
     }
 
+    public static function add($key, $class)
+    {
+        self::$container[$key] = $class;
+    }
+    
     /**
     * method setInjectsParameters
     *
@@ -90,20 +95,21 @@ class Injector {
                 foreach($matches[1] as $in){
 
                     $t = preg_split('/ /',$in);
-                    $i = end(preg_split("/\\\\/", $t[2]));
+                    $segments = preg_split("/\\\\/", $t[2]);
+                    $last = end($segments);
 
-                    if($i == 'array'){
+                    if($last == 'array'){
                         foreach($parm as $_parm){
                             $injects[] = $_parm;
                         }
                     }else{
-                        if(isset(static::$container[$i])){
-                            $injects[] = static::$container[$i];
+                        if(isset(static::$container[$last])){
+                            $injects[] = static::$container[$last];
                         }else{
-                            if(isset(static::$gladProvider[$i])){
-                                $new = new static::$gladProvider[$i];
+                            if(isset(static::$gladProvider[$last])){
+                                $new = new static::$gladProvider[$last];
 
-                                static::$container[$i] = $new;
+                                static::$container[$last] = $new;
                                 
                                 $injects[] = $new;
                             }
