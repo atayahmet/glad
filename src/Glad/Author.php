@@ -3,13 +3,41 @@
 namespace Glad;
 
 use Glad\Driver\Repository\RepositoryInterface;
-use Glad\Driver\Repository\Redis\RedisRepository;
-use Glad\Test;
+use Glad\AuthorInterface;
 use Closure;
 
-class Author {
+class Author implements AuthorInterface {
 
-	public function getIdentity(RepositoryInterface $session, RepositoryInterface $authh)
+	/**
+    * Repository instance
+    *
+    * @var object
+    */
+	protected static $repository;
+	
+	/**
+    * Author instance
+    *
+    * @var object
+    */
+	protected static $author;
+
+	/**
+    * Class constructor
+    *
+    * @param object $repository
+    * @param object $author
+    *
+    * @return void
+    */ 
+	public function __construct(RepositoryInterface $repository, AuthorInterface $author)
+	{
+		static::$repository = $repository;
+
+		static::$author = $author;
+	}
+
+	public function getIdentity(RepositoryInterface $session, RepositoryInterface $auth)
 	{
 		$session->get('hello');
 	}
@@ -19,9 +47,24 @@ class Author {
 		return $repository;
 	}
 
-	public function login(array $user, $remember, RepositoryInterface $repository, RedisRepository $redis)
+	public function login(array $user, $remember, RepositoryInterface $repository)
 	{
-		var_dump($remember);
+		return $user;
+	}
+
+	public function check()
+	{
+		
+	}
+
+	public function guest()
+	{
+
+	}
+
+	public function is($type)
+	{
+
 	}
 
 }

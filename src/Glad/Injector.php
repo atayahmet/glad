@@ -10,8 +10,13 @@ use ReflectionClass;
  * Dependency injection class
  *
  * @author Ahmet ATAY
- *
+ * @category Authentication
+ * @package Glad
+ * @copyright 2015
+ * @license http://opensource.org/licenses/MIT MIT license
+ * @link https://github.com/atayahmet/glad
  */
+
 class Injector {
     
     /**
@@ -28,30 +33,58 @@ class Injector {
     */
     protected static $container;
 
+    /**
+    * Class constructor
+    *
+    * @return void
+    */    
     public function __construct()
     {
         static::$gladProvider = GladProvider::register();
     }
 
-    public static function inject($class, $method, $parm = null)
+    /**
+    * Inject method
+    *
+    * @param string $class
+    * @param string $method
+    * @param array $parm
+    *
+    * @return void
+    */   
+    public static function inject($class, $method, array $parm = null)
     {
-      static::setInjectsParameters($class, $method, $parm);
+        return static::setInjectsParameters($class, $method, $parm);
     }
 
+    /**
+    * method setInjectsParameters
+    *
+    * @param string $class
+    * @param string $method
+    * @param array $parm
+    *
+    * @return all types
+    */ 
     private static function setInjectsParameters($class, $method, array $parm = null)
     {
         $methods = array('__construct', $method);
         $instance = null;
 
-        foreach($methods as $m) {
+        foreach($methods as $k => $m) {
 
             if(method_exists($class, $m)){
+
                 $export = ReflectionMethod::export($class, $m, true);
 
+                // Parametreler ayıklanıyor.
                 preg_match_all('/\[(.*?)\]/', $export, $matches, PREG_PATTERN_ORDER);
 
+                // Gereksiz değerler diziden çıkarılıyor
                 unset($matches[1][0], $matches[1][1]);
                 
+                // Yeni enjekte edilecek parametrelerin
+                // toplanacağı dizi değişkeni.
                 $injects = array();
 
                 foreach($matches[1] as $in){
@@ -69,24 +102,53 @@ class Injector {
                         }else{
                             if(isset(static::$gladProvider[$i])){
                                 $new = new static::$gladProvider[$i];
+
                                 static::$container[$i] = $new;
+                                
                                 $injects[] = $new;
                             }
                         }
                     }
                 }
 
+                // Geçerli class'ın __construct methodu var ise parametreler enjekte
+                // ediliyor ve instance alınıyor..
                 if(method_exists($class, '__construct') && is_null($instance)){
+
                     $c = new ReflectionClass($class);
                     $instance = $c->newInstanceArgs($injects);
                 }else{
-                    $instance = new $class();
+                    if(is_null($instance)){
+                        $instance = new $class();
+                    }
 
                     $reflectionMethod = new ReflectionMethod($class, $m);
 
+                    // Geçerli method parametreler enjekte edilerek çalıştırılıyor..
                     return $reflectionMethod->invokeArgs($instance, $injects);
                 }
             }
+        
         }
+    }
+
+    /**
+    * New instance creator
+    *
+    * @param string $class
+    * @param array $injects
+    *
+    * @return object
+    */ 
+    private static function newInstanceCurrentClass($class, array $injects = null)
+    {
+        if(method_exists($class, '__construct')){
+            $c = new ReflectionClass($class);
+            $instance = $c->newInstanceArgs($injects);
+        }else{
+            $instance = new $class();
+        }
+
+        return $instance;
     }
 }

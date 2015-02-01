@@ -3,6 +3,7 @@
 namespace Glad;
 
 use Glad\Injector;
+use Glad\GladProvider;
 
 /**
  * Glad authentication container class
@@ -28,7 +29,7 @@ class Glad {
     *
     * @var string
     */
-    private static $author = 'Glad\Author';
+    private static $author;
   
     /**
     * Constructor
@@ -36,24 +37,10 @@ class Glad {
     public function __construct()
     {
         static::$injector = new Injector();
+
+        static::$author = GladProvider::$author;
     }
 
-    
-
-    public function register()
-    {
-
-    }
-
-    public function is()
-    {
-
-    }
-
-    public function check()
-    {
-
-    }
 
     public function guest()
     {
