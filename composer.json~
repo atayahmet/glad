@@ -20,5 +20,10 @@
     "psr-0": {
       "": "src"
     }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.0"
+    }
   }
 }
