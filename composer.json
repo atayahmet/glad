@@ -21,10 +21,6 @@
       "": "src"
     }
   },
-"config": {
-		"preferred-install": "dist"
-},
-"minimum-stability": "stable",
   "extra": {
     "branch-alias": {
       "dev-master": "2.0-dev"
