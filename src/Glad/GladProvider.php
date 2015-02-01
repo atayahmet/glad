@@ -16,7 +16,6 @@ class GladProvider {
 		return array(
     		'RepositoryInterface' 	=> 'Glad\Driver\Repository\NativeSession\Session',
     		'AuthorInterface' 		=> 'Glad\Driver\Authentication\GladAuth\Author',
-    		'RedisRepository'		=> 'Glad\Driver\Repository\Redis\RedisRepository',
             'SenderInterface'       => '',
     	);
   	}

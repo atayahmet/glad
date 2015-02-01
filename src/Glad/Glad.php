@@ -4,6 +4,7 @@ namespace Glad;
 
 use Glad\Injector;
 use Glad\GladProvider;
+use Glad\GladModelInterface;
 
 /**
  * Glad authentication container class
@@ -39,13 +40,6 @@ class Glad {
     protected static $model;
 
     /**
-    * Database connection
-    *
-    * @var array
-    */
-    protected static $connection;
-
-    /**
     * Users table fields
     *
     * @var array
@@ -71,22 +65,19 @@ class Glad {
         }
 
         if(is_null(static::$model)){
-            static::$model = new MiniOrm(static::$connection);
-            static::$injector->add('OrmInterface', static::$model);
+            exit('non model');
         }
+
+        static::$injector->add('GladModelInterface', static::$model);
     }
 
-    public static function model(OrmInterface $model)
-    {
+    public static function model(GladModelInterface $model)
+    {   
+        static::$model = $model;
+
         self::init();
 
-        static::$model = $model;
         static::$injector->add('OrmInterface', $model);
-    }
-
-    public static function connection(array $connection)
-    {
-        static::$connection = $connection;
     }
 
     public static function userTableField(array $fields)
