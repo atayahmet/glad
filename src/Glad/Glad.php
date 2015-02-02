@@ -35,7 +35,7 @@ class Glad {
     protected static $author;
   
     /**
-    * Author class name
+    * Model object
     *
     * @var object
     */
@@ -49,6 +49,7 @@ class Glad {
     protected static $fields;
    
     protected static $constants;
+
     /**
     * Class constructor
     *
@@ -65,16 +66,6 @@ class Glad {
             static::$injector = new Injector();
             static::$author = GladProvider::$author;
         }
-
-        if(is_null(static::$model)){
-            exit('non model');
-        }
-
-        if(is_null(static::$constants)){
-            static::$constants = new Constants;
-        }
-
-        self::modelAddToInjector(static::$model);
     }
 
     protected static function modelAddToInjector($model)
@@ -82,21 +73,26 @@ class Glad {
         static::$injector->add('GladModelInterface', $model);
     }
 
+    public static function authField(array $fields)
+    {
+        static::init();
+
+        if(is_null(static::$constants)){
+            static::$constants = static::getConstantsInstance();
+        }
+
+        static::$injector->resolve(static::$constants);
+
+        static::setStaticVariable(static::$constants, ['field' => 'authFields', 'value' => $fields]);
+
+        return new static;
+    }
     public static function model(GladModelInterface $model)
     {   
         static::$model = $model;
 
         self::init();
         self::modelAddToInjector(static::$model);
-
-        return new static;
-    }
-
-    public static function authField(array $fields)
-    {
-        static::init();
-        static::setStaticVariable(static::$constants, ['field' => 'authFields', 'value' => $fields]);
-        static::$injector->add('Constants', static::$constants);
 
         return new static;
     }
@@ -111,6 +107,11 @@ class Glad {
         }catch(Exception $e){
             exit(var_dump($e));
         }
+    }
+
+    protected static function getConstantsInstance()
+    {
+        return new Constants;
     }
 
     public static function __callStatic($method, $parm)

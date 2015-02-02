@@ -61,7 +61,19 @@ class Injector {
     {
         self::$container[$key] = $class;
     }
-    
+
+    public static function resolve($class = null)
+    {
+        if(is_object($class)){
+
+            $resolved = preg_split('/\\\\/', get_class($class));
+
+            if(count($resolved) > 0) {
+                static::add(end($resolved), $class);
+            }
+        }
+    }
+
     /**
     * method setInjectsParameters
     *

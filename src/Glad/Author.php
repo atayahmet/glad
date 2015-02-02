@@ -5,11 +5,10 @@ namespace Glad;
 use Glad\Driver\Repository\RepositoryInterface;
 use Glad\AuthorInterface;
 use Glad\GladModelInterface;
-use Glad\Glad;
 use Glad\Constants;
 use Closure;
 
-class Author implements AuthorInterface {
+class Author extends Glad implements AuthorInterface {
 
 	/**
     * Repository instance
