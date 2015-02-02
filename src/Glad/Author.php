@@ -4,7 +4,9 @@ namespace Glad;
 
 use Glad\Driver\Repository\RepositoryInterface;
 use Glad\AuthorInterface;
-use glad\GladModelInterface;
+use Glad\GladModelInterface;
+use Glad\Glad;
+use Glad\Constants;
 use Closure;
 
 class Author implements AuthorInterface {
@@ -38,9 +40,9 @@ class Author implements AuthorInterface {
 		//static::$author = $author;
 	}
 
-	public static function register(array $credentials, GladModelInterface $model)
+	public static function register(array $credentials, GladModelInterface $model, Constants $constants)
 	{
-		$model->newUser($credentials);
+		$createResult = $model->newUser($credentials);
 	}
 
 	public function login(array $user, $remember, RepositoryInterface $repository)

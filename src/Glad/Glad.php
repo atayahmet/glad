@@ -5,6 +5,8 @@ namespace Glad;
 use Glad\Injector;
 use Glad\GladProvider;
 use Glad\GladModelInterface;
+use Glad\Constants;
+use ReflectionObject;
 
 /**
  * Glad authentication container class
@@ -46,7 +48,7 @@ class Glad {
     */
     protected static $fields;
    
-
+    protected static $constants;
     /**
     * Class constructor
     *
@@ -68,6 +70,10 @@ class Glad {
             exit('non model');
         }
 
+        if(is_null(static::$constants)){
+            static::$constants = new Constants;
+        }
+
         self::modelAddToInjector(static::$model);
     }
 
@@ -82,11 +88,29 @@ class Glad {
 
         self::init();
         self::modelAddToInjector(static::$model);
+
+        return new static;
     }
 
-    public static function userTableField(array $fields)
+    public static function authField(array $fields)
     {
-        static::$fields = $fields;
+        static::init();
+        static::setStaticVariable(static::$constants, ['field' => 'authFields', 'value' => $fields]);
+        static::$injector->add('Constants', static::$constants);
+
+        return new static;
+    }
+
+    protected static function setStaticVariable($instance, $parm)
+    {
+        try {
+            $refObject   = new ReflectionObject($instance);
+            $refProperty = $refObject->getProperty($parm['field']);
+            $refProperty->setAccessible(true);
+            $refProperty->setValue(null, $parm['value']);
+        }catch(Exception $e){
+            exit(var_dump($e));
+        }
     }
 
     public static function __callStatic($method, $parm)
