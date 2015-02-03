@@ -46,7 +46,7 @@ class Glad {
     *
     * @var array
     */
-    protected static $fields;
+    protected static $identityFields;
    
     protected static $constants;
 
@@ -60,6 +60,11 @@ class Glad {
         self::init();
     }
     
+    /**
+    * Class initializer
+    *
+    * @return void
+    */
     protected static function init()
     {
         if(is_null(static::$injector)){
@@ -68,11 +73,23 @@ class Glad {
         }
     }
 
+    /**
+    * Model instance add to injector
+    *
+    * @param $model object
+    * @return void
+    */
     protected static function modelAddToInjector($model)
     {
         static::$injector->add('GladModelInterface', $model);
     }
 
+    /**
+    * set identity fields
+    *
+    * @param $fields array
+    * @return object
+    */
     public static function authField(array $fields)
     {
         static::init();
@@ -84,9 +101,20 @@ class Glad {
         static::$injector->resolve(static::$constants);
 
         static::setStaticVariable(static::$constants, ['field' => 'authFields', 'value' => $fields]);
+        static::$identityFields = false;
 
         return new static;
     }
+
+    protected static function checkIdentityField()
+    {
+        if(! static::$identityFields){
+            throw new \Exception("Identity fields error", 1);
+        }
+
+        return true;
+    }
+
     public static function model(GladModelInterface $model)
     {   
         static::$model = $model;
@@ -116,6 +144,8 @@ class Glad {
 
     public static function __callStatic($method, $parm)
     {
+        static::checkIdentityField();
+
         self::init();
 
         return static::$injector->inject(static::$author, $method, $parm);
@@ -123,6 +153,8 @@ class Glad {
 
     public function __call($method, $parm)
     {
+        static::checkIdentityField();
+
         self::init();
 
         return static::$injector->inject(static::$author, $method, $parm);

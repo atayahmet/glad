@@ -24,6 +24,10 @@ class Author extends Glad implements AuthorInterface {
     */
 	protected static $author;
 
+	protected static $constants;
+
+	protected static $model;
+
 	/**
     * Class constructor
     *
@@ -32,16 +36,43 @@ class Author extends Glad implements AuthorInterface {
     *
     * @return void
     */ 
-	public function __construct(RepositoryInterface $repository)
+	public function __construct(Constants $constants, GladModelInterface $model)
 	{
-		static::$repository = $repository;
+		static::$constants = $constants;
 
-		//static::$author = $author;
+		static::$model = $model;
 	}
 
-	public static function register(array $credentials, GladModelInterface $model, Constants $constants)
+	/**
+    * Class constructor
+    *
+    * @param object $repository
+    * @param object $author
+    *
+    * @return void
+    */ 
+	public static function register(array $credentials)
 	{
-		$createResult = $model->newUser($credentials);
+		static::checkIdentityAsParameter($credentials);
+
+		
+		$createResult = static::$model->newUser($credentials);
+	}
+
+	protected static function checkIdentityAsParameter($credentials)
+	{
+		try {
+			$fields = static::$constants->authFields;
+
+			if(! $credentials[$fields['identity']] || !$credentials[$fields['password']]) {
+				throw new \Exception("Identity and password fields required!", 1);
+			}
+
+			return true;
+		}
+		catch(Exception $e){
+			exit($e->getMessage());
+		}
 	}
 
 	public function login(array $user, $remember, RepositoryInterface $repository)

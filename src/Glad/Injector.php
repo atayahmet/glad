@@ -74,6 +74,11 @@ class Injector {
         }
     }
 
+    public function make()
+    {
+
+    }
+    
     /**
     * method setInjectsParameters
     *
