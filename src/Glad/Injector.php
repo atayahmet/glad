@@ -52,7 +52,7 @@ class Injector {
     *
     * @return void
     */   
-    public static function inject($class, $method, array $parm = null)
+    public static function inject($class, $method = null, array $parm = null)
     {
         return static::setInjectsParameters($class, $method, $parm);
     }
@@ -105,8 +105,7 @@ class Injector {
                 // Gereksiz değerler diziden çıkarılıyor
                 unset($matches[1][0], $matches[1][1]);
                 
-                // Yeni enjekte edilecek parametrelerin
-                // toplanacağı dizi değişkeni.
+                // Yeni enjekte edilecek parametrelerin toplanacağı dizi değişkeni.
                 $injects = array();
 
                 foreach($matches[1] as $in){
@@ -134,8 +133,7 @@ class Injector {
                     }
                 }
 
-                // Geçerli class'ın __construct methodu var ise parametreler enjekte
-                // ediliyor ve instance alınıyor..
+                // Geçerli class'ın __construct methodu var ise parametreler enjekte ediliyor ve instance alınıyor..
                 if(method_exists($class, '__construct') && is_null($instance)){
 
                     $c = new ReflectionClass($class);
@@ -150,9 +148,11 @@ class Injector {
                     // Geçerli method parametreler enjekte edilerek çalıştırılıyor..
                     return $reflectionMethod->invokeArgs($instance, $injects);
                 }
-            }
-        
+            }        
         }
+
+        $c = new ReflectionClass($class);
+        return $c->newInstanceWithoutConstructor();
     }
 
     /**

@@ -4,7 +4,7 @@ namespace Glad;
 
 use Glad\Injector;
 use Glad\GladProvider;
-use Glad\GladModelInterface;
+use Glad\Model\GladModelInterface;
 use Glad\Constants;
 use ReflectionObject;
 
@@ -48,8 +48,14 @@ class Glad {
     */
     protected static $identityFields;
    
+    /**
+    * Constants class instance 
+    *
+    * @var object
+    */
     protected static $constants;
 
+    protected static $provider;
     /**
     * Class constructor
     *
@@ -69,8 +75,13 @@ class Glad {
     {
         if(is_null(static::$injector)){
             static::$injector = new Injector();
+            static::$injector->add('Injector', static::$injector);
+
             static::$author = GladProvider::$author;
         }
+
+        // check and set constants class instance and add to injector
+        static::setConstantsInstance();
     }
 
     /**
@@ -84,26 +95,60 @@ class Glad {
         static::$injector->add('GladModelInterface', $model);
     }
 
+    public static function setup(array $config)
+    {
+        $thisInstance = new static;
+
+        foreach($config as $name => $parm){
+            if(method_exists($thisInstance, $name)){
+                static::$name($parm);
+            }
+        }
+    }
+
     /**
     * set identity fields
     *
     * @param $fields array
-    * @return object
+    * @return void
     */
-    public static function authField(array $fields)
+    public static function fields($fields)
     {
         static::init();
 
-        if(is_null(static::$constants)){
-            static::$constants = static::getConstantsInstance();
+        if(!is_array($fields)){
+            $fields = array($fields);
         }
 
-        static::$injector->resolve(static::$constants);
-
         static::setStaticVariable(static::$constants, ['field' => 'authFields', 'value' => $fields]);
-        static::$identityFields = false;
+        static::$identityFields = true;
+    }
 
-        return new static;
+    /**
+    * set user table name
+    *
+    * @param $table string
+    * @return void
+    */
+    public static function table($table)
+    {
+        static::init();
+
+        static::setStaticVariable(static::$constants, ['field' => 'table', 'value' => $table]);
+    }
+
+    /**
+    * set user table name
+    *
+    * @param $table string
+    * @return void
+    */
+    protected static function setConstantsInstance()
+    {
+        if(! is_object(static::$constants)){
+            static::$constants = static::getConstantsInstance();
+            static::$injector->resolve(static::$constants);
+        }
     }
 
     protected static function checkIdentityField()
@@ -115,14 +160,18 @@ class Glad {
         return true;
     }
 
+    /**
+    * set model data object
+    *
+    * @param $model GladModelInterface instance
+    * @return void
+    */
     public static function model(GladModelInterface $model)
     {   
         static::$model = $model;
 
         self::init();
         self::modelAddToInjector(static::$model);
-
-        return new static;
     }
 
     protected static function setStaticVariable($instance, $parm)

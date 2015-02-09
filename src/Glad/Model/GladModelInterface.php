@@ -1,6 +1,6 @@
 <?php
 
-namespace Glad;
+namespace Glad\Model;
 
 interface GladModelInterface {
 	public function newUser(array $credentials);

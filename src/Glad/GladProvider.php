@@ -5,6 +5,8 @@ namespace Glad;
 class GladProvider {
 	
     public static $author = 'Glad\Author';
+    
+    public static $model = 'Glad\Model\Laravel';
 
     public static $sender = array(
             'environment' => 'test',
@@ -15,7 +17,7 @@ class GladProvider {
 	{
 		return array(
     		'RepositoryInterface' 	=> 'Glad\Driver\Repository\NativeSession\Session',
-    		'AuthorInterface' 		=> 'Glad\Driver\Authentication\GladAuth\Author'
+            'Bcrypt'                => 'Glad\Bcrypt',
     	);
   	}
 }
