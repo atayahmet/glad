@@ -32,7 +32,7 @@ class Session implements RepositoryInterface {
 	{
 		if(! $key) return false;
 
-		if(isset($_SESSION[$key])) unset($_SESSION[$key]);
+		unset($_SESSION[$key]);
 
 		return true;
 	}

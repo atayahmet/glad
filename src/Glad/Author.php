@@ -169,7 +169,7 @@ class Author {
 		$login = $bcrypt->verify($user[$passField], $userResult[$passField]);
 
 		if($login === true) {
-			return static::setUserRepository(static::$user, $remember);
+			return static::setUserRepository($userResult, $remember);
 		}
 		return false;
 	}
@@ -192,6 +192,19 @@ class Author {
 		];
 
 		return static::$repository->set('_gladAuth', serialize($userData));
+	}
+
+	public static function userData()
+	{
+		$data = static::$repository->get('_gladAuth');
+
+		if($data && is_array(unserialize($data))) {
+			$passField = static::$constants->authFields['password'];
+			$unSerialize = unserialize($data);
+			unset($unSerialize['userData'][$passField]);
+			
+			return $unSerialize['userData'];
+		}
 	}
 
 	protected static function getInstance()
@@ -284,8 +297,8 @@ class Author {
 	{
 		$exception = false;
 
+		if(!isset($result)) return [];
 		if(! is_array(reset($result))) return $result;
-		//if(count($result) < 1) return $result;
 
 		foreach($result as $key => $value){
 			if(is_numeric($key) && (!is_array($result[$key]) && !is_object($result[$key])) ){
