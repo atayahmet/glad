@@ -104,7 +104,7 @@ class Injector {
 
                 // Gereksiz değerler diziden çıkarılıyor
                 unset($matches[1][0], $matches[1][1]);
-                
+
                 // Yeni enjekte edilecek parametrelerin toplanacağı dizi değişkeni.
                 $injects = array();
 
@@ -114,7 +114,7 @@ class Injector {
                     $segments = preg_split("/\\\\/", $t[2]);
                     $last = end($segments);
 
-                    if($last == 'array'){
+                    if($last == 'array' || strpos($last, '$') !== false){
                         foreach($parm as $_parm){
                             $injects[] = $_parm;
                         }
