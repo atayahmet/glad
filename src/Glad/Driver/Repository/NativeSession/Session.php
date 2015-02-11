@@ -4,13 +4,35 @@ namespace Glad\Driver\Repository\NativeSession;
 
 use Glad\Driver\Repository\RepositoryInterface;
 
+/**
+ * Session class
+ *
+ * @author Ahmet ATAY
+ * @category Session
+ * @package Glad
+ * @copyright 2015
+ * @license http://opensource.org/licenses/MIT MIT license
+ * @link https://github.com/atayahmet/glad
+ */
 class Session implements RepositoryInterface {
 	
+	/**
+     * Class constructor
+     *
+     * @return void
+     */
 	public function __construct()
 	{
 		static::sessionStart();
 	}
 
+	/**
+     * Sets data to session
+     *
+     * @param string $key
+     * @param mixed $data
+     * @return bool
+     */
 	public static function set($key = false, $data = false)
 	{
 		if(! $key || ! $data) return false;
@@ -21,6 +43,12 @@ class Session implements RepositoryInterface {
 		return false;
 	}
 
+	/**
+     * Gets data from session
+     *
+     * @param string $key
+     * @return bool
+     */
 	public static function get($key = false)
 	{
 		if(! $key || !isset($_SESSION[$key])) return false;
@@ -28,6 +56,12 @@ class Session implements RepositoryInterface {
 		return $_SESSION[$key];
 	}
 
+	/**
+     * Delete data from session
+     *
+     * @param string $key
+     * @return bool
+     */
 	public static function delete($key = false)
 	{
 		if(! $key) return false;
@@ -37,6 +71,11 @@ class Session implements RepositoryInterface {
 		return true;
 	}
 
+	/**
+     * Check and starts session process
+     *
+     * @return bool
+     */
 	protected static function sessionStart()
 	{
 		if(! static::checkSessionStarted()) {
@@ -44,6 +83,11 @@ class Session implements RepositoryInterface {
 		}
 	}
 
+	/**
+     * Checks if the session has been started
+     *
+     * @return bool
+     */
 	protected static function checkSessionStarted()
 	{
 		if (version_compare(phpversion(), '5.4.0', '>=')) {
