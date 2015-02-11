@@ -194,7 +194,7 @@ class Glad {
     public static function __callStatic($method, $parm)
     {
         static::checkIdentityField();
-
+        
         self::init();
 
         return static::$injector->inject(static::$author, $method, $parm);
