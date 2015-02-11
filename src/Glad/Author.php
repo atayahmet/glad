@@ -99,13 +99,13 @@ class Author {
 
 
 	/**
-    * Class constructor
-    *
-    * @param object $repository
-    * @param object $author
-    *
-    * @return void
-    */ 
+     * Class constructor
+     *
+     * @param object $repository
+     * @param object $author
+     *
+     * @return void
+     */ 
 	public function __construct(Constants $constants, GladModelInterface $model, Injector $injector, RepositoryInterface $repository)
 	{
 		static::$constants = $constants;
@@ -114,7 +114,7 @@ class Author {
 		static::$repository = $repository;
 		static::$author = GladProvider::$author;
 
-		static::$userData = $repository->get('_gladAuth');
+		static::$userData = static::$repository->get('_gladAuth');
 	}
 
 	/**
@@ -125,19 +125,22 @@ class Author {
      */ 
 	public static function register(Bcrypt $crypt, array $credentials)
 	{
-		static::checkIdentityAsParameter($credentials);
-		
-		if(! static::checkIdentityForRealUser($credentials)){
-			static::$registerResult = false;
-		}else{
-			static::$tempUser = $credentials;
+		if(static::check() === true){
 
-			$credentials['password'] = $crypt->hash($credentials['password']);
+			static::checkIdentityAsParameter($credentials);
 			
-			static::$registerResult = static::$model->newUser($credentials);
-			static::$user = $credentials;
+			if(! static::checkIdentityForRealUser($credentials)){
+				static::$registerResult = false;
+			}else{
+				static::$tempUser = $credentials;
+
+				$credentials['password'] = $crypt->hash($credentials['password']);
+				
+				static::$registerResult = static::$model->newUser($credentials);
+				static::$user = $credentials;
+			}
 		}
-		
+
 		return static::getInstance();
 	}
 
@@ -145,15 +148,15 @@ class Author {
      * User login process
      *
      * @param object $bcrypt
-     * @param object $repository
      * @param array $user
-     * @return bool $remember
+     * @param bool $remember
+     * @return bool
      */ 
-	public static function login(Bcrypt $bcrypt, RepositoryInterface $repository, array $user, $remember = false)
+	public static function login(Bcrypt $bcrypt, array $user, $remember = false)
 	{
 		$passField = static::$constants->authFields['password'];
 
-		if(!isset($user[$passField])){
+		if(!isset($user[$passField]) || static::check() === true){
 			return false;
 		}
 
@@ -175,16 +178,46 @@ class Author {
 	}
 
 	/**
+     * User login process by user id
+     *
+     * @param int $userId
+     * @return bool
+     */ 
+	public static function loginByUserId($userId = false)
+	{
+		if(static::check() === true || ! $userId) return false;
+
+		$result = static::$model->getIdentityWithId($userId);
+
+		if(count($result) == 1){
+			
+			$userResult = static::resolveDbResult($result);
+			
+			if(isset($userResult) && is_array($userResult)){
+				return static::setUserRepository($userResult);
+			}
+		}
+		return false;
+	}
+
+	/**
      * User logout process
      *
-     * @return bool $remember
+     * @return bool
      */ 
 	public static function logout()
 	{
 		return static::$repository->delete('_gladAuth');
 	}
 
-	protected static function setUserRepository(array $user, $remember)
+	/**
+     * Sets user data to repository
+     *
+     * @param $user array
+     * @param $remember bool
+     * @return bool
+     */ 
+	protected static function setUserRepository(array $user, $remember = false)
 	{
 		$userData = [
 			'userData' => $user,
@@ -194,6 +227,11 @@ class Author {
 		return static::$repository->set('_gladAuth', serialize($userData));
 	}
 
+	/**
+     * Gets user data from repository
+     *
+     * @return array
+     */ 
 	public static function userData()
 	{
 		$data = static::$repository->get('_gladAuth');
@@ -207,11 +245,21 @@ class Author {
 		}
 	}
 
+	/**
+     * Gets container class instane
+     *
+     * @return object
+     */ 
 	protected static function getInstance()
 	{
 		return static::$injector->inject('Glad\Glad');
 	}
 
+	/**
+     * Login to after register process
+     *
+     * @return object
+     */ 
 	public static function andLogin()
 	{
 		if(static::status()){
@@ -221,6 +269,11 @@ class Author {
 		return false;
 	}
 
+	/**
+     * Gets login status
+     *
+     * @return bool
+     */ 
 	public static function status()
 	{
 		if(static::$registerResult && !is_null(static::$registerResult)){
@@ -230,11 +283,11 @@ class Author {
 	}
 
 	/**
-    * Controls the given parameter
-    *
-    * @param array $credentials
-    * @return bool|exception
-    */ 
+     * Controls the given parameter
+     *
+     * @param array $credentials
+     * @return bool|exception
+     */ 
 	protected static function checkIdentityAsParameter($credentials)
 	{
 		try {
@@ -258,11 +311,11 @@ class Author {
 	}
 
 	/**
-    * Controls the given parameter
-    *
-    * @param array $credentials
-    * @return bool|exception
-    */ 
+     * Controls the given parameter
+     *
+     * @param array $credentials
+     * @return bool|exception
+     */ 
 	protected static function checkIdentityForRealUser(array $credentials)
 	{
 		$result = static::$model->getIdentity(static::getIdField($credentials));
@@ -271,6 +324,12 @@ class Author {
 		return count($result) < 1;
 	}
 
+	/**
+     * Check and gets authenticate fields
+     *
+     * @param array $credentials
+     * @return array
+     */ 
 	protected static function getIdField(array $credentials)
 	{
 		$identity = static::$constants->authFields['identity'];
@@ -287,12 +346,13 @@ class Author {
 		return $fields;
 		
 	}
+
 	/**
-    * Controls the given data from implemented model
-    *
-    * @param array $result
-    * @return array|exception
-    */ 
+     * Controls the given data from implemented model
+     *
+     * @param array $result
+     * @return array|exception
+     */ 
 	protected static function resolveDbResult($result)
 	{
 		$exception = false;
@@ -313,7 +373,12 @@ class Author {
 		throw new \Exception('return data incorrect');
 	}
 
-
+	/**
+     * Clean xss data
+     *
+     * @param string $input
+     * @return string
+     */ 
 	protected static function xssClean($input)
 	{
 		$input = strip_tags($input);
@@ -322,13 +387,21 @@ class Author {
 		return $input;
 	}
 
-	
-
+	/**
+     * Gets user logged in status
+     *
+     * @return bool
+     */ 
 	public static function check()
 	{
 		return static::authStatus();
 	}
 
+	/**
+     * Gets user log out status
+     *
+     * @return bool
+     */ 
 	public static function guest()
 	{
 		return !static::authStatus();
@@ -339,6 +412,11 @@ class Author {
 
 	}
 
+	/**
+     * Return user logged in status to other methods
+     *
+     * @return bool
+     */ 
 	protected static function authStatus()
 	{
 		$auth = static::$userData;
