@@ -7,6 +7,7 @@ use Glad\Model\GladModelInterface;
 use Glad\GladProvider;
 use Glad\Constants;
 use Glad\Injector;
+use Closure;
 
 /**
  * Auth process class
@@ -97,6 +98,7 @@ class Author {
     */
 	protected static $registerResult;
 
+	protected static $processResult = false;
 
 	/**
      * Class constructor
@@ -125,7 +127,7 @@ class Author {
      */ 
 	public static function register(Bcrypt $crypt, array $credentials)
 	{
-		if(static::check() === true){
+		if(static::guest() === true){
 
 			static::checkIdentityAsParameter($credentials);
 			
@@ -138,6 +140,10 @@ class Author {
 				
 				static::$registerResult = static::$model->newUser($credentials);
 				static::$user = $credentials;
+
+				if(static::$registerResult){
+					static::$processResult = true;
+				}
 			}
 		}
 
@@ -161,20 +167,40 @@ class Author {
 		}
 
 		$result = static::$model->getIdentity(static::getIdField($user));
-		$userResult = static::resolveDbResult($result);
+		static::$user = static::resolveDbResult($result);
 		
-		if(count($userResult) < 1) return false;
+		if(count(static::$user) < 1) return false;
 
-		if(!isset($userResult[$passField])){
+		if(!isset(static::$user[$passField])){
 			return false;
 		}
 		
-		$login = $bcrypt->verify($user[$passField], $userResult[$passField]);
+		$login = $bcrypt->verify($user[$passField], static::$user[$passField]);
 
 		if($login === true) {
-			return static::setUserRepository($userResult, $remember);
+			static::setUserRepository(static::$user, $remember);
+			static::$processResult = true;
 		}
-		return false;
+		return static::getInstance();
+	}
+
+	public static function apply(Closure $apply)
+	{
+		if(static::$user){
+			$apply();
+		}
+	}
+
+	protected static function banned($ban = false)
+	{
+		static::$checkBanned = $ban;
+		return static::getInstance();
+	}
+
+	protected static function activate($activate = false)
+	{
+		static::$checkActivate = $activate;
+		return static::getInstance();
 	}
 
 	/**
@@ -194,10 +220,11 @@ class Author {
 			$userResult = static::resolveDbResult($result);
 			
 			if(isset($userResult) && is_array($userResult)){
-				return static::setUserRepository($userResult);
+				static::setUserRepository($userResult);
+				static::$processResult = true;
 			}
 		}
-		return false;
+		static::getInstance();
 	}
 
 	/**
@@ -276,10 +303,7 @@ class Author {
      */ 
 	public static function status()
 	{
-		if(static::$registerResult && !is_null(static::$registerResult)){
-			return true;
-		}
-		return false;
+		return static::$processResult;
 	}
 
 	/**
