@@ -88,10 +88,11 @@ class Injector {
     *
     * @return all types
     */ 
-    private static function setInjectsParameters($class, $method, array $parm = null)
+    protected static function setInjectsParameters($class, $method, array $parm = null)
     {
         $methods = array('__construct', $method);
         $instance = null;
+
 
         foreach($methods as $k => $m) {
 
@@ -105,6 +106,8 @@ class Injector {
                 // Gereksiz değerler diziden çıkarılıyor
                 unset($matches[1][0], $matches[1][1]);
 
+                $parm = static::editParameter($matches[1], $parm);
+               
                 // Yeni enjekte edilecek parametrelerin toplanacağı dizi değişkeni.
                 $injects = array();
 
@@ -113,29 +116,33 @@ class Injector {
                     $t = preg_split('/ /',$in);
                     $segments = preg_split("/\\\\/", $t[2]);
                     $last = end($segments);
+   
+                    if(isset(static::$container[$last])){
+                        $injects[] = static::$container[$last];
+                    }
+                    
+                    elseif(isset(static::$gladProvider[$last])){
+                        $new = new static::$gladProvider[$last];
 
-                    if($last == 'array' || strpos($last, '$') !== false){
-                        foreach($parm as $_parm){
-                            $injects[] = $_parm;
-                        }
+                        static::$container[$last] = $new;
+                        
+                        $injects[] = $new;
+                        
                     }else{
-                        if(isset(static::$container[$last])){
-                            $injects[] = static::$container[$last];
-                        }else{
-                            if(isset(static::$gladProvider[$last])){
-                                $new = new static::$gladProvider[$last];
 
-                                static::$container[$last] = $new;
-                                
-                                $injects[] = $new;
+                        if($last == 'array' || strpos($last, '$') !== false || $last == 'Closure'){
+                            foreach($parm as $_parm){
+                                $injects[] = $_parm;
                             }
+
+                            $parm = [];
                         }
                     }
                 }
 
-                // Geçerli class'ın __construct methodu var ise parametreler enjekte ediliyor ve instance alınıyor..
+                // Geçerli class'ın __construct methodu var ise parametreler enjekte 
+                // ediliyor ve instance alınıyor..
                 if(method_exists($class, '__construct') && is_null($instance)){
-
                     $c = new ReflectionClass($class);
                     $instance = $c->newInstanceArgs($injects);
                 }else{
@@ -144,6 +151,7 @@ class Injector {
                     }
 
                     $reflectionMethod = new ReflectionMethod($class, $m);
+                    $reflectionMethod->setAccessible(true);
 
                     // Geçerli method parametreler enjekte edilerek çalıştırılıyor..
                     return $reflectionMethod->invokeArgs($instance, $injects);
@@ -163,7 +171,7 @@ class Injector {
     *
     * @return object
     */ 
-    private static function newInstanceCurrentClass($class, array $injects = null)
+    protected static function newInstanceCurrentClass($class, array $injects = null)
     {
         if(method_exists($class, '__construct')){
             $c = new ReflectionClass($class);
@@ -173,5 +181,42 @@ class Injector {
         }
 
         return $instance;
+    }
+
+    protected static function editParameter($depends, $params)
+    {
+        if(count($depends) > 0 && count($params) > 0){
+            foreach ($depends as $key => $value) {
+                if(!preg_match('/array(\s+)\$(.*?)/', $value) && !preg_match('/\$(.*?)(\s+)\=(\s+)(.*?)/', $value)){
+                    unset($depends[$key]);
+                }
+            }
+
+            if(count($depends) == count($params)) return $params;
+
+            $depends = array_values($depends);
+            $params = array_values($params);
+
+            foreach($depends as $key => $dep){
+                if(!isset($params[$key])){
+                    $newParm = preg_split('/\=/',$dep);
+                    
+                    if(count($newParm) > 1){
+                        $newParm = trim(array_filter($newParm)[1]);
+                    }
+
+                    if(! is_array($newParm) && strtolower($newParm) == 'false'){
+                        $params[] = false;
+                    }
+                    elseif(! is_array($newParm) && strtolower($newParm) == 'true'){
+                        $params[] = true;
+                    }else{
+                        $params[] = $newParm;
+                    }
+                }
+            }
+        }
+
+        return $params;
     }
 }

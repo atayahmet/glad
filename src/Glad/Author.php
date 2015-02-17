@@ -98,7 +98,11 @@ class Author {
     */
 	protected static $registerResult;
 
+	protected static $rememberMe = false;
 	protected static $processResult = false;
+
+	protected static $checkActivate = false;
+	protected static $checkBanned = false;
 
 	/**
      * Class constructor
@@ -158,27 +162,28 @@ class Author {
      * @param bool $remember
      * @return bool
      */ 
-	public static function login(Bcrypt $bcrypt, array $user, $remember = false)
+	public static function login(Bcrypt $bcrypt, array $user, $remember = false, $t = true)
 	{
 		$passField = static::$constants->authFields['password'];
 
 		if(!isset($user[$passField]) || static::check() === true){
-			return false;
+			return static::getInstance();
 		}
 
 		$result = static::$model->getIdentity(static::getIdField($user));
 		static::$user = static::resolveDbResult($result);
 		
-		if(count(static::$user) < 1) return false;
+		if(count(static::$user) < 1) return static::getInstance();
 
 		if(!isset(static::$user[$passField])){
-			return false;
+			return static::getInstance();
 		}
 		
 		$login = $bcrypt->verify($user[$passField], static::$user[$passField]);
 
 		if($login === true) {
-			static::setUserRepository(static::$user, $remember);
+			// static::setUserRepository(static::$user, $remember);
+			static::$rememberMe = $remember;
 			static::$processResult = true;
 		}
 		return static::getInstance();
@@ -186,21 +191,26 @@ class Author {
 
 	public static function apply(Closure $apply)
 	{
-		if(static::$user){
-			$apply();
-		}
+		var_dump($apply);
+		//var_dump(static::$rememberMe);
+		$apply(static::getInstance());
 	}
 
-	protected static function banned($ban = false)
+	public static function banned($banned = false)
 	{
-		static::$checkBanned = $ban;
-		return static::getInstance();
+		return static::setVariable('checkBanned', $banned, static::getInstance());
 	}
 
-	protected static function activate($activate = false)
+	public static function activate($activate = false)
 	{
-		static::$checkActivate = $activate;
-		return static::getInstance();
+		return static::setVariable('checkActivate', $activate, static::getInstance());
+	}
+
+	protected static function setVariable($varName, $value, $return = false)
+	{
+		static::$$varName = $value;
+
+		if($return) return $return;
 	}
 
 	/**
