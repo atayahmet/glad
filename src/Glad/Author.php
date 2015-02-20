@@ -3,6 +3,7 @@
 namespace Glad;
 
 use Glad\Driver\Repository\RepositoryInterface;
+use Glad\UserStatusInterface;
 use Glad\Model\GladModelInterface;
 use Glad\GladProvider;
 use Glad\Constants;
@@ -103,6 +104,8 @@ class Author {
 
 	protected static $checkActivate = false;
 	protected static $checkBanned = false;
+	protected static $status = false;
+	protected static $toDo = [];
 
 	/**
      * Class constructor
@@ -131,6 +134,8 @@ class Author {
      */ 
 	public static function register(Bcrypt $crypt, array $credentials)
 	{
+		static::resetCheckVariables();
+
 		if(static::guest() === true){
 
 			static::checkIdentityAsParameter($credentials);
@@ -162,8 +167,10 @@ class Author {
      * @param bool $remember
      * @return bool
      */ 
-	public static function login(Bcrypt $bcrypt, array $user, $remember = false, $t = true)
+	public static function login(Bcrypt $bcrypt, array $user, $remember = false)
 	{
+		static::resetCheckVariables();
+
 		$passField = static::$constants->authFields['password'];
 
 		if(!isset($user[$passField]) || static::check() === true){
@@ -182,35 +189,29 @@ class Author {
 		$login = $bcrypt->verify($user[$passField], static::$user[$passField]);
 
 		if($login === true) {
-			// static::setUserRepository(static::$user, $remember);
 			static::$rememberMe = $remember;
 			static::$processResult = true;
 		}
 		return static::getInstance();
 	}
 
-	public static function apply(Closure $apply)
+	public static function apply(Closure $apply, ConditionsInterface $conditions)
 	{
-		var_dump($apply);
-		//var_dump(static::$rememberMe);
-		$apply(static::getInstance());
+		// $processResult: result of all processes variable
+		if(static::$processResult === true){
+			$apply(static::getInstance());
+			
+			if($conditions->apply(static::$user)){
+				return static::status();
+			}
+
+			return static::$processResult = false;
+		}
 	}
 
-	public static function banned($banned = false)
+	public function conditions(array $conditions, ConditionsInterface $cond)
 	{
-		return static::setVariable('checkBanned', $banned, static::getInstance());
-	}
-
-	public static function activate($activate = false)
-	{
-		return static::setVariable('checkActivate', $activate, static::getInstance());
-	}
-
-	protected static function setVariable($varName, $value, $return = false)
-	{
-		static::$$varName = $value;
-
-		if($return) return $return;
+		$cond->add($conditions);
 	}
 
 	/**
@@ -219,22 +220,25 @@ class Author {
      * @param int $userId
      * @return bool
      */ 
-	public static function loginByUserId($userId = false)
+	public static function loginByUserId($userId = false, $remember = false)
 	{
-		if(static::check() === true || ! $userId) return false;
+		static::resetCheckVariables();
+
+		if(static::check() === true || ! $userId) return static::getInstance();
 
 		$result = static::$model->getIdentityWithId($userId);
 
 		if(count($result) == 1){
 			
-			$userResult = static::resolveDbResult($result);
+			static::$user = static::resolveDbResult($result);
 			
-			if(isset($userResult) && is_array($userResult)){
-				static::setUserRepository($userResult);
+			if(isset(static::$user) && is_array(static::$user)){
+				static::$rememberMe = $remember;
 				static::$processResult = true;
+				static::status();
 			}
 		}
-		static::getInstance();
+		return static::getInstance();
 	}
 
 	/**
@@ -245,6 +249,12 @@ class Author {
 	public static function logout()
 	{
 		return static::$repository->delete('_gladAuth');
+	}
+
+	protected static function resetCheckVariables()
+	{
+		static::$processResult = false;
+		static::$status = false;
 	}
 
 	/**
@@ -276,6 +286,7 @@ class Author {
 		if($data && is_array(unserialize($data))) {
 			$passField = static::$constants->authFields['password'];
 			$unSerialize = unserialize($data);
+
 			unset($unSerialize['userData'][$passField]);
 			
 			return $unSerialize['userData'];
@@ -307,13 +318,19 @@ class Author {
 	}
 
 	/**
-     * Gets login status
+     * Gets process status and set user data
      *
      * @return bool
      */ 
 	public static function status()
 	{
-		return static::$processResult;
+		if(static::$processResult === true){
+			static::setUserRepository(static::$user, static::$rememberMe);
+			static::$userData = static::$repository->get('_gladAuth');
+			static::$processResult = false;
+			static::$status = true;
+		}
+		return static::$status;
 	}
 
 	/**
@@ -378,7 +395,6 @@ class Author {
 		}
 
 		return $fields;
-		
 	}
 
 	/**
@@ -453,6 +469,8 @@ class Author {
      */ 
 	protected static function authStatus()
 	{
+		static::status();
+
 		$auth = static::$userData;
 
 		if(! is_array($auth)) $auth = unserialize($auth);

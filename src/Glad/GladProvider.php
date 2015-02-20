@@ -18,6 +18,7 @@ class GladProvider {
 		return array(
     		'RepositoryInterface' 	=> 'Glad\Driver\Repository\NativeSession\Session',
             'Bcrypt'                => 'Glad\Bcrypt',
+            'ConditionsInterface'   => 'Glad\Conditions'
     	);
   	}
 }
