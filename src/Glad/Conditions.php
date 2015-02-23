@@ -16,11 +16,10 @@ class Conditions implements ConditionsInterface {
 
 			$this->checkResult[$field] = isset($user[$field]) && $value == $user[$field];
 
-			if(isset($user[$field]) && $value == $user[$field]){
+			if(!isset($user[$field]) || $value != $user[$field]){
 				$this->check = false;
 			}
 		}
-
 		return $this->check;
 	}
 

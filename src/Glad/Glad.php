@@ -125,6 +125,20 @@ class Glad {
     }
 
     /**
+    * set model data object
+    *
+    * @param $model GladModelInterface instance
+    * @return void
+    */
+    public static function model(GladModelInterface $model)
+    {   
+        static::$model = $model;
+
+        self::init();
+        self::modelAddToInjector(static::$model);
+    }
+
+    /**
     * set user table name
     *
     * @param $table string
@@ -160,20 +174,6 @@ class Glad {
         return true;
     }
 
-    /**
-    * set model data object
-    *
-    * @param $model GladModelInterface instance
-    * @return void
-    */
-    public static function model(GladModelInterface $model)
-    {   
-        static::$model = $model;
-
-        self::init();
-        self::modelAddToInjector(static::$model);
-    }
-
     protected static function setStaticVariable($instance, $parm)
     {
         try {
@@ -188,7 +188,7 @@ class Glad {
 
     protected static function getConstantsInstance()
     {
-        return new Constants;
+        return is_null(static::$constants) ? new Constants : static::$constants;
     }
 
     public static function __callStatic($method, $parm)

@@ -3,7 +3,7 @@
 namespace Glad;
 
 use Glad\Driver\Repository\RepositoryInterface;
-use Glad\UserStatusInterface;
+use Glad\ConditionsInterface;
 use Glad\Model\GladModelInterface;
 use Glad\GladProvider;
 use Glad\Constants;
@@ -101,11 +101,7 @@ class Author {
 
 	protected static $rememberMe = false;
 	protected static $processResult = false;
-
-	protected static $checkActivate = false;
-	protected static $checkBanned = false;
 	protected static $status = false;
-	protected static $toDo = [];
 
 	/**
      * Class constructor
@@ -195,16 +191,15 @@ class Author {
 		return static::getInstance();
 	}
 
-	public static function apply(Closure $apply, ConditionsInterface $conditions)
+	public static function apply(Closure $apply)
 	{
 		// $processResult: result of all processes variable
 		if(static::$processResult === true){
 			$apply(static::getInstance());
 			
-			if($conditions->apply(static::$user)){
-				return static::status();
+			if(static::getInstance()->conditionsRun()){
+				return true;
 			}
-
 			return static::$processResult = false;
 		}
 	}
@@ -212,6 +207,14 @@ class Author {
 	public function conditions(array $conditions, ConditionsInterface $cond)
 	{
 		$cond->add($conditions);
+	}
+
+	protected function conditionsRun(ConditionsInterface $conditions)
+	{
+		if(static::$user && $conditions->apply(static::$user)){
+			return static::status();
+		}
+		return false;
 	}
 
 	/**
@@ -248,7 +251,11 @@ class Author {
      */ 
 	public static function logout()
 	{
-		return static::$repository->delete('_gladAuth');
+		$result = static::$repository->delete('_gladAuth');
+		
+		static::$userData = static::userData();
+
+		return $result;
 	}
 
 	protected static function resetCheckVariables()
@@ -469,7 +476,7 @@ class Author {
      */ 
 	protected static function authStatus()
 	{
-		static::status();
+		static::getInstance()->conditionsRun();
 
 		$auth = static::$userData;
 
