@@ -2,7 +2,8 @@
 
 namespace Glad;
 
-class Constants {
+class Constants
+{
 
 	protected static $authFields;
 	protected static $table = 'users';

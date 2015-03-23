@@ -17,7 +17,8 @@ use ReflectionClass;
  * @link https://github.com/atayahmet/glad
  */
 
-class Injector {
+class Injector
+{
     
     /**
     * Provider

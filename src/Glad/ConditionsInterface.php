@@ -2,8 +2,10 @@
 
 namespace Glad;
 
-interface ConditionsInterface {
+use Glad\Event\Dispatcher;
 
-	public function apply(array $conditions, array $user);
+interface ConditionsInterface
+{
+	public function apply(array $user, $cond = array(), Dispatcher $dispatcher);
 
 }

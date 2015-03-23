@@ -2,7 +2,8 @@
 
 namespace Glad;
 
-class Bcrypt {
+class Bcrypt
+{
 
 	protected $cost = 8;
 	protected $algorithm = PASSWORD_BCRYPT;

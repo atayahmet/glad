@@ -3,12 +3,14 @@
 namespace Glad;
 
 use Glad\Driver\Repository\RepositoryInterface;
-use Glad\ConditionsInterface;
 use Glad\Model\GladModelInterface;
+use Glad\ConditionsInterface;
+use Glad\Event\Dispatcher;
 use Glad\GladProvider;
 use Glad\Constants;
 use Glad\Injector;
 use Closure;
+use ReflectionClass;
 
 /**
  * Auth process class
@@ -20,8 +22,8 @@ use Closure;
  * @license http://opensource.org/licenses/MIT MIT license
  * @link https://github.com/atayahmet/glad
  */
-class Author {
-
+class Author
+{
 	/**
     * Repository instance
     *
@@ -102,6 +104,8 @@ class Author {
 	protected static $rememberMe = false;
 	protected static $processResult = false;
 	protected static $status = false;
+	protected static $eventDispatcher;
+	protected static $reflection;
 
 	/**
      * Class constructor
@@ -111,15 +115,18 @@ class Author {
      *
      * @return void
      */ 
-	public function __construct(Constants $constants, GladModelInterface $model, Injector $injector, RepositoryInterface $repository)
+	public function __construct(Constants $constants, GladModelInterface $model, Injector $injector, RepositoryInterface $repository, Dispatcher $eventDispatcher)
 	{
 		static::$constants = $constants;
 		static::$model = $model;
 		static::$injector = $injector;
 		static::$repository = $repository;
 		static::$author = GladProvider::$author;
-
+		static::$eventDispatcher = $eventDispatcher;
+		static::$eventDispatcher->setInstance(static::getInstance());
 		static::$userData = static::$repository->get('_gladAuth');
+
+		// DatabaseService::get('PDO');
 	}
 
 	/**
@@ -196,7 +203,7 @@ class Author {
 		// $processResult: result of all processes variable
 		if(static::$processResult === true){
 			$apply(static::getInstance());
-			
+
 			if(static::getInstance()->conditionsRun()){
 				return true;
 			}
@@ -204,16 +211,24 @@ class Author {
 		}
 	}
 
+	public static function event($name, Closure $event)
+	{
+		static::$eventDispatcher->set($name, $event);
+		return static::getInstance();
+	}
+
 	public function conditions(array $conditions, ConditionsInterface $cond)
 	{
 		$cond->add($conditions);
+		return static::getInstance();
 	}
 
 	protected function conditionsRun(ConditionsInterface $conditions)
 	{
-		if(static::$user && $conditions->apply(static::$user)){
+		if(static::$user && static::$processResult == true && $conditions->apply(static::$user, [], static::$eventDispatcher)){
 			return static::status();
 		}
+
 		return false;
 	}
 
@@ -464,9 +479,20 @@ class Author {
 		return !static::authStatus();
 	}
 
-	public static function is($type)
+	public static function is($method)
 	{
+		if(static::_hasMethod($method)) {
+			return static::$method();
+		}
+	}
 
+	protected static function _hasMethod($method)
+	{
+		if(is_null(static::$reflection)) {
+			static::$reflection = new ReflectionClass("Glad\Author");
+		}
+
+		return static::$reflection->hasMethod($method);
 	}
 
 	/**

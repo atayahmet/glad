@@ -2,21 +2,30 @@
 
 namespace Glad;
 
-class Conditions implements ConditionsInterface {
+use Glad\ConditionsInterface;
+use Glad\Event\Dispatcher;
+
+class Conditions implements ConditionsInterface 
+{
 	
 	protected $checkResult = [];
 	protected $check = true;
 	protected $conditions = [];
 
-	public function apply(array $user, array $cond = [])
+	public function apply(array $user, $cond = array(), Dispatcher $eventDispatcher)
 	{
 		$this->add($cond);
-
+		
 		foreach($this->conditions as $field => $value){
 
 			$this->checkResult[$field] = isset($user[$field]) && $value == $user[$field];
 
 			if(!isset($user[$field]) || $value != $user[$field]){
+
+				if($eventDispatcher->has($field)) {
+					$eventDispatcher->run($field);	
+				}
+				
 				$this->check = false;
 			}
 		}

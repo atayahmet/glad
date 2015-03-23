@@ -18,7 +18,8 @@ use ReflectionObject;
  * @license http://opensource.org/licenses/MIT MIT license
  * @link https://github.com/atayahmet/glad
  */
-class Glad {
+class Glad
+{
     
     /**
     * Injector
@@ -136,6 +137,11 @@ class Glad {
 
         self::init();
         self::modelAddToInjector(static::$model);
+    }
+
+    public static function driver(\PDO $pdo)
+    {
+        static::$injector->add('PDO', $pdo);
     }
 
     /**
