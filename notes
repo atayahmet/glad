@@ -1,3 +1,4 @@
 - login sonrası eventlerin tetiklenmesi -> Conditions.php
-Model adapters kodlaması devam ediyor. DatabaseService oluşturuldu, Author.php 'de çalıştırılacak ama önce Injector den model
+- Model adapters kodlaması devam ediyor. DatabaseService oluşturuldu, Author.php 'de çalıştırılacak ama önce Injector den model
 driver instance alınacak.
+PDOAdapter getIdentity methodunun kurgusu devam ediyor.

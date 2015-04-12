@@ -3,8 +3,8 @@
 namespace Glad;
 
 use Glad\Driver\Repository\RepositoryInterface;
-use Glad\Model\GladModelInterface;
-use Glad\ConditionsInterface;
+use Glad\Interfaces\ConditionsInterface;
+use Glad\Services\DatabaseService;
 use Glad\Event\Dispatcher;
 use Glad\GladProvider;
 use Glad\Constants;
@@ -115,10 +115,9 @@ class Author
      *
      * @return void
      */ 
-	public function __construct(Constants $constants, GladModelInterface $model, Injector $injector, RepositoryInterface $repository, Dispatcher $eventDispatcher)
+	public function __construct(Constants $constants, Injector $injector, DatabaseService $databaseService, RepositoryInterface $repository, Dispatcher $eventDispatcher)
 	{
 		static::$constants = $constants;
-		static::$model = $model;
 		static::$injector = $injector;
 		static::$repository = $repository;
 		static::$author = GladProvider::$author;
@@ -126,7 +125,7 @@ class Author
 		static::$eventDispatcher->setInstance(static::getInstance());
 		static::$userData = static::$repository->get('_gladAuth');
 
-		// DatabaseService::get('PDO');
+		static::$model = $databaseService->get(static::$injector->get('db'));
 	}
 
 	/**
@@ -142,14 +141,14 @@ class Author
 		if(static::guest() === true){
 
 			static::checkIdentityAsParameter($credentials);
-			
-			if(! static::checkIdentityForRealUser($credentials)){
+			exit(var_dump(static::checkIdentityForRealUser($credentials)));
+			if(! static::checkIdentityForRealUser($credentials)) {
 				static::$registerResult = false;
 			}else{
 				static::$tempUser = $credentials;
 
 				$credentials['password'] = $crypt->hash($credentials['password']);
-				
+
 				static::$registerResult = static::$model->newUser($credentials);
 				static::$user = $credentials;
 
@@ -243,10 +242,9 @@ class Author
 		static::resetCheckVariables();
 
 		if(static::check() === true || ! $userId) return static::getInstance();
-
 		$result = static::$model->getIdentityWithId($userId);
 
-		if(count($result) == 1){
+		if(count($result) > 0) {
 			
 			static::$user = static::resolveDbResult($result);
 			
@@ -429,7 +427,7 @@ class Author
 	{
 		$exception = false;
 
-		if(!isset($result)) return [];
+		if(!isset($result) || !$result) return [];
 		if(! is_array(reset($result))) return $result;
 
 		foreach($result as $key => $value){

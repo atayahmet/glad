@@ -5,13 +5,6 @@ namespace Glad;
 class GladProvider
 {
     public static $author = 'Glad\Author';
-    
-    public static $model = 'Glad\Model\Laravel';
-
-    public static $sender = array(
-            'environment' => 'test',
-            'send' => true,
-        );
 
 	public static function register()
 	{

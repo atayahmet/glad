@@ -75,6 +75,11 @@ class Injector
         }
     }
 
+    public static function get($name)
+    {
+        return self::$container[$name];
+    }
+
     public function make()
     {
 

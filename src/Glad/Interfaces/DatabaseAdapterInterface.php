@@ -1,8 +1,8 @@
 <?php
 
-namespace Glad\Model;
+namespace Glad\Interfaces;
 
-interface GladModelInterface {
+interface DatabaseAdapterInterface {
 	public function newUser(array $credentials);
 	public function getIdentity($identity);
 	public function getIdentityWithId($userId);

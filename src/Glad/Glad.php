@@ -4,7 +4,7 @@ namespace Glad;
 
 use Glad\Injector;
 use Glad\GladProvider;
-use Glad\Model\GladModelInterface;
+use Glad\Interfaces\DatabaseAdapterInterface;
 use Glad\Constants;
 use ReflectionObject;
 
@@ -93,7 +93,7 @@ class Glad
     */
     protected static function modelAddToInjector($model)
     {
-        static::$injector->add('GladModelInterface', $model);
+        static::$injector->add('DatabaseAdapterInterface', $model);
     }
 
     public static function setup(array $config)
@@ -125,23 +125,13 @@ class Glad
         static::$identityFields = true;
     }
 
-    /**
-    * set model data object
-    *
-    * @param $model GladModelInterface instance
-    * @return void
-    */
-    public static function model(GladModelInterface $model)
-    {   
-        static::$model = $model;
-
-        self::init();
-        self::modelAddToInjector(static::$model);
-    }
-
-    public static function driver(\PDO $pdo)
+    public static function services(array $services)
     {
-        static::$injector->add('PDO', $pdo);
+        static::$injector->add('DatabaseService', new Services\DatabaseService);
+
+        foreach($services as $name => $instance) {
+            static::$injector->add($name, $instance);
+        }
     }
 
     /**

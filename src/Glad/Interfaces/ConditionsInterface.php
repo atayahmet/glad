@@ -1,6 +1,6 @@
 <?php
 
-namespace Glad;
+namespace Glad\Interfaces;
 
 use Glad\Event\Dispatcher;
 

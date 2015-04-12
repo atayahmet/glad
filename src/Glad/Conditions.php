@@ -2,12 +2,11 @@
 
 namespace Glad;
 
-use Glad\ConditionsInterface;
+use Glad\Interfaces\ConditionsInterface;
 use Glad\Event\Dispatcher;
 
 class Conditions implements ConditionsInterface 
 {
-	
 	protected $checkResult = [];
 	protected $check = true;
 	protected $conditions = [];
