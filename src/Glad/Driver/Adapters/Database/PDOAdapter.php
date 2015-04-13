@@ -20,33 +20,47 @@ class PDOAdapter extends Adapter {
 
 	public function newUser(array $credentials)
 	{
-		//$this->pdo->beginTransaction();
-		//exit(var_dump($credentials));
-	}
+		$fields = implode(array_flip($credentials), ',');
 
-	public function getIdentity($identity)
-	{
-		$x = '';
+		$bindValues = '';
 
-		foreach($identity as $field => $value) {
-			$x .= $x == '' ? $field . "=" . "?" : ' OR ' . $field . "=" . "?";
+		foreach ($credentials as $field => $value) {
+			$bindValues .= $bindValues == '' ? ':'.$field : ',:'.$field;
 		}
 
-		//exit(var_dump($x));
-		$field = key($identity);
-		$value = current($identity);
+		$cursor = $this->pdo->prepare("INSERT INTO {$this->table} ({$fields}) VALUES ({$bindValues})");
+
+		foreach ($credentials as $field => $value) {
+			$cursor->bindValue(':'.$field, $value);
+		}
+
+		if($cursor->execute()) {
+			return $this->pdo->lastInsertId();
+		}
+
+		return false;
+	}
+
+	public function getIdentity(array $identity)
+	{
+		$x = '';
+		
+		foreach($identity as $field => $value) {
+			$x .= ($x == '' ? $field . " = " . "?": ' OR ' . $field . " = " . "?");
+		}
+
 		$sql = "SELECT * FROM {$this->table} WHERE {$x} LIMIT 1";
 
 		$cursor = $this->pdo->prepare($sql, [PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY]);
-
+		
 		$i = 1;
-		foreach ($identity as $field => $value) {
-			$cursor->bindParam($i, $value, PDO::PARAM_STR);
-			$i++;
-		}
-		//$cursor->bindParam(1, $value, PDO::PARAM_STR);
-		$cursor->execute();
 
+		foreach ($identity as $field => $value) {
+			$cursor->bindValue($i++, $value, PDO::PARAM_STR);
+		}
+		
+		$cursor->execute();
+		
 		return $cursor->fetch(\PDO::FETCH_ASSOC);
 	}
 
@@ -55,7 +69,7 @@ class PDOAdapter extends Adapter {
 		$sql = "SELECT * FROM {$this->table} WHERE id = ? LIMIT 1";
 
 		$cursor = $this->pdo->prepare($sql, [PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY]);
-		$cursor->bindParam(1, $userId, PDO::PARAM_INT);
+		$cursor->bindValue(1, $userId, PDO::PARAM_INT);
 		$cursor->execute();
 
 		return $cursor->fetch(\PDO::FETCH_ASSOC);

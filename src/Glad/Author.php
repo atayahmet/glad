@@ -141,7 +141,7 @@ class Author
 		if(static::guest() === true){
 
 			static::checkIdentityAsParameter($credentials);
-			exit(var_dump(static::checkIdentityForRealUser($credentials)));
+			
 			if(! static::checkIdentityForRealUser($credentials)) {
 				static::$registerResult = false;
 			}else{
