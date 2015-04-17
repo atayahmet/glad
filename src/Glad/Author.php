@@ -100,7 +100,7 @@ class Author
     * @var object
     */
 	protected static $registerResult;
-
+	protected static $changeResult;
 	protected static $rememberMe = false;
 	protected static $processResult = false;
 	protected static $status = false;
@@ -149,7 +149,7 @@ class Author
 
 				$credentials['password'] = $crypt->hash($credentials['password']);
 
-				static::$registerResult = static::$model->newUser($credentials);
+				static::$registerResult = static::$model->insert($credentials);
 				static::$user = $credentials;
 
 				if(static::$registerResult){
@@ -159,6 +159,41 @@ class Author
 		}
 
 		return static::getInstance();
+	}
+
+	public static function change(array $credentials)
+	{
+		static::resetCheckVariables();
+
+		if(static::check() === true) {
+
+			$credentials = static::cryptPasswordIfFieldExists($credentials);
+
+			$tableIncrementField = static::$constants->id;
+			
+			$where = ['and' => [$tableIncrementField => static::getUserId()]];
+
+			$result = static::$model->update($where,$credentials);
+exit(var_dump($result));
+			if(!static::$changeResult){
+				static::$processResult = true;
+			}
+			
+			//exit(var_dump($credentials));
+		}
+	}
+
+	
+
+	protected static function cryptPasswordIfFieldExists(array $credentials)
+	{
+		$fields = static::$constants->authFields;
+
+		if(isset($credentials[$fields['password']])) {
+			$crypt = new Bcrypt;
+			$credentials['password'] = $crypt->hash($credentials['password']);
+		}
+		return $credentials;
 	}
 
 	/**
@@ -378,6 +413,25 @@ class Author
 		}
 		catch(Exception $e){
 			throw $e;
+		}
+	}
+
+	public static function getUserId()
+	{
+		$userData = static::getData();
+
+		if($userData) {
+			$tableIncrementField = static::$constants->id;
+			$userId = $userData[$tableIncrementField];
+
+			return is_numeric($userId) ? (int)$userId : $userId;
+		}
+	}
+
+	protected static function getData()
+	{
+		if(static::authStatus()) {
+			return static::userData();
 		}
 	}
 

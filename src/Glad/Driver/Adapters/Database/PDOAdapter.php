@@ -18,15 +18,11 @@ class PDOAdapter extends Adapter {
 		$this->checkPdoDriver(false, $exception = true);
 	}
 
-	public function newUser(array $credentials)
+	public function insert(array $credentials)
 	{
 		$fields = implode(array_flip($credentials), ',');
 
-		$bindValues = '';
-
-		foreach ($credentials as $field => $value) {
-			$bindValues .= $bindValues == '' ? ':'.$field : ',:'.$field;
-		}
+		$bindValues = $this->bindInsertData($credentials);
 
 		$cursor = $this->pdo->prepare("INSERT INTO {$this->table} ({$fields}) VALUES ({$bindValues})");
 
@@ -39,6 +35,63 @@ class PDOAdapter extends Adapter {
 		}
 
 		return false;
+	}
+
+	public function update(array $where, array $newData, $limit = 1)
+	{
+		$bindWhere = $this->bindWhere($where);
+		$bindData = $this->bindUpdateData($newData);
+
+		$cursor = $this->pdo->prepare("UPDATE {$this->table} SET {$bindData} WHERE({$bindWhere})");
+
+		foreach ($where as $op => $w) {
+			foreach($w as $field => $value) {
+				$cursor->bindValue(':'.$field, $value, (is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR));
+			}
+		}
+
+		foreach($newData as $field => $value) {
+			$cursor->bindValue(':'.$field, $value,  (is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR));
+		}
+		
+		return $cursor->execute();
+	}
+
+	public function bindWhere($where)
+	{
+		$_where = '';
+
+		foreach($where as $operator => $w) {
+
+			if(is_array($w)) {
+				foreach($w as $field => $value) {
+					$_where .= $_where == '' ? $field."=".":{$field}" : " ".strtoupper($operator)." ".$field."=".":{$field}";
+				}
+			}else{
+
+			}
+		}
+		return $_where;
+	}
+
+	public function bindInsertData(array $data)
+	{
+		$_data = '';
+
+		foreach ($data as $field => $value) {
+			$_data .= $_data == '' ? ':'.$field : ',:'.$field;
+		}
+	}
+
+	public function bindUpdateData(array $data)
+	{
+		$_data = '';
+
+		foreach($data as $field => $value) {
+			$_data .= $_data == '' ? $field."=".":{$field}" : ",".$field."=".":{$field}";
+		}
+
+		return $_data;
 	}
 
 	public function getIdentity(array $identity)
