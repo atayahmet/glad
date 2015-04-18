@@ -25,86 +25,122 @@ use ReflectionClass;
 class Author
 {
 	/**
-    * Repository instance
-    *
-    * @var object
-    */
+     * Repository instance
+     *
+     * @var object
+     */
 	protected static $repository;
 	
 	/**
-    * Author service class name
-    *
-    * @var string
-    */
+     * Author service class name
+     *
+     * @var string
+     */
 	protected static $author;
 
 	/**
-    * Constant class instance
-    *
-    * @var object
-    */
+     * Constant class instance
+     *
+     * @var object
+     */
 	protected static $constants;
 
 	/**
-    * Implemented model object
-    *
-    * @var object
-    */
+     * Implemented model object
+     *
+     * @var object
+      */
 	protected static $model;
 
 	/**
-    * Query builder object
-    *
-    * @var object
-    */
+     * Query builder object
+     *
+     * @var object
+     */
 	protected static $queryBuilder;
 
 	/**
-    * Identity fields
-    *
-    * @var array
-    */
+     * Identity fields
+     *
+     * @var array
+     */
 	protected static $fieldIdentity;
 
 	/**
-    * Injector class
-    *
-    * @var object
-    */
+     * Injector class
+     *
+     * @var object
+     */
 	protected static $injector;
 
 	/**
-    * Temp user data
-    *
-    * @var array
-    */
+     * Temp user data
+     *
+     * @var array
+     */
 	protected static $tempUser;
 
 	/**
-    * Safe user data
-    *
-    * @var array
-    */
+     * Safe user data
+     *
+     * @var array
+     */
 	protected static $user;
 
 	/**
-    * User session data
-    *
-    * @var array
-    */
+     * User session data
+     *
+     * @var array
+     */
 	protected static $userData;
 
 	/**
-    * After register of new account 
-    *
-    * @var object
-    */
+     * Register transaction result
+     *
+     * @var object
+     */
 	protected static $registerResult;
+
+	/**
+     * Change transaction result
+     *
+     * @var bool
+     */
 	protected static $changeResult;
+
+	/**
+     * Remember me
+     *
+     * @var bool
+     */
 	protected static $rememberMe = false;
+
+	/**
+     * All the results of operations
+     *
+     * @var bool
+     */
 	protected static $processResult = false;
+
+	/**
+     * status of operations
+     *
+     * @var bool
+     */
 	protected static $status = false;
+
+	/**
+     * Instance of EventDispatcher class
+     *
+     * @var object
+     */
 	protected static $eventDispatcher;
+
+	/**
+     * Instance of Reflection class
+     *
+     * @var object
+     */
 	protected static $reflection;
 
 	/**
@@ -132,7 +168,7 @@ class Author
      * New account handler method
      *
      * @param array $credentials
-     * @return integer
+     * @return self instance
      */ 
 	public static function register(Bcrypt $crypt, array $credentials)
 	{
@@ -161,6 +197,13 @@ class Author
 		return static::getInstance();
 	}
 
+	/**
+     * Change the user information
+     *
+     * @param object $credentials
+     *
+     * @return self instance
+     */ 
 	public static function change(array $credentials)
 	{
 		static::resetCheckVariables();
@@ -172,19 +215,23 @@ class Author
 			$tableIncrementField = static::$constants->id;
 			
 			$where = ['and' => [$tableIncrementField => static::getUserId()]];
+			static::$changeResult = static::$model->update($where,$credentials);
 
-			$result = static::$model->update($where,$credentials);
-exit(var_dump($result));
-			if(!static::$changeResult){
+			if(static::$changeResult){
+				static::$user = static::$model->getIdentityWithId(static::getUserId());
 				static::$processResult = true;
 			}
-			
-			//exit(var_dump($credentials));
 		}
+		return static::getInstance();
 	}
 
-	
-
+	/**
+     * Crypt password if password field 
+     *
+     * @param object $credentials
+     *
+     * @return array
+     */ 
 	protected static function cryptPasswordIfFieldExists(array $credentials)
 	{
 		$fields = static::$constants->authFields;
@@ -202,7 +249,8 @@ exit(var_dump($result));
      * @param object $bcrypt
      * @param array $user
      * @param bool $remember
-     * @return bool
+     *
+     * @return self instance
      */ 
 	public static function login(Bcrypt $bcrypt, array $user, $remember = false)
 	{
@@ -232,6 +280,13 @@ exit(var_dump($result));
 		return static::getInstance();
 	}
 
+	/**
+     * Applies some conditions after transaction
+     *
+     * @param instance Closure
+     *
+     * @return bool
+     */ 
 	public static function apply(Closure $apply)
 	{
 		// $processResult: result of all processes variable
@@ -245,18 +300,41 @@ exit(var_dump($result));
 		}
 	}
 
+	/**
+     * Registering event at some methods
+     *
+     * @param string $name
+     * @param instance Closure
+     *
+     * @return self instance
+     */ 
 	public static function event($name, Closure $event)
 	{
 		static::$eventDispatcher->set($name, $event);
 		return static::getInstance();
 	}
 
+	/**
+     * Registering validate condition for some transactions
+     *
+     * @param string $conditions
+     * @param instance Glad\Interfaces\ConditionsInterface
+     *
+     * @return self instance
+     */ 
 	public function conditions(array $conditions, ConditionsInterface $cond)
 	{
 		$cond->add($conditions);
 		return static::getInstance();
 	}
 
+	/**
+     * Run the conditions
+     *
+     * @param instance Glad\Interfaces\ConditionsInterface
+     *
+     * @return bool
+     */ 
 	protected function conditionsRun(ConditionsInterface $conditions)
 	{
 		if(static::$user && static::$processResult == true && $conditions->apply(static::$user, [], static::$eventDispatcher)){
@@ -293,7 +371,7 @@ exit(var_dump($result));
 	}
 
 	/**
-     * User logout process
+     * User logout
      *
      * @return bool
      */ 
@@ -306,6 +384,11 @@ exit(var_dump($result));
 		return $result;
 	}
 
+	/**
+     * Reset the check variables
+     *
+     * @return void
+     */ 
 	protected static function resetCheckVariables()
 	{
 		static::$processResult = false;
@@ -359,9 +442,9 @@ exit(var_dump($result));
 	}
 
 	/**
-     * Login to after register process
+     * Login to after register transaction
      *
-     * @return object
+     * @return void|bool
      */ 
 	public static function andLogin()
 	{
@@ -416,6 +499,11 @@ exit(var_dump($result));
 		}
 	}
 
+	/**
+     * Return the user id
+     *
+     * @return int|null
+     */ 
 	public static function getUserId()
 	{
 		$userData = static::getData();
@@ -428,6 +516,11 @@ exit(var_dump($result));
 		}
 	}
 
+	/**
+     * Return user data if user logged in
+     *
+     * @return array|null
+     */ 
 	protected static function getData()
 	{
 		if(static::authStatus()) {
@@ -436,10 +529,11 @@ exit(var_dump($result));
 	}
 
 	/**
-     * Controls the given parameter
+     * Check the user in database by parameters
+     * Arranges the data coming from database
      *
      * @param array $credentials
-     * @return bool|exception
+     * @return bool
      */ 
 	protected static function checkIdentityForRealUser(array $credentials)
 	{
@@ -531,6 +625,12 @@ exit(var_dump($result));
 		return !static::authStatus();
 	}
 
+	/**
+     * Runs some methods
+     *
+     * @param string $method
+     * @return bool|null
+     */ 
 	public static function is($method)
 	{
 		if(static::_hasMethod($method)) {
@@ -538,6 +638,12 @@ exit(var_dump($result));
 		}
 	}
 
+	/**
+     * Detects the presence of the methods by ReflectionClass
+     *
+     * @param string $method
+     * @return bool
+     */ 
 	protected static function _hasMethod($method)
 	{
 		if(is_null(static::$reflection)) {

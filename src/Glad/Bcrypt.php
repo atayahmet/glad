@@ -8,6 +8,14 @@ class Bcrypt
 	protected $cost = 8;
 	protected $algorithm = PASSWORD_BCRYPT;
 
+	/**
+     * Verifying password
+     *
+     * @param string $password
+     * @param string $hash string
+     *
+     * @return bool
+     */ 
 	public function verify($password = null, $hash = null)
 	{
 		return password_verify($password, $hash);
