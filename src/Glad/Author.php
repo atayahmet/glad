@@ -4,6 +4,7 @@ namespace Glad;
 
 use Glad\Driver\Repository\RepositoryInterface;
 use Glad\Interfaces\ConditionsInterface;
+use Glad\Interfaces\HashInterface;
 use Glad\Services\DatabaseService;
 use Glad\Event\Dispatcher;
 use Glad\GladProvider;
@@ -11,6 +12,7 @@ use Glad\Constants;
 use Glad\Injector;
 use Closure;
 use ReflectionClass;
+use ErrorException;
 
 /**
  * Auth process class
@@ -136,6 +138,7 @@ class Author
      */
 	protected static $eventDispatcher;
 
+	protected static $rememberFields = ['remember_token', 'remember_token_expiration'];
 	/**
      * Instance of Reflection class
      *
@@ -170,7 +173,7 @@ class Author
      * @param array $credentials
      * @return self instance
      */ 
-	public static function register(Bcrypt $crypt, array $credentials)
+	public static function register(HashInterface $hash, array $credentials)
 	{
 		static::resetCheckVariables();
 
@@ -183,7 +186,7 @@ class Author
 			}else{
 				static::$tempUser = $credentials;
 
-				$credentials['password'] = $crypt->hash($credentials['password']);
+				$credentials['password'] = $hash->make($credentials['password']);
 
 				static::$registerResult = static::$model->insert($credentials);
 				static::$user = $credentials;
@@ -204,13 +207,16 @@ class Author
      *
      * @return self instance
      */ 
-	public static function change(array $credentials)
+	public static function change(HashInterface $hash, \Glad\Interfaces\CryptInterface $crypt, array $credentials)
 	{
+		$c = $crypt->encrypt('hello glad auth!...');
+		echo $c.'<br>';
+		echo $crypt->decrypt($c);
 		static::resetCheckVariables();
 
 		if(static::check() === true) {
 
-			$credentials = static::cryptPasswordIfFieldExists($credentials);
+			$credentials = static::cryptPasswordIfFieldExists($hash, $credentials);
 
 			$tableIncrementField = static::$constants->id;
 			
@@ -232,13 +238,12 @@ class Author
      *
      * @return array
      */ 
-	protected static function cryptPasswordIfFieldExists(array $credentials)
+	protected static function cryptPasswordIfFieldExists(HashInterface $hash, array $credentials)
 	{
 		$fields = static::$constants->authFields;
 
 		if(isset($credentials[$fields['password']])) {
-			$crypt = new Bcrypt;
-			$credentials['password'] = $crypt->hash($credentials['password']);
+			$credentials['password'] = $hash->make($credentials['password']);
 		}
 		return $credentials;
 	}
@@ -252,7 +257,7 @@ class Author
      *
      * @return self instance
      */ 
-	public static function login(Bcrypt $bcrypt, array $user, $remember = false)
+	public static function login(HashInterface $hash, array $user, $remember = false)
 	{
 		static::resetCheckVariables();
 
@@ -271,13 +276,34 @@ class Author
 			return static::getInstance();
 		}
 		
-		$login = $bcrypt->verify($user[$passField], static::$user[$passField]);
+		$login = $hash->verify($user[$passField], static::$user[$passField]);
 
 		if($login === true) {
+			if($remember === true) {
+				static::setRemember(static::$user);
+			}
+
 			static::$rememberMe = $remember;
 			static::$processResult = true;
 		}
 		return static::getInstance();
+	}
+
+	protected static function setRemember(array $userData)
+	{
+		foreach(static::$rememberFields as $field) {
+			if(! isset($userData[$field])) {
+				throw new ErrorException($field . " fields is missing on database");
+			}
+		}
+
+		$now = time();
+		$tokenLife = 31536000; // 1 year
+		$exprDate = $now + $tokenLife;
+
+		$x = setcookie("TestCookie", 'edrewwsddV', $exprDate, "/", ".laravel", false, true);
+		//var_dump($_COOKIE['TestCookie']);
+		exit(var_dump($x));
 	}
 
 	/**

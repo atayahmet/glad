@@ -1,10 +1,11 @@
 <?php
 
-namespace Glad;
+namespace Glad\Driver\Security\Hash;
 
-class Bcrypt
+use Glad\Interfaces\HashInterface;
+
+class Hash implements HashInterface
 {
-
 	protected $cost = 8;
 	protected $algorithm = PASSWORD_BCRYPT;
 
@@ -21,7 +22,7 @@ class Bcrypt
 		return password_verify($password, $hash);
 	}
 
-	public function hash($password, $algo = PASSWORD_BCRYPT, array $options = array())
+	public function make($password, $algo = PASSWORD_BCRYPT, array $options = array())
 	{
 		$options = static::checkOptions($options);
 
