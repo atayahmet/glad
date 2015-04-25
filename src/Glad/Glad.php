@@ -134,6 +134,12 @@ class Glad
         }
     }
 
+    public static function remember(array $remember)
+    {
+        $change = array_merge(static::$constants->remember, $remember);
+        static::setStaticVariable(static::$constants, ['field' => 'remember', 'value' => $change]);
+    }
+
     /**
     * set user table name
     *

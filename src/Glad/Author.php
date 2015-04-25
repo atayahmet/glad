@@ -138,13 +138,13 @@ class Author
      */
 	protected static $eventDispatcher;
 
-	protected static $rememberFields = ['remember_token', 'remember_token_expiration'];
 	/**
      * Instance of Reflection class
      *
      * @var object
      */
 	protected static $reflection;
+	protected static $crypt;
 
 	/**
      * Class constructor
@@ -207,11 +207,8 @@ class Author
      *
      * @return self instance
      */ 
-	public static function change(HashInterface $hash, \Glad\Interfaces\CryptInterface $crypt, array $credentials)
+	public static function change(HashInterface $hash, array $credentials)
 	{
-		$c = $crypt->encrypt('hello glad auth!...');
-		echo $c.'<br>';
-		echo $crypt->decrypt($c);
 		static::resetCheckVariables();
 
 		if(static::check() === true) {
@@ -257,7 +254,7 @@ class Author
      *
      * @return self instance
      */ 
-	public static function login(HashInterface $hash, array $user, $remember = false)
+	public static function login(HashInterface $hash, \Glad\Interfaces\CryptInterface $crypt, array $user, $remember = false)
 	{
 		static::resetCheckVariables();
 
@@ -280,6 +277,7 @@ class Author
 
 		if($login === true) {
 			if($remember === true) {
+				static::$crypt = $crypt;
 				static::setRemember(static::$user);
 			}
 
@@ -291,19 +289,26 @@ class Author
 
 	protected static function setRemember(array $userData)
 	{
-		foreach(static::$rememberFields as $field) {
-			if(! isset($userData[$field])) {
+		$rememberConf = static::$constants->remember;
+
+		if($rememberConf['enabled'] === true) {
+			
+			if(! isset($userData[$rememberConf['field']])) {
 				throw new ErrorException($field . " fields is missing on database");
 			}
+
+			$cookieName = $rememberConf['cookieName'];
+			$lifeTime = time()+$rememberConf['lifetime'];
+			$unique = uniqid().'|'.$lifeTime;
+			$cryptedValue = static::$crypt->encrypt($unique);
+
+			$setResult = setcookie($cookieName, $cryptedValue, $lifeTime, "/", ".".$_SERVER['HTTP_HOST'], false, true);
+
+			if($setResult) {
+				$where = ['and' => [static::$constants->id => $userData[static::$constants->id]]];
+				$result = static::$model->update($where,[$rememberConf['field'] => $cryptedValue]);	
+			}
 		}
-
-		$now = time();
-		$tokenLife = 31536000; // 1 year
-		$exprDate = $now + $tokenLife;
-
-		$x = setcookie("TestCookie", 'edrewwsddV', $exprDate, "/", ".laravel", false, true);
-		//var_dump($_COOKIE['TestCookie']);
-		exit(var_dump($x));
 	}
 
 	/**

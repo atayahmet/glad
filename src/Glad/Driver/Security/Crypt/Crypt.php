@@ -6,7 +6,7 @@ use Glad\Interfaces\CryptInterface;
 
 class Crypt implements CryptInterface {
 
-	protected static $secret = 'Thisismysecretkey';
+	protected static $secret = '|3|#__()=?';
 
 	public static function encrypt($string)
 	{
@@ -18,6 +18,4 @@ class Crypt implements CryptInterface {
 	{
     	return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, static::$secret, base64_decode($hash), MCRYPT_MODE_ECB, '');
 	}
-
-
 }
