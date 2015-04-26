@@ -25,7 +25,7 @@ Bu bölümde database ve repository ayarları, user tablosunda bulunması gereke
 
 Name     | Value
 -------- | ---
-idenity  | string|array
+idenity  | string/array
 password | string
 
 Kullanıcıları bulunduracağınız tablonuzda 
