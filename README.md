@@ -14,7 +14,7 @@ Biz varsayılan database driver'ını PDO üzerine tasarladık. Bunun yanında L
 Glad Auth composer üzerinden gelmektedir. Aşağıdaki komutu terminalinizde çalıştırarak en güncel versiyona erişebilirsiniz:
 
 ```sh
-composer require atayahmet/glad
+$ composer require atayahmet/glad
 ```
 
 #Paket Ayarları
