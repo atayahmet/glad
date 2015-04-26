@@ -28,7 +28,10 @@ Name     | Value
 idenity  | string/array
 password | string
 
-Kullanıcıları bulunduracağınız tablonuzda 
+Kullanıcıları bulunduracağınız tablonuzda sütun olarak bulunması ve tanımlamanız gereken alanlar var.
+
+Bunlardan birincisi kullanıcının kimliğinin yani bir kullanıcı adının saklanacağı alan ikincisi ise şifre alanının adının tanımlanması.
+
 ```php
 'fields' => [
 	'identity' => ['username','email'], 
