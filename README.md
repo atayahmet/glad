@@ -9,6 +9,17 @@ Yine aynı şekilde oturum bilgilerinin depolanmasını projenizin gereksinimler
 
 Biz varsayılan database driver'ını PDO üzerine tasarladık. Bunun yanında Laravel geliştiricilerine kolaylık olması adına Eloquent driver yaptık. 
 
+Kurulum
+=================
+
+Glad Auth composer üzerinden gelmektedir. Aşağıdaki komutu terminalinizde çalıştırarak en güncel versiyona erişebilirsiniz:
+
+```sh
+composer require atayahmet/glad
+```
+
+
+Projeleriniz de size kolaylık sağlaması dileğiyle.
 İlk olarak basitçe kayıt, kullanıcı girişi gibi metodları inceleyerek bir başlangıç yapalım.
 
 
