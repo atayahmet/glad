@@ -7,7 +7,11 @@ Glad Auth sabit bir yapıdan uzak olarak tasarlandı. İstendiğinde database dr
 
 Yine aynı şekilde oturum bilgilerinin depolanmasını projenizin gereksinimlerine göre farklı repository sistemlerinde saklayabilirsiniz.
 
-Biz varsayılan olarak database driver'larını PDO üzerine tasarladık.
+Biz varsayılan database driver'ını PDO üzerine tasarladık. Bunun yanında Laravel geliştiricilerine kolaylık olması adına Eloquent driver yaptık. 
+
+İlk olarak basitçe kayıt, kullanıcı girişi gibi metodları inceleyerek bir başlangıç yapalım.
+
+
 
 
 ----------
