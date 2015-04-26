@@ -4,6 +4,7 @@ namespace Glad;
 
 use Glad\Driver\Repository\RepositoryInterface;
 use Glad\Interfaces\ConditionsInterface;
+use Glad\Interfaces\CryptInterface;
 use Glad\Interfaces\HashInterface;
 use Glad\Services\DatabaseService;
 use Glad\Event\Dispatcher;
@@ -154,13 +155,14 @@ class Author
      *
      * @return void
      */ 
-	public function __construct(Constants $constants, Injector $injector, DatabaseService $databaseService, RepositoryInterface $repository, Dispatcher $eventDispatcher)
+	public function __construct(Constants $constants, Injector $injector, CryptInterface $crypt, DatabaseService $databaseService, RepositoryInterface $repository, Dispatcher $eventDispatcher)
 	{
 		static::$constants = $constants;
 		static::$injector = $injector;
 		static::$repository = $repository;
 		static::$author = GladProvider::$author;
 		static::$eventDispatcher = $eventDispatcher;
+		static::$crypt = $crypt;
 		static::$eventDispatcher->setInstance(static::getInstance());
 		static::$userData = static::$repository->get('_gladAuth');
 
@@ -254,7 +256,7 @@ class Author
      *
      * @return self instance
      */ 
-	public static function login(HashInterface $hash, \Glad\Interfaces\CryptInterface $crypt, array $user, $remember = false)
+	public static function login(HashInterface $hash, array $user, $remember = false)
 	{
 		static::resetCheckVariables();
 
@@ -277,7 +279,6 @@ class Author
 
 		if($login === true) {
 			if($remember === true) {
-				static::$crypt = $crypt;
 				static::setRemember(static::$user);
 			}
 
@@ -299,18 +300,50 @@ class Author
 
 			$cookieName = $rememberConf['cookieName'];
 			$lifeTime = time()+$rememberConf['lifetime'];
-			$unique = uniqid().'|'.$lifeTime;
-			$cryptedValue = static::$crypt->encrypt($unique);
-
+			$token = static::$crypt->encrypt(time()+$rememberConf['lifetime']);
+			$tokenDecrypted = static::$crypt->decrypt($token);
+			$userData[$rememberConf['field']] = $token;
+			$cryptedValue = static::$crypt->encrypt(json_encode($userData));
 			$setResult = setcookie($cookieName, $cryptedValue, $lifeTime, "/", ".".$_SERVER['HTTP_HOST'], false, true);
-
+			
 			if($setResult) {
 				$where = ['and' => [static::$constants->id => $userData[static::$constants->id]]];
-				$result = static::$model->update($where,[$rememberConf['field'] => $cryptedValue]);	
+				$result = static::$model->update($where,[$rememberConf['field'] => $token]);	
 			}
 		}
 	}
 
+	protected static function loginFromRemember()
+	{
+		$rememberConf = static::$constants->remember;
+
+		if($rememberConf['enabled'] === true) {
+			$cookieName = $rememberConf['cookieName'];
+
+			if(isset($_COOKIE[$cookieName])) {
+ 				
+ 				$userData = static::$crypt->decrypt($_COOKIE[$cookieName]);
+ 				$userDataArr = json_decode($userData , true);
+
+ 				if(! json_last_error() && isset($userDataArr[$rememberConf['field']])) {
+ 					
+ 					$token = $userDataArr[$rememberConf['field']];
+ 					$tokenDecrypted = static::$crypt->decrypt($token);
+
+ 					if(intval($tokenDecrypted) > time()) {
+
+ 						static::$user = static::resolveDbResult($userDataArr);
+ 						$result = static::setUserRepository(static::$user);
+
+ 						return $result;
+ 					}
+ 					
+ 				}
+			}
+		}
+
+		return false;
+	}
 	/**
      * Applies some conditions after transaction
      *
@@ -430,14 +463,13 @@ class Author
      * Sets user data to repository
      *
      * @param $user array
-     * @param $remember bool
      * @return bool
      */ 
-	protected static function setUserRepository(array $user, $remember = false)
+	protected static function setUserRepository(array $user)
 	{
 		$userData = [
 			'userData' => $user,
-			'auth' => ['status' => true, 'remember' => $remember]
+			'auth' => ['status' => true]
 		];
 
 		return static::$repository->set('_gladAuth', serialize($userData));
@@ -699,6 +731,8 @@ class Author
 
 		if($auth && isset($auth['auth'])) {
 			return isset($auth['auth']['status']) && $auth['auth']['status'] === true;
+		}else{
+			return static::loginFromRemember();
 		}
 
 		return false;

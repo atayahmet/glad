@@ -57,6 +57,11 @@ class PDOAdapter extends Adapter {
 		return $cursor->execute();
 	}
 
+	public function get(array $where)
+	{
+
+	}
+
 	public function bindWhere($where)
 	{
 		$_where = '';
