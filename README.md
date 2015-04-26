@@ -9,8 +9,7 @@ Yine aynı şekilde oturum bilgilerinin depolanmasını projenizin gereksinimler
 
 Biz varsayılan database driver'ını PDO üzerine tasarladık. Bunun yanında Laravel geliştiricilerine kolaylık olması adına Eloquent driver yaptık. 
 
-Kurulum
-=================
+###Kurulum
 
 Glad Auth composer üzerinden gelmektedir. Aşağıdaki komutu terminalinizde çalıştırarak en güncel versiyona erişebilirsiniz:
 
@@ -18,7 +17,24 @@ Glad Auth composer üzerinden gelmektedir. Aşağıdaki komutu terminalinizde ç
 composer require atayahmet/glad
 ```
 
+#Paket Ayarları
 
+Bu bölümde database ve repository ayarları, user tablosunda bulunması gereken bazı alanların ve beni hatırla (remember) ayarlarını yapacağız.
+
+###User tablosunda olması gereken alanlar: 
+
+Name     | Value
+-------- | ---
+idenity  | string|array
+password | string
+
+Kullanıcıları bulunduracağınız tablonuzda 
+```php
+'fields' => [
+	'identity' => ['username','email'], 
+	'password' => 'password'
+]
+```
 Projeleriniz de size kolaylık sağlaması dileğiyle.
 İlk olarak basitçe kayıt, kullanıcı girişi gibi metodları inceleyerek bir başlangıç yapalım.
 
