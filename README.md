@@ -39,4 +39,4 @@ Bunlardan birincisi kullanıcının kimliğinin yani bir kullanıcı adının sa
 ]
 ```
 Projeleriniz de size kolaylık sağlaması dileğiyle.
-İlk olarak basitçe kayıt, kullanıcı girişi gibi metodları inceleyerek bir başlangıç yapalım.
+İlk olarak basitçe kayıt, kullanıcı girişi gibi metodları inceleyerek bir başlangıç yapalım..
