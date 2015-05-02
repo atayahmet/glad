@@ -3,6 +3,24 @@ Ayarlar
 
 Bu bölümde database ve repository ayarları, user tablosunda bulunması gereken bazı alanların ve beni hatırla (remember) ayarlarını yapacağız.
 
+**Örnek yapılandırma:**
+```php
+Glad::setup([
+	'fields' => [
+		'identity' => ['username','email'], 
+		'password' => 'password'
+	],
+	'services' => [
+		'db' => new \PDO('mysql:host=localhost;dbname=dbName', username, password)
+	],
+	'remember' => [
+		'enabled'   => true,
+		'cookieName'=> 'glad',
+		'lifetime'  => (3600*5),
+		'field'	    => 'remember_token'
+	]
+]);
+```
 ###Üye tablosunda olması gereken alanlar
 
 Name     | Value
