@@ -120,7 +120,7 @@ interface DatabaseAdapterInterface {
 ```
 
 
-####Beni Hatırla (Remember Me) yapılandırması
+###Beni Hatırla (Remember Me) yapılandırması
 Üyelik sistemlerinde sıkça kullanılan Beni Hatırla yöntemi Glad auth'ta basit bir kaç ayara tabi.
 
 **Aşağıda bu ayarlarla ilgili tabloyu görüyorsunuz:**
