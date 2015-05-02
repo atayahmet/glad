@@ -1,4 +1,4 @@
 Glad Authentication
 ===================
 
-[![Documentation Status](https://readthedocs.org/projects/glad/badge/?version=latest)](https://readthedocs.org/projects/glad/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/glad/badge/?version=dev)](https://readthedocs.org/projects/glad/?badge=dev)
