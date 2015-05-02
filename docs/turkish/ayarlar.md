@@ -112,7 +112,7 @@ interface DatabaseAdapterInterface {
 	public function getIdentityWithId($user);
 }
 ```
-####Tanımlama:
+**Tanımlama:**
 ```php
 'services' => [
 	'db' => new OrnekClass
