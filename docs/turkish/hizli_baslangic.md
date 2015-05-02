@@ -1,4 +1,7 @@
+Hızlı Başlangıç
+====
 
-
-
-> Written with [StackEdit](https://stackedit.io/).
+**Kullanıcı girişi:**
+```php
+Glad::login(['username' => 'exampleuser', 'password' => '1234'], true)
+```
