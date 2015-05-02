@@ -141,7 +141,8 @@ Glad auth bu uygulama için çerezleri kullanmaktadır. Burada çereze kendi bel
 ####lifetime:
 Çerezin kullanılamaz hale geleceği (expire) zamanı tanımlayabilirsiniz. Değeri timestamp integer olmalıdır. 
 
-Örnek:
+**strong text**Örnek:
+
 Bu çerezin 1 yıl kullanıcının siteminde kalmasını istiyorsanız değer olarak **31536000** tanımlamanız gerekiyor.
 
 [Timestamp integer hakkında daha fazla bilgi için tıklayınız.](http://en.wikipedia.org/wiki/Unix_time)
