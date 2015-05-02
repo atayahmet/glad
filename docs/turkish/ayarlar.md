@@ -5,21 +5,6 @@ Bu bölümde database ve repository ayarları, user tablosunda bulunması gereke
 
 ###User tablosunda olması gereken alanlar: 
 
-<table border="1">
-<tr>
-<td>Name</td>
-<td>Value</td>
-</tr>
-<tr>
-<td>identity</td>
-<td>string/array</td>
-</tr>
-<tr>
-<td>password</td>
-<td>string</td>
-</tr>
-
-</table>
 Name     | Value
 -------- | ---
 idenity  | string/array
