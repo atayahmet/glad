@@ -27,10 +27,15 @@ Glad auth projenizde kullancağınız veritabanı seçimlerinde iki farklı yol 
 2. DatabaseAdapterInterface
 
 ####PDO Driver
-Birinci yol PDO driver'ı kullanmak. Ayalarınızda PDO instance'ı servislerde tanımlamanız gerekmektedir.
+Birinci yol PDO driver'ı kullanmak. Ayalarınızda PDO instance'ı servisler de tanımlamanız gerekmektedir.
 
 ```php
 'services' => [
 	'db' => new \PDO('mysql:host=localhost;dbname=exampleDb', username, password)
 ]
 ```
+
+####DatabaseAdapterInterface
+İkinci yol ise adapter yöntemi ile dilediğiniz veritabanını kullanabilirsiniz.
+
+Servis ayarlarına tanımlayacağınız sınıfınızı DatabaseAdapterInterface arayüzüne implemente ederek methodları entegre ederek ve Glad auth'un istediği formatta return'lerini ayarlamanız gerekmektedir.
