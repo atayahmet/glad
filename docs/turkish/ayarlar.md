@@ -40,12 +40,38 @@ Birinci yol PDO driver'ı kullanmak. Ayalarınızda PDO instance'ı servisler de
 
 Servis ayarlarına tanımlayacağınız sınıfınızı DatabaseAdapterInterface arayüzüne implemente ederek methodları entegre ederek ve Glad auth'un istediği formatta return'lerini ayarlamanız gerekmektedir.
 
+**Örnek Kullanım:**
+
+```php
+use Glad\Interfaces\DatabaseAdapterInterface;
+
+class OrnekClass implements DatabaseAdapterInterface
+{
+	public function insert(array $credentials)
+	{
+		// your own methods...
+	}
+	
+	public function update(array $where, array $newData)
+	{
+		// your own methods...
+	}
+	public function getIdentity($user)
+	{
+		// your own methods...
+	}
+	public function getIdentityWithId($user)
+	{
+		// your own methods...
+	}
+}
+```
 **Arayüzün bulunduğu dizin:**
 ```php
 Glad\Interfaces\DatabaseAdapterInterface
 ```
 
-Arayüz önizleme:
+**Arayüz önizleme:**
 ```php
 <?php
 
@@ -85,4 +111,10 @@ interface DatabaseAdapterInterface {
      */ 
 	public function getIdentityWithId($user);
 }
+```
+####Tanımlama:
+```php
+'services' => [
+	'db' => new OrnekClass
+]
 ```
