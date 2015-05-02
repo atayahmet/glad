@@ -12,4 +12,4 @@ Projenize yüklemek için:
 use Glad\Glad;
 ```
 
-[- Ayarlar](ayarlar)
+[- Ayarlar](turkish/ayarlar)
