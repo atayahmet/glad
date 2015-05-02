@@ -3,7 +3,7 @@ Ayarlar
 
 Bu bölümde database ve repository ayarları, user tablosunda bulunması gereken bazı alanların ve beni hatırla (remember) ayarlarını yapacağız.
 
-###Üye tablosunda olması gereken alanlar: 
+###Üye tablosunda olması gereken alanlar
 
 Name     | Value
 -------- | ---
@@ -118,3 +118,6 @@ interface DatabaseAdapterInterface {
 	'db' => new OrnekClass
 ]
 ```
+
+
+####Beni Hatırla (Remember Me) yapılandırması
