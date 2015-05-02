@@ -1,3 +1,6 @@
+Ayarlar
+======
+
 Bu bölümde database ve repository ayarları, user tablosunda bulunması gereken bazı alanların ve beni hatırla (remember) ayarlarını yapacağız.
 
 ###User tablosunda olması gereken alanlar: 
