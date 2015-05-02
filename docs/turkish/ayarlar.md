@@ -121,3 +121,12 @@ interface DatabaseAdapterInterface {
 
 
 ####Beni Hatırla (Remember Me) yapılandırması
+Üyelik sistemlerinde sıkça kullanılan Beni Hatırla yöntemi Glad auth'ta basit bir kaç ayara tabi.
+
+**Aşağıda bu ayarlarla ilgili tabloyu görüyorsunuz:**
+Name       | Value
+-----------| ---
+enabled    | true/false
+cookieName | string
+lifetime   | timestamp integer
+field      | string
