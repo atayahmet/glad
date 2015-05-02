@@ -6,3 +6,10 @@ Glad Auth composer üzerinden gelmektedir. Aşağıdaki komutu terminalinizde ç
 ```sh
 $ composer require atayahmet/glad
 ```
+
+Projenize yüklemek için:
+```sh
+use Glad\Glad;
+```
+
+[- Ayarlar](ayarlar)
