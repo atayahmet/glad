@@ -11,5 +11,3 @@ Projenize yüklemek için:
 ```sh
 use Glad\Glad;
 ```
-
-[- Ayarlar](docs/turkish/ayarlar)
