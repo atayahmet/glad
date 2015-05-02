@@ -34,3 +34,19 @@ if(Glad::status() === true){
 	// do something...
 }
 ```
+
+Yukarıda kullanıcı adı olarak email tanımlandı sadece, buna email dışında kullanıcı adı ekleyerekte genişletebilirsiniz. Bunu da Ayarlar kısmında nasıl yapabileceğiniz anlatılmıştır.
+
+**Kullanıcı bilgilerini değiştirme:**
+
+```php
+Glad::change([
+	'firstname' => 'New firstname',
+	'lastname'  => 'New lastname'
+]);
+```
+
+Kullanıcı şifresini yine **change** methodu yardımıyla değiştirebiliriz. 
+```php
+Glad::change(['password'  => '123412']);
+```
