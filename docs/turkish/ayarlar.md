@@ -150,3 +150,13 @@ Bu çerezin 1 yıl kullanıcının siteminde kalmasını istiyorsanız değer ol
 ####field:
 
 Kullanıcı tablonuz da kullanabileceğimiz ve bunun ismini bilmemiz gereken bir alan olması gerekiyor. Bu alanda Beni Hatırla uygulaması içni üreteceğimiz anahtar (token)'ı barındıracağız. Örnek olarak **remember_token** olabilir.
+
+**Tanımlama:**
+```php
+'remember' => [
+	'enabled'   => true,
+	'cookieName'=> 'glad',
+	'lifetime'  => (3600*5),
+	'field'	    => 'remember_token'
+]
+```
