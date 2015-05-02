@@ -131,3 +131,17 @@ enabled    | true/false
 cookieName | string
 lifetime   | timestamp integer
 field      | string
+
+####enable
+Beni hatırla uygulamasının projenizde aktif/pasif durumunu belirlemektedir.
+
+####cookieName
+Glad auth bu uygulama için çerezleri kullanmaktadır. Burada çereze kendi belirleyeceğiniz ismi atayabilirsiniz. Varsayılan isim:  **_glad_auth**
+
+####lifetime
+Çerezin kullanılamaz hale geleceği (expire) zamanı tanımlayabilirsiniz. Değeri timestamp integer olmalıdır. 
+
+Örnek:
+Bu çerezin 1 yıl kullanıcının siteminde kalmasını istiyorsanız değer olarak **31536000** tanımlamanız gerekiyor.
+
+[Timestamp integer hakkında daha fazla bilgi için tıklayınız.](http://en.wikipedia.org/wiki/Unix_time)
