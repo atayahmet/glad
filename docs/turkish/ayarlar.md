@@ -3,7 +3,7 @@ Ayarlar
 
 Bu bölümde database ve repository ayarları, user tablosunda bulunması gereken bazı alanların ve beni hatırla (remember) ayarlarını yapacağız.
 
-###User tablosunda olması gereken alanlar: 
+###Üye tablosunda olması gereken alanlar: 
 
 Name     | Value
 -------- | ---
@@ -20,5 +20,17 @@ Bunlardan birincisi kullanıcının kimliğinin yani bir kullanıcı adının sa
 	'password' => 'password'
 ]
 ```
-Projeleriniz de size kolaylık sağlaması dileğiyle.
-İlk olarak basitçe kayıt, kullanıcı girişi gibi metodları inceleyerek bir başlangıç yapalım.
+###Servisler
+Glad auth projenizde kullancağınız veritabanı seçimlerinde iki farklı yol sunmaktadır.
+
+1. PDO driver
+2. DatabaseAdapterInterface
+
+####PDO Driver
+Birinci yol PDO driver'ı kullanmak. Ayalarınızda PDO instance'ı servislerde tanımlamanız gerekmektedir.
+
+```php
+'services' => [
+	'db' => new \PDO('mysql:host=localhost;dbname=exampleDb', username, password)
+]
+```
