@@ -146,3 +146,7 @@ Glad auth bu uygulama için çerezleri kullanmaktadır. Burada çereze kendi bel
 Bu çerezin 1 yıl kullanıcının siteminde kalmasını istiyorsanız değer olarak **31536000** tanımlamanız gerekiyor.
 
 [Timestamp integer hakkında daha fazla bilgi için tıklayınız.](http://en.wikipedia.org/wiki/Unix_time)
+
+####field:
+
+Kullanıcı tablonuz da kullanabileceğimiz ve bunun ismini bilmemiz gereken bir alan olması gerekiyor. Bu alanda Beni Hatırla uygulaması içni üreteceğimiz anahtar (token)'ı barındıracağız. Örnek olarak **remember_token** olabilir.
