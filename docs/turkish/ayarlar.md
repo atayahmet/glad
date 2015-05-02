@@ -39,3 +39,8 @@ Birinci yol PDO driver'ı kullanmak. Ayalarınızda PDO instance'ı servisler de
 İkinci yol ise adapter yöntemi ile dilediğiniz veritabanını kullanabilirsiniz.
 
 Servis ayarlarına tanımlayacağınız sınıfınızı DatabaseAdapterInterface arayüzüne implemente ederek methodları entegre ederek ve Glad auth'un istediği formatta return'lerini ayarlamanız gerekmektedir.
+
+**Arayüzün bulunduğu dizin:**
+```php
+Glad\Interfaces\DatabaseAdapterInterface
+```
