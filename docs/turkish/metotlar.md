@@ -13,6 +13,10 @@ identity  | array | Kullanıcının giriş bilgilerini içerir. Dizi olarak gön
 remember | bool  | Beni Hatırla özelliğinin çalışması. Varsayılan parametre **false**
 
 
+return  | Description
+--------|
+instance| Glad class'sının örneği dönmektedir.
+
 **Örnek**
 
 ```php
@@ -39,6 +43,10 @@ Name     | Value | Description
 -------- | ------|------------
 User id  | mixed | Üyenin kullanıcılar tablosunda ki numarası (User Id)
 
+return  | Description
+--------|
+instance| Glad class'sının örneği dönmektedir.
+
 **Örnek**
 ```php
 Glad::loginByUserId(1);
@@ -52,7 +60,7 @@ Glad::loginByUserId('507f191e810c19729de860ea');
 
 Bu işlemin sonucunu şu şekilde kontrol edebiliriz:
 ```php
-if(Glad::status === true) {
+if(Glad::status() === true) {
 	// do something...
 }
 ```
@@ -60,6 +68,90 @@ if(Glad::status === true) {
 ya da;
 ```php
 if(Glad::loginByUserId(1)->status() === true) {
+	// do something...
+}
+```
+
+###andLogin
+
+Normal de sisteme yeni bir üye eklendiğin de (bunu register metodu ile yaptığınızı varsayıyoruz) kullanıcı sadece kayıt edilir. Sistem de oturumda açılmasını istersek **andLogin** metodunu kullanmanız gerekiyor.
+
+return  | Description
+--------|
+instance| Glad class'sının örneği dönmektedir.
+
+**Kullanım özeti:**
+```php
+Glad::register([])->andLogin();
+```
+ya da;
+```php
+Glad::register([]);
+
+Glad::andLogin();
+```
+
+> Not: **andLogin** metodu her hangi bir parametre almamaktadır.
+
+
+**Örnek**
+```php
+Glad::register([
+	'email'	    => 'email@example.com',
+	'password'  => '1234',
+	'firstname' => 'Firstname',
+	'lastname'  => 'Lastname'
+])->andLogin();
+```
+
+İşlem sonucunu kontrol etmek için:
+```php
+if(Glad::status() === true) {
+	// do something...
+}
+```
+
+###logout
+
+Bir kullanıcının sistemdeki oturumunu tamamen kapatır. Bununla birlikte kullanıcı Beni Hatır'la özelliğini kullanıyorsa hemen sonlandırılır. Üyenin tekrar girişi yapması istenir.
+
+return  | Description
+--------|
+bool    | true/false
+
+**Örnek**
+```php
+Glad::logout();
+```
+
+###register
+
+Kullanıcı kayıt işlemini gerçekleştirir.
+
+
+**Parametreler**
+
+Name         | Value | Description
+------------ | ------|------------
+credentilas  | array | Kayıt için gerekli bilgiler
+
+return  | Description
+--------|
+instance| Glad class'sının örneği dönmektedir.
+
+**Örnek:**
+```php
+Glad::register([
+	'email'	    => 'email@example.com',
+	'password'  => '1234',
+	'firstname' => 'Firstname',
+	'lastname'  => 'Lastname'
+]);
+```
+
+İşlem sonucunu kontrol etmek için:
+```php
+if(Glad::status() === true) {
 	// do something...
 }
 ```
