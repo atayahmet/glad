@@ -1,6 +1,10 @@
 Hızlı Başlangıç
 ====
 
+```php
+use Glad\Glad;
+```
+
 **Kullanıcı girişi:**
 ```php
 Glad::login(['email' => 'exampleuser', 'password' => '1234'], true);
