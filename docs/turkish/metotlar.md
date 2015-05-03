@@ -1,7 +1,7 @@
 Metotlar
 =======
 
-###login
+###login()
 
 Kayıtlı kullanıcıların bizde muhafaza edilen üyelik bilgileriyle karşılaştırma yapar işlem başarılıysa sistemde kullanıcı oturumunu başlatır.
 
@@ -33,7 +33,7 @@ if(Glad::status() === true) {
 
 > Not: Giriş esnasında belirttiğiniz kullanıcı adı alanı yada email alanının setup metodunda **fields** alanına tanımladığınız alanlarla örtüştüğünden emin olunuz. Bunların en az bir tanesini eğer isteseniz tamamını giriş koşulu olarak kullanabilirsiniz.
 
-###loginByUserId
+###loginByUserId()
 
 Metodun isminden de anlaşılacağı gibi kullanıcıyı üye numarası (ID) ile giriş yapmasına imkan sağlar. Bazı durumlar da kullanıcıyı üyelik bilgilerini girmesini istemeden sistemde oturum açmasını isteyebiliriz.
 
@@ -72,7 +72,7 @@ if(Glad::loginByUserId(1)->status() === true) {
 }
 ```
 
-###andLogin
+###andLogin()
 
 Normal de sisteme yeni bir üye eklendiğin de (bunu register metodu ile yaptığınızı varsayıyoruz) kullanıcı sadece kayıt edilir. Sistem de oturumda açılmasını istersek **andLogin** metodunu kullanmanız gerekiyor.
 
@@ -111,7 +111,7 @@ if(Glad::status() === true) {
 }
 ```
 
-###logout
+###logout()
 
 Bir kullanıcının sistemdeki oturumunu tamamen kapatır. Bununla birlikte kullanıcı Beni Hatır'la özelliğini kullanıyorsa hemen sonlandırılır. Üyenin tekrar girişi yapması istenir.
 
@@ -124,7 +124,7 @@ bool    | true/false
 Glad::logout();
 ```
 
-###register
+###register()
 
 Kullanıcı kayıt işlemini gerçekleştirir.
 
@@ -156,7 +156,8 @@ if(Glad::status() === true) {
 }
 ```
 
-###change
+###change()
+
 Sistemdeki kullanıcıların bilgileri buna şifreleride dahil değiştirmek istediğimizde **change** metodu burada bize bunu sağlamaktadır.
 
 return  | Description
@@ -187,7 +188,7 @@ if(Glad::status() === true) {
 
 > Not: Yeni bilgilerin daha önce kayıt işleminde alanları belirtilmiş olması gerekiyor.
 
-###apply
+###apply()
 
 Üyelik sistemlerinde detaylı çapraz kontroller olmazsa olmazlardan diyebiliriz. Glad auth burada sizlere apply metoduyla detaylı kontroller ve bu kontoller sonrası davranışları yönetmenizi sağlıyor. 
 
@@ -224,32 +225,42 @@ Yukarıdaki kod bloğunu sırasıyla inceleyelim.
 
 Burada bir Closure metodunu kurguladığımızı görüyoruz. Ve bu metoda Glad class'sının instance'ı injekt ediliyor.
 
-**conditions**
+###conditions()
 
 Üyelik sistemlerin de kullanıcıların durumlarıyla ilgili bir takım sınıflandırmalar yapılmaktadır. Mesela üyeliğini henüz aktifleştirmemiş olan kullanıcılar için burada bir filtre uygulayabilirsiniz. 
 
 ```php
 $glad->conditions(['banned' => 0, 'activate' => 1]);
 ```
-Örnekte banned ve activate alanlarının kontrol edildiğini görüyoruz.
+Örnekte **banned** ve **activate** alanlarının kontrol edildiğini görüyoruz.
 
 > Not: Bu alanların üye tablonuzda bulunması gerekiyor.
 
-**event**
 
-Üye girişi esnasında bir takım sorgulamalarımızın sonucunda davranışları yönetmek için **event** metodu burada bize yardımcı oluyor. 
+###event()
+
+**apply** metodu içinde **conditions** metodunun sonucuna göre işlem akışlarına yön vermemize imkan sağlıyor.
+
+```php
+$glad->conditions(['banned' => 0, 'activate' => 0]);
+```
+
+Kullanıcı başarılı bir giriş yaptığında ikinci aşama hesabının durumuyla ilgili kontrol yapıyoruz.
+
+Eğer hesabında **banned** alanı **0** ise şu event çalışacaktır:
 
 ```php
 $glad->event('banned', function() {
 	exit('you are banned');
 });
+```
 
+Eğer hesabında **activate** alanı **0** ise şu event çalışacaktır:
+
+```php
 $glad->event('activate', function() {
-	exit('your account has activated');
+	exit('you account has not activated');
 });
 ```
-Yukarıdaki örnekte **conditions** metodu ile **banned** ve **activate** alanlarına birer şart ekledik. 
 
-Bu şartların her hangi biri eşleştiğinde **event** metodu işlemlerimize yön vermemizi sağlıyor. Biz şimdilik sadece **exit** ile bir mesaj çıktısı aldık.
-
-###event
+###status()
