@@ -264,3 +264,29 @@ $glad->event('activate', function() {
 ```
 
 ###status()
+
+Gerek üye girişi gerekse yeni bir üyelik kaydında işlemlerin sonucunu kontrol etmek için kullanabileceğimiz metodtur.
+
+**Örnek**
+```php
+Glad::login(['email' => 'example@email.com', 'password' => '1234'], true);
+```
+
+Bu işlemin sonucunu kontrol etmek için:
+```php
+if(Glad::status() === true) {
+	// do something...
+}
+```
+
+**status** metodunu kullanabileceğimiz işlemler:
+
+Name         | Description
+------------ | -------
+login        | Üye girişi sonrası
+loginByUserId| Üye numarası ile giriş sonrası 
+andLogin     | Kayıt sonrası üye giriş işleminden sonra
+register     | Kayıt işlemi sonrası
+change       | Kullanıcı bilgileri değiştirme işlemi sonrası
+
+###check()
