@@ -7,7 +7,7 @@ Kayıtlı kullanıcıların bizde muhafaza edilen üyelik bilgileriyle karşıla
 
 İki para metre almaktadır. Bunlar;
 
-Name     | Value | Description
+Name     | Type | Description
 -------- | ------|------------
 identity  | array | Kullanıcının giriş bilgilerini içerir. Dizi olarak gönderilmelidir.
 remember | bool  | Beni Hatırla özelliğinin çalışması. Varsayılan parametre **false**
@@ -39,7 +39,7 @@ Metodun isminden de anlaşılacağı gibi kullanıcıyı üye numarası (ID) ile
 
 Parametreler:
 
-Name     | Value | Description
+Name     | Type | Description
 -------- | ------|------------
 User id  | mixed | Üyenin kullanıcılar tablosunda ki numarası (User Id)
 
@@ -131,9 +131,9 @@ Kullanıcı kayıt işlemini gerçekleştirir.
 
 **Parametreler**
 
-Name         | Value | Description
+Name         | Type | Description
 ------------ | ------|------------
-credentilas  | array | Kayıt için gerekli bilgiler
+credentials  | array | Kayıt için gerekli bilgiler
 
 return  | Description
 --------|
@@ -155,3 +155,101 @@ if(Glad::status() === true) {
 	// do something...
 }
 ```
+
+###change
+Sistemdeki kullanıcıların bilgileri buna şifreleride dahil değiştirmek istediğimizde **change** metodu burada bize bunu sağlamaktadır.
+
+return  | Description
+--------|
+instance| Glad class'sının örneği dönmektedir
+
+**Parametreler**
+
+Name         | Type | Description
+------------ | ------|------------
+credentials  | array | Yeni kullanıcı bilgileri
+
+```php
+Glad::change([
+	'email'	    => 'email@example.com',
+	'password'  => '1234',
+	'firstname' => 'Firstname',
+	'lastname'  => 'Lastname'
+]);
+```
+
+İşlem sonucunu kontrol etmek için:
+```php
+if(Glad::status() === true) {
+	// do something...
+}
+```
+
+> Not: Yeni bilgilerin daha önce kayıt işleminde alanları belirtilmiş olması gerekiyor.
+
+###apply
+
+Üyelik sistemlerinde detaylı çapraz kontroller olmazsa olmazlardan diyebiliriz. Glad auth burada sizlere apply metoduyla detaylı kontroller ve bu kontoller sonrası davranışları yönetmenizi sağlıyor. 
+
+**apply** metodu parametre olarak **Closure** methodu almaktadır:
+
+Name         | Type   | Description
+------------ | -------|------------
+Closure      | object | Kontrolleri içerir
+
+return  | Description
+--------|
+instance| Glad class'sının örneği dönmektedir
+
+**Örnek**
+
+```php
+Glad::login(['username' => 'exampleuser', 'password' => '1234'], true)
+	->apply(function(Glad $glad) {
+		$glad->conditions(['banned' => 0, 'activate' => 1]);
+			
+		$glad->event('banned', function() {
+				exit('you are banned');
+			});
+
+		$glad->event('activate', function() {
+				exit('your account has activated');
+			});
+		});
+```
+
+Yukarıdaki kod bloğunu sırasıyla inceleyelim.
+
+İlk olarak **login** metodumuzu çalıştırdık ve hemen sonrasında **apply** metodunu chain yöntemiyle çalıştırdık.
+
+Burada bir Closure metodunu kurguladığımızı görüyoruz. Ve bu metoda Glad class'sının instance'ı injekt ediliyor.
+
+**conditions**
+
+Üyelik sistemlerin de kullanıcıların durumlarıyla ilgili bir takım sınıflandırmalar yapılmaktadır. Mesela üyeliğini henüz aktifleştirmemiş olan kullanıcılar için burada bir filtre uygulayabilirsiniz. 
+
+```php
+$glad->conditions(['banned' => 0, 'activate' => 1]);
+```
+Örnekte banned ve activate alanlarının kontrol edildiğini görüyoruz.
+
+> Not: Bu alanların üye tablonuzda bulunması gerekiyor.
+
+**event**
+
+Üye girişi esnasında bir takım sorgulamalarımızın sonucunda davranışları yönetmek için **event** metodu burada bize yardımcı oluyor. 
+
+```php
+$glad->event('banned', function() {
+	exit('you are banned');
+});
+
+$glad->event('activate', function() {
+	exit('your account has activated');
+});
+```
+Yukarıdaki örnekte **conditions** metodu ile **banned** ve **activate** alanlarına birer şart ekledik. 
+
+Bu şartların her hangi biri eşleştiğinde **event** metodu işlemlerimize yön vermemizi sağlıyor. Biz şimdilik sadece **exit** ile bir mesaj çıktısı aldık.
+
+###event

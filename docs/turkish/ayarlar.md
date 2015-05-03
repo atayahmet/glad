@@ -38,7 +38,7 @@ Bunlardan birincisi kullanıcının kimliğinin yani bir kullanıcı adının sa
 	'password' => 'password'
 ]
 ```
-###Servisler
+###Database Adapter
 Glad auth projenizde kullancağınız veritabanı seçimlerinde iki farklı yol sunmaktadır.
 
 1. PDO driver
