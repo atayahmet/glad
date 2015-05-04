@@ -290,3 +290,41 @@ register     | Kayıt işlemi sonrası
 change       | Kullanıcı bilgileri değiştirme işlemi sonrası
 
 ###check()
+
+Kullanıcının sistemdeki oturumunu kontrol eder. Eğer oturumu aktif sonuç **true** döner. Aksi takdir de **false** döner.
+
+**Örnek**
+
+```php
+if(Glad::check() === true) {
+	// do something...
+}
+```
+
+###guest()
+
+Kullanıcının sistemdeki oturumunu kontrol eder. Eğer oturum aktif değilse sonuç **true** dönecektir. Aksi takdir de **false** döner.
+
+**Örnek**
+```php
+if(Glad::guest() === true) {
+	// do something...
+}
+```
+
+###is()
+
+Kapsayıcı bir metodtur. Check ve guest metodlarını kullanabilmektedir.
+
+**Örnek 1**
+```php
+if(Glad::is('check') === true) {
+	// do something...
+}
+```
+**Örnek 2**
+```php
+if(Glad::is('guest') === true) {
+	// do something...
+}
+```
