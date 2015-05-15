@@ -149,7 +149,6 @@ class Glad
     public static function table($table)
     {
         static::init();
-
         static::setStaticVariable(static::$constants, ['field' => 'table', 'value' => $table]);
     }
 

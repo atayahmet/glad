@@ -12,6 +12,7 @@ class GladProvider
     		'RepositoryInterface' 	=> 'Glad\Driver\Repository\NativeSession\Session',
             'HashInterface'         => 'Glad\Driver\Security\Hash\Hash',
             'CryptInterface'        => 'Glad\Driver\Security\Crypt\Crypt',
+            'CookerInterface'       => 'Glad\Cooker',
             'Hash'                  => 'Glad\Hash',
             'ConditionsInterface'   => 'Glad\Conditions',
             'Dispatcher'            => 'Glad\Event\Dispatcher',

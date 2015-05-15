@@ -6,6 +6,7 @@ use Glad\Driver\Repository\RepositoryInterface;
 use Glad\Interfaces\ConditionsInterface;
 use Glad\Interfaces\CryptInterface;
 use Glad\Interfaces\HashInterface;
+use Glad\Interfaces\CookerInterface;
 use Glad\Services\DatabaseService;
 use Glad\Event\Dispatcher;
 use Glad\GladProvider;
@@ -146,6 +147,7 @@ class Author
      */
 	protected static $reflection;
 	protected static $crypt;
+	protected static $cooker;
 
 	/**
      * Class constructor
@@ -155,11 +157,12 @@ class Author
      *
      * @return void
      */ 
-	public function __construct(Constants $constants, Injector $injector, CryptInterface $crypt, DatabaseService $databaseService, RepositoryInterface $repository, Dispatcher $eventDispatcher)
+	public function __construct(Constants $constants, CookerInterface $cooker, Injector $injector, CryptInterface $crypt, DatabaseService $databaseService, RepositoryInterface $repository, Dispatcher $eventDispatcher)
 	{
 		static::$constants = $constants;
 		static::$injector = $injector;
 		static::$repository = $repository;
+		static::$cooker = $cooker;
 		static::$author = GladProvider::$author;
 		static::$eventDispatcher = $eventDispatcher;
 		static::$crypt = $crypt;
@@ -216,7 +219,6 @@ class Author
 		if(static::check() === true) {
 
 			$credentials = static::cryptPasswordIfFieldExists($hash, $credentials);
-
 			$tableIncrementField = static::$constants->id;
 			
 			$where = ['and' => [$tableIncrementField => static::getUserId()]];
@@ -256,7 +258,7 @@ class Author
      *
      * @return self instance
      */ 
-	public static function login(HashInterface $hash, array $user, $remember = false)
+	public static function login(HashInterface $hash, CookerInterface $cooker, array $user, $remember = false)
 	{
 		static::resetCheckVariables();
 
@@ -299,13 +301,24 @@ class Author
 			}
 
 			$cookieName = $rememberConf['cookieName'];
-			$lifeTime = time()+$rememberConf['lifetime'];
-			$token = static::$crypt->encrypt(time()+$rememberConf['lifetime']);
+			$lifeTime = static::currentTime()+$rememberConf['lifetime'];
+
+			$token = static::$crypt->encrypt(static::currentTime()+$rememberConf['lifetime']);
 			$tokenDecrypted = static::$crypt->decrypt($token);
+			
 			$userData[$rememberConf['field']] = $token;
 			$cryptedValue = static::$crypt->encrypt(json_encode($userData));
-			$setResult = setcookie($cookieName, $cryptedValue, $lifeTime, "/", ".".$_SERVER['HTTP_HOST'], false, true);
 			
+			$setResult = static::$cooker->set(
+					$cookieName,
+					$cryptedValue,
+					$lifeTime,
+					"/",
+					".".$_SERVER['HTTP_HOST'],
+					false,
+					true
+				);
+
 			if($setResult) {
 				$where = ['and' => [static::$constants->id => $userData[static::$constants->id]]];
 				$result = static::$model->update($where,[$rememberConf['field'] => $token]);	
@@ -320,24 +333,22 @@ class Author
 		if($rememberConf['enabled'] === true) {
 			$cookieName = $rememberConf['cookieName'];
 
-			if(isset($_COOKIE[$cookieName])) {
+			if(static::$cooker->has($cookieName)) {
  				
- 				$userData = static::$crypt->decrypt($_COOKIE[$cookieName]);
+ 				$userData = static::$crypt->decrypt(static::$cooker->get($cookieName));
  				$userDataArr = json_decode($userData , true);
-
+ 				
  				if(! json_last_error() && isset($userDataArr[$rememberConf['field']])) {
  					
  					$token = $userDataArr[$rememberConf['field']];
  					$tokenDecrypted = static::$crypt->decrypt($token);
 
- 					if(intval($tokenDecrypted) > time()) {
-
+ 					if(intval($tokenDecrypted) >= static::currentTime()) {
+ 						static::setRemember($userDataArr);
  						static::$user = static::resolveDbResult($userDataArr);
  						$result = static::setUserRepository(static::$user);
-
  						return $result;
  					}
- 					
  				}
 			}
 		}
@@ -441,11 +452,20 @@ class Author
      */ 
 	public static function logout()
 	{
-		$result = static::$repository->delete('_gladAuth');
-		
-		static::$userData = static::userData();
+		static::$repository->delete('_gladAuth');
 
-		return $result;
+		$expire = (static::currentTime()-static::$constants->remember['lifetime']);
+
+		static::$cooker->set(
+					static::$constants->remember['cookieName'],
+					'glad',
+					$expire,
+					"/",
+					$_SERVER['HTTP_HOST'],
+					false,
+					true
+				);
+		static::$userData = static::userData();
 	}
 
 	/**
@@ -736,5 +756,10 @@ class Author
 		}
 
 		return false;
+	}
+
+	protected static function currentTime()
+	{
+		return time();
 	}
 }
