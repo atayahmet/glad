@@ -2,7 +2,6 @@
 
 namespace Glad;
 
-use Glad\GladProvider;
 use ReflectionMethod;
 use ReflectionClass;
 
@@ -23,10 +22,9 @@ class Injector
     /**
     * Provider
     *
-    * @var object
+    * @var array
     */
-    protected static $gladProvider;
-
+    public static $providers = [];
     /**
     * Object Container
     *
@@ -41,7 +39,7 @@ class Injector
     */    
     public function __construct()
     {
-        static::$gladProvider = GladProvider::register();
+        //static::$gladProvider = GladProvider::get();
     }
 
     /**
@@ -127,8 +125,8 @@ class Injector
                         $injects[] = static::$container[$last];
                     }
                     
-                    elseif(isset(static::$gladProvider[$last])){
-                        $new = new static::$gladProvider[$last];
+                    elseif(isset(static::$providers[$last])){
+                        $new = new static::$providers[$last];
 
                         static::$container[$last] = $new;
                         

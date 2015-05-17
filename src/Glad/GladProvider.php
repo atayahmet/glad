@@ -6,17 +6,24 @@ class GladProvider
 {
     public static $author = 'Glad\Author';
 
-	public static function register()
+    protected static $providers = [
+        'SessionHandlerInterface'   => 'Glad\Driver\Repository\NativeSession\Session',
+        'HashInterface'         => 'Glad\Driver\Security\Hash\Hash',
+        'CryptInterface'        => 'Glad\Driver\Security\Crypt\Crypt',
+        'CookerInterface'       => 'Glad\Cooker',
+        'ConditionsInterface'   => 'Glad\Conditions',
+        'Hash'                  => 'Glad\Hash',
+        'Dispatcher'            => 'Glad\Event\Dispatcher',
+        'DatabaseService'       => 'Glad\Services\DatabaseService'
+    ];
+
+	public static function get()
 	{
-		return array(
-    		'RepositoryInterface' 	=> 'Glad\Driver\Repository\NativeSession\Session',
-            'HashInterface'         => 'Glad\Driver\Security\Hash\Hash',
-            'CryptInterface'        => 'Glad\Driver\Security\Crypt\Crypt',
-            'CookerInterface'       => 'Glad\Cooker',
-            'Hash'                  => 'Glad\Hash',
-            'ConditionsInterface'   => 'Glad\Conditions',
-            'Dispatcher'            => 'Glad\Event\Dispatcher',
-            'DatabaseService'       => 'Glad\Services\DatabaseService'
-    	);
+		return static::$providers;
   	}
+
+    public static function set(array $_providers)
+    {
+        static::$providers = array_merge(static::$providers, $_providers);
+    }
 }

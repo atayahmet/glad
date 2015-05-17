@@ -11,6 +11,24 @@ class Constants
 		'lifetime' 	=> 31536000, 
 		'field' 	=> 'remember_token'
 	];
+
+	protected static $repository = [
+		'driver'  => 'session',
+		'options' => [
+			'session' => [
+				'path'   => '/',
+				'type'   => 'serialize',
+				'name' 	 => 'SESSIONID',
+				'prefix' => 'ses_'
+			],
+			'memcache' 	=> [],
+			'memcached' => [],
+			'redis'		=> []
+		]
+			
+	];
+	protected static $repositoryDriver = 'session';
+
 	protected static $id = 'id';
 	protected static $table = 'users';
 	protected static $conditions = [];

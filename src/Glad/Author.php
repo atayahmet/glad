@@ -2,7 +2,6 @@
 
 namespace Glad;
 
-use Glad\Driver\Repository\RepositoryInterface;
 use Glad\Interfaces\ConditionsInterface;
 use Glad\Interfaces\CryptInterface;
 use Glad\Interfaces\HashInterface;
@@ -12,6 +11,7 @@ use Glad\Event\Dispatcher;
 use Glad\GladProvider;
 use Glad\Constants;
 use Glad\Injector;
+use SessionHandlerInterface;
 use Closure;
 use ReflectionClass;
 use ErrorException;
@@ -157,7 +157,7 @@ class Author
      *
      * @return void
      */ 
-	public function __construct(Constants $constants, CookerInterface $cooker, Injector $injector, CryptInterface $crypt, DatabaseService $databaseService, RepositoryInterface $repository, Dispatcher $eventDispatcher)
+	public function __construct(Constants $constants, CookerInterface $cooker, Injector $injector, CryptInterface $crypt, DatabaseService $databaseService, SessionHandlerInterface $repository, Dispatcher $eventDispatcher)
 	{
 		static::$constants = $constants;
 		static::$injector = $injector;
@@ -167,9 +167,16 @@ class Author
 		static::$eventDispatcher = $eventDispatcher;
 		static::$crypt = $crypt;
 		static::$eventDispatcher->setInstance(static::getInstance());
-		static::$userData = static::$repository->get('_gladAuth');
-
 		static::$model = $databaseService->get(static::$injector->get('db'));
+		static::setSession();
+	}
+
+	protected static function setSession()
+	{
+		echo '<pre>';
+		exit(var_dump(static::$constants->repository));
+		session_set_save_handler($repository, true);
+		$repository->open('Storage/', 'PHPSESSID');
 	}
 
 	/**
@@ -258,7 +265,7 @@ class Author
      *
      * @return self instance
      */ 
-	public static function login(HashInterface $hash, CookerInterface $cooker, array $user, $remember = false)
+	public static function login(HashInterface $hash, array $user, $remember = false)
 	{
 		static::resetCheckVariables();
 
@@ -337,7 +344,7 @@ class Author
  				
  				$userData = static::$crypt->decrypt(static::$cooker->get($cookieName));
  				$userDataArr = json_decode($userData , true);
- 				
+
  				if(! json_last_error() && isset($userDataArr[$rememberConf['field']])) {
  					
  					$token = $userDataArr[$rememberConf['field']];
@@ -745,12 +752,15 @@ class Author
 	{
 		static::getInstance()->conditionsRun();
 
-		$auth = static::$userData;
+		exit(var_dump($_SESSION));
+		if(! static::$userData) {
+			static::$userData = static::$repository->read();
+		}
+		$authData = static::$userData;
+		if(! is_array($authData)) $authData = unserialize($authData);
 
-		if(! is_array($auth)) $auth = unserialize($auth);
-
-		if($auth && isset($auth['auth'])) {
-			return isset($auth['auth']['status']) && $auth['auth']['status'] === true;
+		if($authData && isset($authData['auth'])) {
+			return isset($authData['auth']['status']) && $auth['auth']['status'] === true;
 		}else{
 			return static::loginFromRemember();
 		}

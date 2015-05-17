@@ -2,7 +2,7 @@
 
 namespace Glad\Driver\Repository\NativeSession;
 
-use Glad\Driver\Repository\RepositoryInterface;
+use SessionHandlerInterface;
 
 /**
  * Session class
@@ -14,86 +14,53 @@ use Glad\Driver\Repository\RepositoryInterface;
  * @license http://opensource.org/licenses/MIT MIT license
  * @link https://github.com/atayahmet/glad
  */
-class Session implements RepositoryInterface {
-	
-	/**
-     * Class constructor
-     *
-     * @return void
-     */
-	public function __construct()
-	{
-		static::sessionStart();
-	}
+class Session implements SessionHandlerInterface
+{
+	private $savePath;
 
-	/**
-     * Sets data to session
-     *
-     * @param string $key
-     * @param mixed $data
-     * @return bool
-     */
-	public static function set($key = false, $data = false)
-	{
-		if(! $key || ! $data) return false;
-
-		if($_SESSION[$key] = $data) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-     * Gets data from session
-     *
-     * @param string $key
-     * @return bool
-     */
-	public static function get($key = false)
-	{
-		if(! $key || !isset($_SESSION[$key])) return false;
-
-		return $_SESSION[$key];
-	}
-
-	/**
-     * Delete data from session
-     *
-     * @param string $key
-     * @return bool
-     */
-	public static function delete($key = false)
-	{
-		if(! $key) return false;
-
-		unset($_SESSION[$key]);
-
-		return true;
-	}
-
-	/**
-     * Check and starts session process
-     *
-     * @return bool
-     */
-	protected static function sessionStart()
-	{
-		if(! static::checkSessionStarted()) {
-			session_start();
-		}
-	}
-
-	/**
-     * Checks if the session has been started
-     *
-     * @return bool
-     */
-	protected static function checkSessionStarted()
-	{
-		if (version_compare(phpversion(), '5.4.0', '>=')) {
-            return session_status() === PHP_SESSION_ACTIVE ? TRUE : FALSE;
-        }else{
-            return session_id() === '' ? FALSE : TRUE;
+    public function open($savePath, $sessionName)
+    {
+        $this->savePath = $savePath;
+        if (!is_dir($this->savePath)) {
+            mkdir($this->savePath, 0777);
         }
-	}
+
+        return true;
+    }
+
+    public function close()
+    {
+        return true;
+    }
+
+    public function read($id)
+    {
+        return (string)@file_get_contents("$this->savePath/sess_$id");
+    }
+
+    public function write($id, $data)
+    {
+        return file_put_contents("$this->savePath/sess_$id", serialize($data)) === false ? false : true;
+    }
+
+    public function destroy($id)
+    {
+        $file = "$this->savePath/sess_$id";
+        if (file_exists($file)) {
+            unlink($file);
+        }
+
+        return true;
+    }
+
+    public function gc($maxlifetime)
+    {
+        foreach (glob("$this->savePath/sess_*") as $file) {
+            if (filemtime($file) + $maxlifetime < time() && file_exists($file)) {
+                unlink($file);
+            }
+        }
+
+        return true;
+    }
 }

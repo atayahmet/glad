@@ -136,8 +136,44 @@ class Glad
 
     public static function remember(array $remember)
     {
-        $change = array_merge(static::$constants->remember, $remember);
-        static::setStaticVariable(static::$constants, ['field' => 'remember', 'value' => $change]);
+        static::setStaticVariable(static::$constants,
+            [
+                'field' => 'remember',
+                'value' => array_merge(static::$constants->remember, $remember)
+            ]
+        );
+    }
+
+    public static function repository(array $repository)
+    {
+        $driver = key($repository);
+        $config = static::$constants->repository;
+
+        if(! isset($config['options'][$driver])) {
+            throw new \Exception("incorrect session driver: {$driver}");
+        }   
+        
+        $config['options'][$driver] = reset($repository);
+        $config['driver'] = $driver;
+        
+        static::setStaticVariable(static::$constants,
+            [
+                'field' => 'repository', 
+                'value' => $config
+            ]
+        );
+    }
+
+    public static function provider(array $providers)
+    {
+        GladProvider::set($providers);
+        
+        static::setStaticVariable(static::$injector,
+            [
+                'field' => 'providers',
+                'value' => GladProvider::get()
+            ]
+        );
     }
 
     /**
@@ -195,7 +231,6 @@ class Glad
     public static function __callStatic($method, $parm)
     {
         static::checkIdentityField();
-        
         self::init();
 
         return static::$injector->inject(static::$author, $method, $parm);
@@ -204,7 +239,6 @@ class Glad
     public function __call($method, $parm)
     {
         static::checkIdentityField();
-
         self::init();
 
         return static::$injector->inject(static::$author, $method, $parm);
