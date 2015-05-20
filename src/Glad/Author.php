@@ -148,6 +148,7 @@ class Author
 	protected static $reflection;
 	protected static $crypt;
 	protected static $cooker;
+	protected static $tokenId;
 
 	/**
      * Class constructor
@@ -168,15 +169,30 @@ class Author
 		static::$crypt = $crypt;
 		static::$eventDispatcher->setInstance(static::getInstance());
 		static::$model = $databaseService->get(static::$injector->get('db'));
-		static::setSession();
+		static::setSession(static::$repository);
 	}
 
-	protected static function setSession()
+	protected static function setSession(SessionHandlerInterface $repository)
 	{
-		echo '<pre>';
-		exit(var_dump(static::$constants->repository));
+		$activeDriver = static::$constants->repository['driver'];
+		$config = static::$constants->repository['options'][$activeDriver];
 		session_set_save_handler($repository, true);
-		$repository->open('Storage/', 'PHPSESSID');
+		$repository->open($config['path'], $config['prefix']);
+
+		static::$tokenId = static::$cooker->get($config['name']);
+		
+		if(!static::$tokenId) {
+			static::$tokenId = sha1(time());
+			$setResult = static::$cooker->set(
+					$config['name'],
+					static::$tokenId,
+					static::currentTime()+$config['timeout'],
+					"/",
+					".".$_SERVER['HTTP_HOST'],
+					false,
+					true
+				);
+		}
 	}
 
 	/**
@@ -459,9 +475,23 @@ class Author
      */ 
 	public static function logout()
 	{
-		static::$repository->delete('_gladAuth');
-
 		$expire = (static::currentTime()-static::$constants->remember['lifetime']);
+		
+		$activeDriver = static::$constants->repository['driver'];
+		$config = static::$constants->repository['options'][$activeDriver];
+
+		if(static::$tokenId) {
+			static::$repository->destroy(static::$tokenId);
+			static::$cooker->set(
+					$config['name'],
+					'glad',
+					$expire,
+					"/",
+					$_SERVER['HTTP_HOST'],
+					false,
+					true
+				);
+		}
 
 		static::$cooker->set(
 					static::$constants->remember['cookieName'],
@@ -499,7 +529,7 @@ class Author
 			'auth' => ['status' => true]
 		];
 
-		return static::$repository->set('_gladAuth', serialize($userData));
+		return static::$repository->write(static::$tokenId, $userData);
 	}
 
 	/**
@@ -509,7 +539,7 @@ class Author
      */ 
 	public static function userData()
 	{
-		$data = static::$repository->get('_gladAuth');
+		$data = static::$repository->read(static::$tokenId);
 
 		if($data && is_array(unserialize($data))) {
 			$passField = static::$constants->authFields['password'];
@@ -554,7 +584,7 @@ class Author
 	{
 		if(static::$processResult === true){
 			static::setUserRepository(static::$user, static::$rememberMe);
-			static::$userData = static::$repository->get('_gladAuth');
+			static::$userData = static::$repository->read(static::$tokenId);
 			static::$processResult = false;
 			static::$status = true;
 		}
@@ -739,7 +769,6 @@ class Author
 		if(is_null(static::$reflection)) {
 			static::$reflection = new ReflectionClass("Glad\Author");
 		}
-
 		return static::$reflection->hasMethod($method);
 	}
 
@@ -752,15 +781,16 @@ class Author
 	{
 		static::getInstance()->conditionsRun();
 
-		exit(var_dump($_SESSION));
 		if(! static::$userData) {
-			static::$userData = static::$repository->read();
+			static::$userData = static::$repository->read(static::$tokenId);
 		}
+
 		$authData = static::$userData;
+
 		if(! is_array($authData)) $authData = unserialize($authData);
 
 		if($authData && isset($authData['auth'])) {
-			return isset($authData['auth']['status']) && $auth['auth']['status'] === true;
+			return isset($authData['auth']['status']) && $authData['auth']['status'] === true;
 		}else{
 			return static::loginFromRemember();
 		}

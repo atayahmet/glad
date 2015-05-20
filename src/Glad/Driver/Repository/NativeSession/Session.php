@@ -17,10 +17,13 @@ use SessionHandlerInterface;
 class Session implements SessionHandlerInterface
 {
 	private $savePath;
+	private $prefix;
 
-    public function open($savePath, $sessionName)
+    public function open($savePath, $prefix)
     {
         $this->savePath = $savePath;
+        $this->prefix = $prefix;
+
         if (!is_dir($this->savePath)) {
             mkdir($this->savePath, 0777);
         }
@@ -35,17 +38,17 @@ class Session implements SessionHandlerInterface
 
     public function read($id)
     {
-        return (string)@file_get_contents("$this->savePath/sess_$id");
+        return (string)@file_get_contents("$this->savePath/$this->prefix".$id);
     }
 
     public function write($id, $data)
     {
-        return file_put_contents("$this->savePath/sess_$id", serialize($data)) === false ? false : true;
+        return file_put_contents("$this->savePath/$this->prefix".$id, serialize($data)) === false ? false : true;
     }
 
     public function destroy($id)
     {
-        $file = "$this->savePath/sess_$id";
+        $file = "$this->savePath/$this->prefix".$id;
         if (file_exists($file)) {
             unlink($file);
         }
@@ -55,7 +58,7 @@ class Session implements SessionHandlerInterface
 
     public function gc($maxlifetime)
     {
-        foreach (glob("$this->savePath/sess_*") as $file) {
+        foreach (glob("$this->savePath/$this->prefix*") as $file) {
             if (filemtime($file) + $maxlifetime < time() && file_exists($file)) {
                 unlink($file);
             }
