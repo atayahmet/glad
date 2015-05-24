@@ -150,10 +150,11 @@ class Glad
         $config = static::$constants->repository;
 
         if(! isset($config['options'][$driver])) {
-            throw new \Exception("incorrect session driver: {$driver}");
+            $config['options'][$driver] = $repository;
+        }else{
+            $config['options'][$driver] = array_merge($config['options'][$driver], reset($repository));
         }
         
-        $config['options'][$driver] = array_merge($config['options'][$driver], reset($repository));
         $config['driver'] = $driver;
         
         static::setStaticVariable(static::$constants,

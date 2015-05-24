@@ -48,7 +48,7 @@ class Memcache implements SessionHandlerInterface
 
         // connect to memcached server
         $this->connect();
-       
+        $this->memcache->flush();
         return true;
     }
 
@@ -60,15 +60,16 @@ class Memcache implements SessionHandlerInterface
     public function read($id)
     {
         $data = $this->memcache->get($this->config['prefix'].$id, false);
-        return ! $data ? "" : $data;
+        //exit(var_dump($data));
+        return ! $data ? "" : json_encode($data);
     }
 
     public function write($id, $data, $refresh = false)
     {
         if(! $refresh) {
-            return $this->memcache->add($this->config['prefix'].$id, serialize($data), false, $this->config['timeout']);
+            return $this->memcache->add($this->config['prefix'].$id, $data, false, $this->config['timeout']);
         }
-        return $this->memcache->replace($this->config['prefix'].$id, serialize($data), false, $this->config['timeout']);
+        return $this->memcache->replace($this->config['prefix'].$id, $data, false, $this->config['timeout']);
     }
 
     public function destroy($id)

@@ -2,11 +2,12 @@
 
 namespace Glad\Driver\Repository\Memcached;
 
+use MemcachedException;
 use SessionHandlerInterface;
 use Memcached as MCached;
 
 /**
- * Memcached driver
+ * Memcache driver
  *
  * @author Ahmet ATAY
  * @category Memcached
@@ -17,18 +18,37 @@ use Memcached as MCached;
  */
 class Memcached implements SessionHandlerInterface
 {
-	private $savePath;
-	private $prefix;
+    /**
+     * $config parameters
+     *
+     * @var array
+     */
+    private $config;
 
-    public function open($savePath, $prefix)
-    {
-        $this->savePath = $savePath;
-        $this->prefix = $prefix;
+    /**
+     * memcached instance
+     *
+     * @var object
+     */
+    private $memcached;
 
-        if (!is_dir($this->savePath)) {
-            mkdir($this->savePath, 0777);
-        }
+    /**
+     * openning the memcached process
+     *
+     * @param array $config
+     * @param string $prefix
+     * 
+     * @return bool
+     */ 
+    public function open($config, $prefix = '')
+    {   
+        $this->config = $config;
 
+        $this->memcached  = new MCached;
+
+        // connect to memcached server
+        $this->connect();
+        
         return true;
     }
 
@@ -39,32 +59,43 @@ class Memcached implements SessionHandlerInterface
 
     public function read($id)
     {
-        return (string)@file_get_contents("$this->savePath/$this->prefix".$id);
+        $data = $this->memcached->get($this->config['prefix'].$id);
+        return ! $data ? "" : $data;
     }
 
-    public function write($id, $data)
+    public function write($id, $data, $refresh = false)
     {
-        return file_put_contents("$this->savePath/$this->prefix".$id, serialize($data)) === false ? false : true;
+        if(! $refresh) {
+            return $this->memcached->add($this->config['prefix'].$id, $data, time()+$this->config['timeout']);
+        }
+        return $this->memcached->replace($this->config['prefix'].$id, $data, time()+$this->config['timeout']);
     }
 
     public function destroy($id)
     {
-        $file = "$this->savePath/$this->prefix".$id;
-        if (file_exists($file)) {
-            unlink($file);
-        }
-
-        return true;
+        return $this->memcached->delete($this->config['prefix'].$id);
     }
 
     public function gc($maxlifetime)
     {
-        foreach (glob("$this->savePath/$this->prefix*") as $file) {
-            if (filemtime($file) + $maxlifetime < time() && file_exists($file)) {
-                unlink($file);
-            }
-        }
+        return true;
+    }
 
+    protected function connect($exception = true)
+    {
+        $host = $this->config['host'];
+        $port = $this->config['port'];
+        
+        $this->memcached->addServer($host, $port);
+
+        if($exception) {
+            $stats = $this->memcached->getStats();
+
+            if(! isset($stats["$host:$port"]) || ! $stats["$host:$port"]) {
+                throw new MemcachedException('Can not connect to Memcached server');
+            }
+            return false;
+        }
         return true;
     }
 }

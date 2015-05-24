@@ -797,8 +797,6 @@ class Author
 
 		$authData = static::$userData;
 
-		if(! is_array($authData)) $authData = unserialize($authData);
-
 		if($authData && isset($authData['auth'])) {
 			return isset($authData['auth']['status']) && $authData['auth']['status'] === true;
 		}else{
