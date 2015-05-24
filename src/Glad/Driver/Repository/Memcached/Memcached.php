@@ -1,20 +1,21 @@
 <?php
 
-namespace Glad\Driver\Repository\NativeSession;
+namespace Glad\Driver\Repository\Memcached;
 
 use SessionHandlerInterface;
+use Memcached as MCached;
 
 /**
- * Native Session driver
+ * Memcached driver
  *
  * @author Ahmet ATAY
- * @category Session
+ * @category Memcached
  * @package Glad
  * @copyright 2015
  * @license http://opensource.org/licenses/MIT MIT license
  * @link https://github.com/atayahmet/glad
  */
-class Session implements SessionHandlerInterface
+class Memcached implements SessionHandlerInterface
 {
 	private $savePath;
 	private $prefix;

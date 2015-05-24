@@ -177,11 +177,11 @@ class Author
 		$activeDriver = static::$constants->repository['driver'];
 		$config = static::$constants->repository['options'][$activeDriver];
 		session_set_save_handler($repository, true);
-		$repository->open($config['path'], $config['prefix']);
+		$repository->open($config, '');
 
 		static::$tokenId = static::$cooker->get($config['name']);
 		
-		if(!static::$tokenId) {
+		if(! static::$tokenId) {
 			static::$tokenId = sha1(time());
 			$setResult = static::$cooker->set(
 					$config['name'],
@@ -539,7 +539,7 @@ class Author
      */ 
 	public static function userData()
 	{
-		$data = static::$repository->read(static::$tokenId);
+		$data = static::readSession();
 
 		if($data && is_array(unserialize($data))) {
 			$passField = static::$constants->authFields['password'];
@@ -584,7 +584,7 @@ class Author
 	{
 		if(static::$processResult === true){
 			static::setUserRepository(static::$user, static::$rememberMe);
-			static::$userData = static::$repository->read(static::$tokenId);
+			static::$userData = static::readSession();
 			static::$processResult = false;
 			static::$status = true;
 		}
@@ -772,6 +772,16 @@ class Author
 		return static::$reflection->hasMethod($method);
 	}
 
+	protected static function readSession()
+	{
+		$data = static::$repository->read(static::$tokenId);
+
+		if(! empty($data)) {
+			static::$repository->write(static::$tokenId, $data, $refresh = true);
+		}
+		return $data;
+	}
+
 	/**
      * Return user logged in status to other methods
      *
@@ -782,7 +792,7 @@ class Author
 		static::getInstance()->conditionsRun();
 
 		if(! static::$userData) {
-			static::$userData = static::$repository->read(static::$tokenId);
+			static::$userData = static::readSession();
 		}
 
 		$authData = static::$userData;

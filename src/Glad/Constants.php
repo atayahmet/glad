@@ -19,10 +19,15 @@ class Constants
 				'path'   => '/',
 				'type'   => 'serialize',
 				'name' 	 => 'SESSIONID',
-				'prefix' => '',
+				'prefix' => 'ses_',
 				'timeout'=> 1800
 			],
 			'memcache' 	=> [
+				'host'	  => '127.0.0.1',
+				'port'	  => 11211,
+				'timeout' => 1800,
+				'type'	  => 'serialize',
+				'prefix'  => 'ses_'
 
 			],
 			'memcached' => [],
