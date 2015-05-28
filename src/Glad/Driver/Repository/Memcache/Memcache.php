@@ -60,8 +60,7 @@ class Memcache implements SessionHandlerInterface
     public function read($id)
     {
         $data = $this->memcache->get($this->config['prefix'].$id, false);
-        //exit(var_dump($data));
-        return ! $data ? "" : json_encode($data);
+        return ! $data ? "" : $data;
     }
 
     public function write($id, $data, $refresh = false)
@@ -98,5 +97,10 @@ class Memcache implements SessionHandlerInterface
         }
 
         return $this->memcache->connect($host, $port);
+    }
+
+    protected function now()
+    {
+        return time();
     }
 }

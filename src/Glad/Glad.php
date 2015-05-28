@@ -154,7 +154,6 @@ class Glad
         }else{
             $config['options'][$driver] = array_merge($config['options'][$driver], reset($repository));
         }
-        
         $config['driver'] = $driver;
         
         static::setStaticVariable(static::$constants,

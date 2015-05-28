@@ -16,16 +16,14 @@ use SessionHandlerInterface;
  */
 class Session implements SessionHandlerInterface
 {
-	private $savePath;
-	private $prefix;
+	private $config;
 
-    public function open($savePath, $prefix)
+    public function open($config, $prefix)
     {
-        $this->savePath = $savePath;
-        $this->prefix = $prefix;
+    	$this->config = $config;
 
-        if (!is_dir($this->savePath)) {
-            mkdir($this->savePath, 0777);
+        if(!is_dir($this->config['path'])) {
+            mkdir($this->config['path'], 0777);
         }
 
         return true;
@@ -38,17 +36,30 @@ class Session implements SessionHandlerInterface
 
     public function read($id)
     {
-        return (string)@file_get_contents("$this->savePath/$this->prefix".$id);
+    	$this->gc($this->config['timeout']);
+
+        $data = (string)@file_get_contents($this->config['path']."/".$this->config['prefix'].$id);
+
+        if($data) {
+        	$data = $this->unserializer($data);
+
+        	if($data['timestamp'] + $data['expiration'] < $this->now()) {
+        		return null;
+        	}
+        }
+        return $data;
     }
 
     public function write($id, $data)
     {
-        return file_put_contents("$this->savePath/$this->prefix".$id, serialize($data)) === false ? false : true;
+    	$data['timestamp'] 	= $this->now();
+    	$data['expiration']	= $this->config['timeout'];
+        return file_put_contents($this->config['path']."/".$this->config['prefix'].$id, $this->serializer($data)) === false ? false : true;
     }
 
     public function destroy($id)
     {
-        $file = "$this->savePath/$this->prefix".$id;
+        $file = $this->config['path']."/".$this->config['prefix'].$id;
         if (file_exists($file)) {
             unlink($file);
         }
@@ -58,12 +69,33 @@ class Session implements SessionHandlerInterface
 
     public function gc($maxlifetime)
     {
-        foreach (glob("$this->savePath/$this->prefix*") as $file) {
-            if (filemtime($file) + $maxlifetime < time() && file_exists($file)) {
+        foreach (glob($this->config['path']."/".$this->config['prefix']."*") as $file) {
+            if (filemtime($file) + $maxlifetime < $this->now() && file_exists($file)) {
                 unlink($file);
             }
         }
 
         return true;
+    }
+
+    protected function serializer(array $data)
+    {
+    	if($this->config['type'] == 'serialize') {
+    		return serialize($data);
+    	}
+    	return json_encode($data);
+    }
+
+    protected function unserializer($data)
+    {
+    	if($this->config['type'] == 'serialize') {
+    		return unserialize($data);
+    	}
+    	return json_decode($data, true);
+    }
+
+    protected function now()
+    {
+    	return time();
     }
 }

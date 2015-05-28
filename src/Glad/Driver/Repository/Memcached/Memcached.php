@@ -66,9 +66,9 @@ class Memcached implements SessionHandlerInterface
     public function write($id, $data, $refresh = false)
     {
         if(! $refresh) {
-            return $this->memcached->add($this->config['prefix'].$id, $data, time()+$this->config['timeout']);
+            return $this->memcached->add($this->config['prefix'].$id, $data, $this->now()+$this->config['timeout']);
         }
-        return $this->memcached->replace($this->config['prefix'].$id, $data, time()+$this->config['timeout']);
+        return $this->memcached->replace($this->config['prefix'].$id, $data, $this->now()+$this->config['timeout']);
     }
 
     public function destroy($id)

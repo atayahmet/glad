@@ -528,7 +528,6 @@ class Author
 			'userData' => $user,
 			'auth' => ['status' => true]
 		];
-
 		return static::$repository->write(static::$tokenId, $userData);
 	}
 
@@ -541,13 +540,12 @@ class Author
 	{
 		$data = static::readSession();
 
-		if($data && is_array(unserialize($data))) {
+		if($data && is_array($data)) {
 			$passField = static::$constants->authFields['password'];
-			$unSerialize = unserialize($data);
 
-			unset($unSerialize['userData'][$passField]);
+			unset($data['userData'][$passField]);
 			
-			return $unSerialize['userData'];
+			return $data['userData'];
 		}
 	}
 
