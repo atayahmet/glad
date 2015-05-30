@@ -29,7 +29,8 @@ class Constants
 				'port'	  => 11211,
 				'timeout' => 1800,
 				'prefix'  => 'ses_',
-				'crypt'	  => false
+				'crypt'	  => false,
+				'name'	=> 'PHPSESID'
 
 			],
 			'memcached' => [
@@ -37,7 +38,8 @@ class Constants
 				'port'	  => 11211,
 				'timeout' => 1800,
 				'prefix'  => 'ses_',
-				'crypt'	  => false
+				'crypt'	  => false,
+				'name'	=> 'PHPSESID',
 			]
 		]
 	];
