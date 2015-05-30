@@ -108,11 +108,11 @@ class Glad
     }
 
     /**
-    * set identity fields
-    *
-    * @param $fields array
-    * @return void
-    */
+     * set identity fields
+     *
+     * @param $fields array
+     * @return void
+     */
     public static function fields($fields)
     {
         static::init();
@@ -160,6 +160,16 @@ class Glad
             [
                 'field' => 'repository', 
                 'value' => $config
+            ]
+        );
+    }
+
+    public static function domain($domain)
+    {
+         static::setStaticVariable(static::$constants,
+            [
+                'field' => 'cookieDomain',
+                'value' => $domain
             ]
         );
     }

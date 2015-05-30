@@ -177,7 +177,7 @@ class Author
 		$activeDriver = static::$constants->repository['driver'];
 		$config = static::$constants->repository['options'][$activeDriver];
 		session_set_save_handler($repository, true);
-		$repository->open($config, '');
+		$repository->openSession($config, static::$crypt);
 
 		static::$tokenId = static::$cooker->get($config['name']);
 		
@@ -188,7 +188,7 @@ class Author
 					static::$tokenId,
 					static::currentTime()+$config['timeout'],
 					"/",
-					".".$_SERVER['HTTP_HOST'],
+					static::$constants->cookieDomain,
 					false,
 					true
 				);
@@ -337,7 +337,7 @@ class Author
 					$cryptedValue,
 					$lifeTime,
 					"/",
-					".".$_SERVER['HTTP_HOST'],
+					static::$constants->cookieDomain,
 					false,
 					true
 				);
@@ -487,7 +487,7 @@ class Author
 					'glad',
 					$expire,
 					"/",
-					$_SERVER['HTTP_HOST'],
+					static::$constants->cookieDomain,
 					false,
 					true
 				);
@@ -498,7 +498,7 @@ class Author
 					'glad',
 					$expire,
 					"/",
-					$_SERVER['HTTP_HOST'],
+					static::$constants->cookieDomain,
 					false,
 					true
 				);

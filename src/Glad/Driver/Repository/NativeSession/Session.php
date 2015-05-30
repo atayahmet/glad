@@ -2,7 +2,9 @@
 
 namespace Glad\Driver\Repository\NativeSession;
 
-use SessionHandlerInterface;
+use Glad\Interfaces\GladSessionHandlerInterface;
+use Glad\Driver\Repository\RepositoryAdapter;
+use Glad\Interfaces\CryptInterface;
 
 /**
  * Native Session driver
@@ -14,34 +16,78 @@ use SessionHandlerInterface;
  * @license http://opensource.org/licenses/MIT MIT license
  * @link https://github.com/atayahmet/glad
  */
-class Session implements SessionHandlerInterface
+class Session extends RepositoryAdapter implements GladSessionHandlerInterface
 {
-	private $config;
+	/**
+     * $config parameters
+     *
+     * @var array
+     */
+	protected $config;
+	
+	/**
+     * $crypt instance
+     *
+     * @var object
+     */
+	protected $crypt;
 
-    public function open($config, $prefix)
-    {
-    	$this->config = $config;
+	/**
+     * start the session process
+     *
+     * @param $config array
+     * @param $prefix null
+     *
+     * @return bool
+     */
+	public function openSession(array $config, CryptInterface $crypt)
+	{
+		$this->config = $config;
+    	$this->crypt  = $crypt;
 
         if(!is_dir($this->config['path'])) {
             mkdir($this->config['path'], 0777);
         }
 
+        $this->gc($this->config['timeout']);
+	}
+
+	/**
+     * It was isolated
+     *
+     * @param $config array
+     * @param $prefix null
+     *
+     * @return bool
+     */
+    public function open($config, $prefix = '')
+    {
         return true;
     }
 
+    /**
+     * close the session process (not using)
+     *
+     * @return bool
+     */
     public function close()
     {
         return true;
     }
 
+    /**
+     * Read the session data
+     *
+     * @param $id string
+     *
+     * @return null|array
+     */
     public function read($id)
     {
-    	$this->gc($this->config['timeout']);
-
         $data = (string)@file_get_contents($this->config['path']."/".$this->config['prefix'].$id);
 
         if($data) {
-        	$data = $this->unserializer($data);
+        	$data = $this->unserializer($this->dataDecrypt($data));
 
         	if($data['timestamp'] + $data['expiration'] < $this->now()) {
         		return null;
@@ -50,13 +96,31 @@ class Session implements SessionHandlerInterface
         return $data;
     }
 
+    /**
+     * Save the session data
+     *
+     * @param $id string
+     * @param $data array
+     *
+     * @return bool
+     */
     public function write($id, $data)
     {
     	$data['timestamp'] 	= $this->now();
     	$data['expiration']	= $this->config['timeout'];
-        return file_put_contents($this->config['path']."/".$this->config['prefix'].$id, $this->serializer($data)) === false ? false : true;
+
+    	$sessionData = $this->dataCrypt($this->serializer($data));
+
+        return file_put_contents($this->config['path']."/".$this->config['prefix'].$id, $sessionData) === false ? false : true;
     }
 
+    /**
+     * Delete the session data
+     *
+     * @param $id string
+     *
+     * @return bool
+     */
     public function destroy($id)
     {
         $file = $this->config['path']."/".$this->config['prefix'].$id;
@@ -67,6 +131,13 @@ class Session implements SessionHandlerInterface
         return true;
     }
 
+    /**
+     * Delete the  all timeout session
+     *
+     * @param $maxlifetime integer
+     *
+     * @return bool
+     */
     public function gc($maxlifetime)
     {
         foreach (glob($this->config['path']."/".$this->config['prefix']."*") as $file) {
@@ -74,28 +145,6 @@ class Session implements SessionHandlerInterface
                 unlink($file);
             }
         }
-
         return true;
-    }
-
-    protected function serializer(array $data)
-    {
-    	if($this->config['type'] == 'serialize') {
-    		return serialize($data);
-    	}
-    	return json_encode($data);
-    }
-
-    protected function unserializer($data)
-    {
-    	if($this->config['type'] == 'serialize') {
-    		return unserialize($data);
-    	}
-    	return json_decode($data, true);
-    }
-
-    protected function now()
-    {
-    	return time();
     }
 }

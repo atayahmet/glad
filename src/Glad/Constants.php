@@ -5,6 +5,7 @@ namespace Glad;
 class Constants
 {
 	protected static $authFields;
+	protected static $cookieDomain  = '';
 	protected static $remember = [
 		'cookieName' 		=> '_glad_auth', 
 		'enabled' 	=> true, 
@@ -20,22 +21,28 @@ class Constants
 				'type'   => 'serialize',
 				'name' 	 => 'SESSIONID',
 				'prefix' => 'ses_',
+				'crypt'	 => false,
 				'timeout'=> 1800
 			],
 			'memcache' 	=> [
 				'host'	  => '127.0.0.1',
 				'port'	  => 11211,
 				'timeout' => 1800,
-				'type'	  => 'serialize',
-				'prefix'  => 'ses_'
+				'prefix'  => 'ses_',
+				'crypt'	  => false
 
 			],
-			'memcached' => [],
-			'redis'		=> []
+			'memcached' => [
+				'host'	  => '127.0.0.1',
+				'port'	  => 11211,
+				'timeout' => 1800,
+				'prefix'  => 'ses_',
+				'crypt'	  => false
+			]
 		]
-			
 	];
-	protected static $repositoryDriver = 'session';
+
+	//protected static $repositoryDriver = 'session';
 
 	protected static $id = 'id';
 	protected static $table = 'users';
