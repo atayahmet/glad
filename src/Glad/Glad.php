@@ -22,63 +22,62 @@ class Glad
 {
     
     /**
-    * Injector
-    *
-    * @var object
-    */
+     * Injector
+     *
+     * @var object
+     */
     protected static $injector;
 
     /**
-    * Author class name
-    *
-    * @var object
-    */
+     * Author class name
+     *
+     * @var object
+     */
     protected static $author;
   
     /**
-    * Model object
-    *
-    * @var object
-    */
+     * Model object
+     *
+     * @var object
+     */
     protected static $model;
 
     /**
-    * Users table fields
-    *
-    * @var array
-    */
+     * Users table fields
+     *
+     * @var array
+     */
     protected static $identityFields;
    
     /**
-    * Constants class instance 
-    *
-    * @var object
-    */
+     * Constants class instance 
+     *
+     * @var object
+     */
     protected static $constants;
-
-    protected static $provider;
+    
     /**
-    * Class constructor
-    *
-    * @return void
-    */
+     * Class constructor
+     *
+     * @return void
+     */
     public function __construct()
     {
         self::init();
     }
     
     /**
-    * Class initializer
-    *
-    * @return void
-    */
+     * Class initializer
+     *
+     * @return void
+     */
     protected static function init()
     {
         if(is_null(static::$injector)){
             static::$injector = new Injector();
             static::$injector->add('Injector', static::$injector);
-
             static::$author = GladProvider::$author;
+            static::provider([]);
         }
 
         // check and set constants class instance and add to injector
@@ -86,16 +85,24 @@ class Glad
     }
 
     /**
-    * Model instance add to injector
-    *
-    * @param $model object
-    * @return void
-    */
+     * Model instance add to injector
+     *
+     * @param $model object
+     *
+     * @return void
+     */
     protected static function modelAddToInjector($model)
     {
         static::$injector->add('DatabaseAdapterInterface', $model);
     }
 
+    /**
+     * Initializer
+     *
+     * @param $config array
+     *
+     * @return bool
+     */
     public static function setup(array $config)
     {
         $thisInstance = new static;
@@ -105,13 +112,16 @@ class Glad
                 static::$name($parm);
             }
         }
+
+        return true;
     }
 
     /**
      * set identity fields
      *
      * @param $fields array
-     * @return void
+     *
+     * @return bool
      */
     public static function fields($fields)
     {
@@ -123,8 +133,17 @@ class Glad
 
         static::setStaticVariable(static::$constants, ['field' => 'authFields', 'value' => $fields]);
         static::$identityFields = true;
+
+        return true;
     }
 
+    /**
+     * Set services
+     *
+     * @param $services array
+     *
+     * @return bool
+     */
     public static function services(array $services)
     {
         static::$injector->add('DatabaseService', new Services\DatabaseService);
@@ -132,8 +151,17 @@ class Glad
         foreach($services as $name => $instance) {
             static::$injector->add($name, $instance);
         }
+
+        return true;
     }
 
+    /**
+     * Set remember parameters
+     *
+     * @param $remember array
+     *
+     * @return bool
+     */
     public static function remember(array $remember)
     {
         static::setStaticVariable(static::$constants,
@@ -142,8 +170,17 @@ class Glad
                 'value' => array_merge(static::$constants->remember, $remember)
             ]
         );
+
+        return true;
     }
 
+    /**
+     * Set session repository parameters
+     *
+     * @param $repository array
+     *
+     * @return bool
+     */
     public static function repository(array $repository)
     {
         $driver = key($repository);
@@ -162,8 +199,17 @@ class Glad
                 'value' => $config
             ]
         );
+
+        return true;
     }
 
+    /**
+     * Set cookie domain paremeter
+     *
+     * @param $domain string
+     *
+     * @return bool
+     */
     public static function domain($domain)
     {
          static::setStaticVariable(static::$constants,
@@ -172,8 +218,17 @@ class Glad
                 'value' => $domain
             ]
         );
+
+         return true;
     }
 
+    /**
+     * Set custom providers
+     *
+     * @param $providers array
+     *
+     * @return bool
+     */
     public static function provider(array $providers)
     {
         GladProvider::set($providers);
@@ -184,26 +239,30 @@ class Glad
                 'value' => GladProvider::get()
             ]
         );
+
+        return true;
     }
 
     /**
-    * set user table name
-    *
-    * @param $table string
-    * @return void
-    */
+     * set user table name
+     *
+     * @param $table string
+     *
+     * @return bool
+     */
     public static function table($table)
     {
         static::init();
         static::setStaticVariable(static::$constants, ['field' => 'table', 'value' => $table]);
+
+        return true;
     }
 
     /**
-    * set user table name
-    *
-    * @param $table string
-    * @return void
-    */
+     * Set the Glad\Constants class instance
+     *
+     * @return void
+     */
     protected static function setConstantsInstance()
     {
         if(! is_object(static::$constants)){
@@ -212,6 +271,11 @@ class Glad
         }
     }
 
+    /**
+     * Check the identity fields
+     *
+     * @return bool
+     */
     protected static function checkIdentityField()
     {
         if(! static::$identityFields){
@@ -221,7 +285,15 @@ class Glad
         return true;
     }
 
-    protected static function setStaticVariable($instance, $parm)
+    /**
+     * Set the static and protected variables
+     *
+     * @param $instance object will set the class
+     * @param $parm array
+     *
+     * @return bool
+     */
+    protected static function setStaticVariable($instance, array $parm)
     {
         try {
             $refObject   = new ReflectionObject($instance);
@@ -233,6 +305,11 @@ class Glad
         }
     }
 
+    /**
+     * Get the Glad\Constants class instance
+     *
+     * @return bool
+     */
     protected static function getConstantsInstance()
     {
         return is_null(static::$constants) ? new Constants : static::$constants;

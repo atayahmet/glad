@@ -56,11 +56,26 @@ class Injector
         return static::setInjectsParameters($class, $method, $parm);
     }
 
+    /**
+     * The class add to container
+     *
+     * @param string $key
+     * @param object|string $class
+     *
+     * @return void
+     */ 
     public static function add($key, $class)
     {
         self::$container[$key] = $class;
     }
 
+    /**
+     * Resolve the object and add
+     *
+     * @param object $class
+     *
+     * @return void
+     */ 
     public static function resolve($class = null)
     {
         if(is_object($class)){
@@ -73,30 +88,31 @@ class Injector
         }
     }
 
+    /**
+     * Get the instance from object container
+     *
+     * @param string $name
+     *
+     * @return object
+     */ 
     public static function get($name)
     {
         return self::$container[$name];
     }
-
-    public function make()
-    {
-
-    }
     
     /**
-    * method setInjectsParameters
-    *
-    * @param string $class
-    * @param string $method
-    * @param array $parm
-    *
-    * @return all types
-    */ 
+     * method setInjectsParameters
+     *
+     * @param string $class
+     * @param string $method
+     * @param array $parm
+     *
+     * @return all types
+     */ 
     protected static function setInjectsParameters($class, $method, array $parm = null)
     {
         $methods = array('__construct', $method);
         $instance = null;
-
 
         foreach($methods as $k => $m) {
 
@@ -168,13 +184,13 @@ class Injector
     }
 
     /**
-    * New instance creator
-    *
-    * @param string $class
-    * @param array $injects
-    *
-    * @return object
-    */ 
+     * New instance creator
+     *
+     * @param string $class
+     * @param array $injects
+     *
+     * @return object
+     */ 
     protected static function newInstanceCurrentClass($class, array $injects = null)
     {
         if(method_exists($class, '__construct')){
@@ -187,6 +203,14 @@ class Injector
         return $instance;
     }
 
+    /**
+     * Edit that run method parameters
+     *
+     * @param array $depends
+     * @param array $params
+     *
+     * @return array
+     */ 
     protected static function editParameter($depends, $params)
     {
         if(count($depends) > 0 && count($params) > 0){
@@ -199,7 +223,7 @@ class Injector
             if(count($depends) == count($params)) return $params;
 
             $depends = array_values($depends);
-            $params = array_values($params);
+            $params  = array_values($params);
 
             foreach($depends as $key => $dep){
                 if(!isset($params[$key])){
@@ -220,7 +244,6 @@ class Injector
                 }
             }
         }
-
         return $params;
     }
 }

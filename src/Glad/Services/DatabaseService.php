@@ -6,8 +6,25 @@ use InvalidArgumentException;
 use Glad\Service;
 use Glad\Interfaces\ServiceInterface;
 
+/**
+ * Database Service
+ *
+ * @author Ahmet ATAY
+ * @category DatabaseService
+ * @package Glad
+ * @copyright 2015
+ * @license http://opensource.org/licenses/MIT MIT license
+ * @link https://github.com/atayahmet/glad
+ */
 class DatabaseService extends Service implements ServiceInterface {
 
+	/**
+     * Get the active service
+     *
+     * @param object $driver
+     *
+     * @return bool
+     */ 
 	public function get($driver)
 	{
 		if(get_class($driver) == 'PDO') {

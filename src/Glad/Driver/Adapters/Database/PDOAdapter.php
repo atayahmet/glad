@@ -6,8 +6,23 @@ use PDO;
 use Glad\Driver\Adapters\Database\Adapter;
 use Glad\Injector;
 
+/**
+ * PDO Adapter
+ *
+ * @author Ahmet ATAY
+ * @category PDOAdapter
+ * @package Glad
+ * @copyright 2015
+ * @license http://opensource.org/licenses/MIT MIT license
+ * @link https://github.com/atayahmet/glad
+ */
 class PDOAdapter extends Adapter {
 
+	/**
+     * User table name
+     *
+     * @var string
+     */
 	protected $table;
 
 	public function __construct(PDO $pdo)
@@ -18,6 +33,13 @@ class PDOAdapter extends Adapter {
 		$this->checkPdoDriver(false, $exception = true);
 	}
 
+	/**
+     * Data insert
+     *
+     * @param array $credentials
+     *
+     * @return bool
+     */ 
 	public function insert(array $credentials)
 	{
 		$fields = implode(array_flip($credentials), ',');
@@ -37,6 +59,15 @@ class PDOAdapter extends Adapter {
 		return false;
 	}
 
+	/**
+     * Data update
+     *
+     * @param array $where
+     * @param array $newData
+     * @param integer $limit
+     *
+     * @return bool
+     */ 
 	public function update(array $where, array $newData, $limit = 1)
 	{
 		$bindWhere = $this->bindWhere($where);
@@ -57,12 +88,14 @@ class PDOAdapter extends Adapter {
 		return $cursor->execute();
 	}
 
-	public function get(array $where)
-	{
-
-	}
-
-	public function bindWhere($where)
+	/**
+     * Bind data to where combination
+     *
+     * @param array $where
+     *
+     * @return string
+     */
+	public function bindWhere(array $where)
 	{
 		$_where = '';
 
@@ -79,6 +112,13 @@ class PDOAdapter extends Adapter {
 		return $_where;
 	}
 
+	/**
+     * Bind insert data
+     *
+     * @param array $data
+     *
+     * @return string
+     */
 	public function bindInsertData(array $data)
 	{
 		$_data = '';
@@ -88,6 +128,13 @@ class PDOAdapter extends Adapter {
 		}
 	}
 
+	/**
+     * Bind update data
+     *
+     * @param array $data
+     *
+     * @return string
+     */
 	public function bindUpdateData(array $data)
 	{
 		$_data = '';
@@ -99,6 +146,13 @@ class PDOAdapter extends Adapter {
 		return $_data;
 	}
 
+	/**
+     * Get the user identity
+     *
+     * @param array $identity
+     *
+     * @return array
+     */
 	public function getIdentity(array $identity)
 	{
 		$x = '';
@@ -122,6 +176,13 @@ class PDOAdapter extends Adapter {
 		return $cursor->fetch(\PDO::FETCH_ASSOC);
 	}
 
+	/**
+     * Get the user identity with user id
+     *
+     * @param mixed $userId
+     *
+     * @return array
+     */
 	public function getIdentityWithId($userId)
 	{
 		$sql = "SELECT * FROM {$this->table} WHERE id = ? LIMIT 1";

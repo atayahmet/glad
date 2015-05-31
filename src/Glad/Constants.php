@@ -2,10 +2,40 @@
 
 namespace Glad;
 
+/**
+ * Glad contant parameters
+ *
+ * @author Ahmet ATAY
+ * @category Constants
+ * @package Glad
+ * @copyright 2015
+ * @license http://opensource.org/licenses/MIT MIT license
+ * @link https://github.com/atayahmet/glad
+ */
 class Constants
 {
-	protected static $authFields;
+	/**
+     * Identity fields
+     *
+     * @var array
+     */
+	protected static $authFields = [
+		'identity' => 'email', 
+		'password' => 'password',
+	];
+
+	/**
+     * Cookie domain
+     *
+     * @var string
+     */
 	protected static $cookieDomain  = '';
+	
+	/**
+     * Remember process parameters
+     *
+     * @var array
+     */
 	protected static $remember = [
 		'cookieName' 		=> '_glad_auth', 
 		'enabled' 	=> true, 
@@ -13,6 +43,11 @@ class Constants
 		'field' 	=> 'remember_token'
 	];
 
+	/**
+     * Session repository parameters
+     *
+     * @var array
+     */
 	protected static $repository = [
 		'driver'  => 'session',
 		'options' => [
@@ -44,10 +79,25 @@ class Constants
 		]
 	];
 
-	//protected static $repositoryDriver = 'session';
-
+	/**
+     * User table unique field
+     *
+     * @var string
+     */
 	protected static $id = 'id';
+
+	/**
+     * User table name
+     *
+     * @var string
+     */
 	protected static $table = 'users';
+
+	/**
+     * Conditions that apply to user data
+     *
+     * @var array
+     */
 	protected static $conditions = [];
  
 	public function __get($attr)

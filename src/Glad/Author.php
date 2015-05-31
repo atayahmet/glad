@@ -146,9 +146,34 @@ class Author
      * @var object
      */
 	protected static $reflection;
+
+	/**
+     * CryptInterface instance
+     *
+     * @var object
+     */
 	protected static $crypt;
+
+	/**
+     * CookerInterface instance 
+     *
+     * @var object
+     */
 	protected static $cooker;
+
+	/**
+     * Session token id
+     *
+     * @var string
+     */
 	protected static $tokenId;
+
+	/**
+     * SimpleXMLElement class instance
+     *
+     * @var object
+     */
+	protected static $simpleXML;
 
 	/**
      * Class constructor
@@ -172,6 +197,13 @@ class Author
 		static::setSession(static::$repository);
 	}
 
+	/**
+     * Start session process
+     *
+     * @param object $credentials SessionHandlerInterface
+     *
+     * @return void
+     */ 
 	protected static function setSession(SessionHandlerInterface $repository)
 	{
 		$activeDriver = static::$constants->repository['driver'];
@@ -199,6 +231,7 @@ class Author
      * New account handler method
      *
      * @param array $credentials
+     *
      * @return self instance
      */ 
 	public static function register(HashInterface $hash, array $credentials)
@@ -249,6 +282,7 @@ class Author
 
 			if(static::$changeResult){
 				static::$user = static::$model->getIdentityWithId(static::getUserId());
+				static::setRemember(static::$user);
 				static::$processResult = true;
 			}
 		}
@@ -313,6 +347,13 @@ class Author
 		return static::getInstance();
 	}
 
+	/**
+     * Start remember process
+     *
+     * @param array $userdata
+     *
+     * @return void
+     */
 	protected static function setRemember(array $userData)
 	{
 		$rememberConf = static::$constants->remember;
@@ -349,6 +390,11 @@ class Author
 		}
 	}
 
+	/**
+     * Login process with remember data 
+     *
+     * @return bool|array
+     */
 	protected static function loginFromRemember()
 	{
 		$rememberConf = static::$constants->remember;
@@ -378,6 +424,7 @@ class Author
 
 		return false;
 	}
+
 	/**
      * Applies some conditions after transaction
      *
@@ -446,6 +493,7 @@ class Author
      * User login process by user id
      *
      * @param int $userId
+     *
      * @return bool
      */ 
 	public static function loginByUserId($userId = false, $remember = false)
@@ -520,6 +568,7 @@ class Author
      * Sets user data to repository
      *
      * @param $user array
+     *
      * @return bool
      */ 
 	protected static function setUserRepository(array $user)
@@ -651,6 +700,7 @@ class Author
      * Arranges the data coming from database
      *
      * @param array $credentials
+     *
      * @return bool
      */ 
 	protected static function checkIdentityForRealUser(array $credentials)
@@ -665,6 +715,7 @@ class Author
      * Check and gets authenticate fields
      *
      * @param array $credentials
+     *
      * @return array
      */ 
 	protected static function getIdField(array $credentials)
@@ -687,6 +738,7 @@ class Author
      * Controls the given data from implemented model
      *
      * @param array $result
+     *
      * @return array|exception
      */ 
 	protected static function resolveDbResult($result)
@@ -713,6 +765,7 @@ class Author
      * Clean xss data
      *
      * @param string $input
+     *
      * @return string
      */ 
 	protected static function xssClean($input)
@@ -747,6 +800,7 @@ class Author
      * Runs some methods
      *
      * @param string $method
+     *
      * @return bool|null
      */ 
 	public static function is($method)
@@ -757,9 +811,61 @@ class Author
 	}
 
 	/**
+     * Export User data as json
+     *
+     * @return string
+     */ 
+	public static function toJson()
+	{
+		return json_encode(static::getData());
+	}
+
+	/**
+     * Export User data as array
+     *
+     * @return array
+     */ 
+	public static function toArray()
+	{
+		return static::getData();
+	}
+
+	/**
+     * Export User data as xml
+     *
+     * @return string
+     */ 
+	public static function toXml()
+	{
+		if(  ! class_exists('SimpleXMLElement')) {
+			throw new \Exception('SimpleXMLElement class not found');
+		}
+
+		if(! is_object(static::$simpleXML)) {
+			static::$simpleXML = new \SimpleXMLElement('<root/>');
+		}
+		
+		foreach(static::getData() as $field => $value) {
+			static::$simpleXML->addChild($field, $value);
+		}
+		return static::$simpleXML->asXML();
+	}
+
+	/**
+     * Export User data as stdObject
+     *
+     * @return object
+     */ 
+	public static function toObject()
+	{   
+		return (object)static::getData();
+	}   
+
+	/**
      * Detects the presence of the methods by ReflectionClass
      *
-     * @param string $method
+     * @param string $methodstatic::getData()
+     *
      * @return bool
      */ 
 	protected static function _hasMethod($method)
@@ -770,6 +876,11 @@ class Author
 		return static::$reflection->hasMethod($method);
 	}
 
+	/**
+     * Read session data and refresh session expiration
+     *
+     * @return array
+     */
 	protected static function readSession()
 	{
 		$data = static::$repository->read(static::$tokenId);
@@ -804,6 +915,11 @@ class Author
 		return false;
 	}
 
+	/**
+     * Current timestamp
+     *
+     * @return integer
+     */
 	protected static function currentTime()
 	{
 		return time();

@@ -26,6 +26,7 @@ class Cooker implements CookerInterface {
      * @param $domain string
      * @param $secure boolean
      * @param $httpOnly boolean
+     *
      * @return boolean
      */
 	public function set($name = false, $value = false, $lifeTime = '', $path = '/', $domain = '.', $secure = false, $httpOnly = false)
@@ -40,6 +41,7 @@ class Cooker implements CookerInterface {
      * Get the value if exists
      *
      * @param $name string
+     *
      * @return string|null
      */
 	public function get($name)
@@ -51,6 +53,7 @@ class Cooker implements CookerInterface {
      * Delete cookie
      *
      * @param $name string
+     *
      * @return boolean
      */
 	public function remove($name)
@@ -65,6 +68,7 @@ class Cooker implements CookerInterface {
      * Check cookie exists
      *
      * @param $name string
+     *
      * @return boolean
      */
 	public function has($name)
