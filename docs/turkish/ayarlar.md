@@ -65,22 +65,50 @@ use Glad\Interfaces\DatabaseAdapterInterface;
 
 class OrnekClass implements DatabaseAdapterInterface
 {
-	public function insert(array $credentials)
+	/**
+	 * Create new user
+	 *
+	 * @var $credentials array
+	 *
+	 * @return bool|int
+	 */
+	public function gladInsert(array $credentials)
 	{
-		// your own methods...
+		// your way...
 	}
-	
-	public function update(array $where, array $newData)
+
+	/**
+	 * Update user
+	 *
+	 * @var $credentials array
+	 * @var $where array
+	 * @return bool
+	 */
+	public function gladUpdate(array $where, array $credentials)
 	{
-		// your own methods...
+		// your way...
 	}
-	public function getIdentity($user)
+
+	/**
+	 * Get user identity details by identity
+	 *
+	 * @var $identity string
+	 * @return array
+	 */
+	public function getIdentity($identity)
 	{
-		// your own methods...
+		// your way...
 	}
-	public function getIdentityWithId($user)
+
+	/**
+	 * Get user identity details by user id
+	 *
+	 * @var $userId int
+	 * @return array
+	 */
+	public function getIdentityWithId($userId)
 	{
-		// your own methods...
+		// your way...
 	}
 }
 ```
@@ -95,39 +123,55 @@ Glad\Interfaces\DatabaseAdapterInterface
 
 namespace Glad\Interfaces;
 
+/**
+ * User model adapter interface
+ *
+ * @author Ahmet ATAY
+ * @category DatabaseAdapterInterface
+ * @package Glad
+ * @copyright 2015
+ * @license http://opensource.org/licenses/MIT MIT license
+ * @link https://github.com/atayahmet/glad
+ */
 interface DatabaseAdapterInterface {
-	
+
 	/**
-     * For new data input
+     * Data insert
      *
      * @param array $credentials
-     * @return bool|int
-     */ 
-	public function insert(array $credentials);
-	
-	/**
-     * To update procedures
      *
-     * @param array $credentials
      * @return bool
      */ 
-	public function update(array $where, array $newData);
+	public function gladInsert(array $credentials);
 
 	/**
-     * Receives the user information with the user name
+     * Data update
      *
-     * @param array $user
-     * @return array
+     * @param array $where
+     * @param array $newData
+     * @param integer $limit
+     *
+     * @return bool
      */ 
-	public function getIdentity($user);
+	public function gladUpdate(array $where, array $credentials);
 
 	/**
-     * Receives the user information with the user id
+     * Get the user identity
      *
-     * @param array $user
+     * @param array $identity
+     *
      * @return array
-     */ 
-	public function getIdentityWithId($user);
+     */
+	public function getIdentity($identity);
+
+	/**
+     * Get the user identity with user id
+     *
+     * @param mixed $userId
+     *
+     * @return array
+     */
+	public function getIdentityWithId($userId);
 }
 ```
 **Tanımlama:**
@@ -150,13 +194,13 @@ cookieName | string
 lifetime   | timestamp integer
 field      | string
 
-####enable:
+#####enable:
 Beni hatırla uygulamasının projenizde aktif/pasif durumunu belirlemektedir.
 
-####cookieName:
+#####cookieName:
 Glad auth bu uygulama için çerezleri kullanmaktadır. Burada çereze kendi belirleyeceğiniz ismi atayabilirsiniz. Varsayılan isim:  **_glad_auth**
 
-####lifetime:
+#####lifetime:
 Çerezin kullanılamaz hale geleceği (expire) zamanı tanımlayabilirsiniz. Değeri timestamp integer olmalıdır. 
 
 **Örnek:**
@@ -165,7 +209,7 @@ Bu çerezin 1 yıl kullanıcının siteminde kalmasını istiyorsanız değer ol
 
 [Timestamp integer hakkında daha fazla bilgi için tıklayınız.](http://en.wikipedia.org/wiki/Unix_time)
 
-####field:
+#####field:
 
 Kullanıcı tablonuz da kullanabileceğimiz ve bunun ismini bilmemiz gereken bir alan olması gerekiyor. Bu alanda Beni Hatırla uygulaması içni üreteceğimiz anahtar (token)'ı barındıracağız. Örnek olarak **remember_token** olabilir.
 
@@ -177,4 +221,119 @@ Kullanıcı tablonuz da kullanabileceğimiz ve bunun ismini bilmemiz gereken bir
 	'lifetime'  => (3600*5),
 	'field'	    => 'remember_token'
 ]
+```
+
+###Session Repository
+Üyelik sistemlerimizde kullanıcı oturumlarını muhafaza etmek istediğimizde genelde PHP'nin sunmuş olduğu Session yöntemini kullanırız. Küçük projelerimizde bu fazlasıyla işimizi görüyor. Ama daha yoğun sistemlerde PHP Session performans açısından yetersiz kalıyor. 
+
+Bu durumlarda bize performans açısından avantaj kazandıracak farklı uygulamalar tercih edilir. Bunlara örnek olarak Memcache, Memcached, Redis, Mongo yada Database destekli session yöntemleri verilebilir.
+
+Glad Authentication'da PHP Session, Memcache, Memcached dahili olarak mevcut bulunuyor. Bunların dışında Glad Provider aracılığıyla istediğiniz farklı yöntemleri entegre edebilirsiniz.
+
+####PHP Session
+
+**Parametreler:**
+
+Name       | Value
+-----------| ---
+path       | string
+type       | json
+name       | string
+timeout    | timestamp integer
+crypt      | boolean
+prefix     | string
+
+#####path:
+PHP Session kullanıcı verilerini belirleyeceğiniz dizinde depolayacaktır. Bu dizini **path** parametresi altında tanımlamanız gerekiyor.
+
+#####type:
+Kullanıcı verilerini hangi türde serileştirmesi gerektiğini tanımlayabilirsiniz. Varsayılan: **serialize**
+
+Serileştirme türleri:
+
+Name       | Description
+-----------|
+json       | encode/decode
+serialize  | Php Serialize
+
+
+#####name:
+Kullanıcı tarafında kullanacağımız çerez (cookie)'nin adını belirler. Varsayılan çerez adı: **SESSIONID**
+
+#####timeout:
+Kullanıcının sistemde ne kadar süre her hangi bir aktivitede bulunmadığında oturumunun kapanacağını belirler. Saniye cinsinden belirtilmelidir.
+
+Örnek:
+Kullanıcının 30 dakika içinde her hangi bir işlem yapmadığında oturumunun kapatılmasını istiyorsak.
+
+```php
+'timeout' => 1800
+```
+
+#####crypt:
+Oturum verilerinin şifrelenmesini istiyorsanız bu değeri **true** olarak tanımlamanız gerekiyor. Varsayılan: **false**
+
+#####prefix:
+Oturum hash değerinin ön eki'dir. Varsayılan: **ses_**
+
+Örnek:
+```php
+ses_2490537e432c2d489381934905cedf9aa7ccda0e
+```
+
+Örnek tanımlama:
+
+```php
+'repository' => [
+	'session'  => [
+		'path' 	  => '/path/storage',
+		'type'	  => 'json',
+		'name'	  => 'PHPSESSID',
+		'timeout' => 1800,
+		'crypt'	  => false,
+		'prefix'  => 'ses_'
+	]
+]
+```
+
+####Memcache
+
+**Parametreler:**
+
+Name       | Value
+-----------| ---
+host       | string
+port       | integer
+name       | string
+timeout    | timestamp integer
+crypt      | boolean
+prefix     | string
+
+
+#####host:
+
+#####port:
+
+#####name:
+Kullanıcı tarafında kullanacağımız çerez (cookie)'nin adını belirler. Varsayılan çerez adı: **SESSIONID**
+
+#####timeout:
+Kullanıcının sistemde ne kadar süre her hangi bir aktivitede bulunmadığında oturumunun kapanacağını belirler. Saniye cinsinden belirtilmelidir.
+
+Örnek:
+Kullanıcının 30 dakika içinde her hangi bir işlem yapmadığında oturumunun kapatılmasını istiyorsak.
+
+```php
+'timeout' => 1800
+```
+
+#####crypt:
+Oturum verilerinin şifrelenmesini istiyorsanız bu değeri **true** olarak tanımlamanız gerekiyor. Varsayılan: **false**
+
+#####prefix:
+Oturum hash değerinin ön eki'dir. Varsayılan: **ses_**
+
+Örnek:
+```php
+ses_2490537e432c2d489381934905cedf9aa7ccda0e
 ```
