@@ -10,6 +10,19 @@ Glad::setup([
 		'identity' => ['username','email'], 
 		'password' => 'password'
 	],
+	'repository' => [
+		'session'  => [
+			'path'   => '/',
+			'type'   => 'serialize',
+			'name' 	 => 'SESSIONID',
+			'prefix' => 'ses_',
+			'crypt'	 => false,
+			'timeout'=> 1800
+		]
+	],
+	'provider' => [
+		'SessionHandlerInterface' => 'Glad\Driver\Repository\NativeSession\Session'
+	],
 	'services' => [
 		'db' => new \PDO('mysql:host=localhost;dbname=dbName', username, password)
 	],
@@ -182,7 +195,7 @@ interface DatabaseAdapterInterface {
 ```
 
 
-###Beni Hatırla (Remember Me) yapılandırması
+###Beni Hatırla yapılandırması
 Üyelik sistemlerinde sıkça kullanılan Beni Hatırla yöntemi Glad auth'ta basit bir kaç ayara tabi.
 
 **Aşağıda bu ayarlarla ilgili tabloyu görüyorsunuz:**
@@ -223,6 +236,13 @@ Kullanıcı tablonuz da kullanabileceğimiz ve bunun ismini bilmemiz gereken bir
 ]
 ```
 
+###Cookie Domain
+Sub domain kullanıyorsanız eğer bu parametreye bunu tanımlamanız gerekmektedir. Sub domain kullanmıyorsanız boş bırakabilirsiniz.
+
+```php
+'domain' => 'sub.domain.com'
+```
+
 ###Session Repository
 Üyelik sistemlerimizde kullanıcı oturumlarını muhafaza etmek istediğimizde genelde PHP'nin sunmuş olduğu Session yöntemini kullanırız. Küçük projelerimizde bu fazlasıyla işimizi görüyor. Ama daha yoğun sistemlerde PHP Session performans açısından yetersiz kalıyor. 
 
@@ -248,7 +268,7 @@ prefix     | string
 
 Interface                         | Class
 ----------------------------------| --------------------------------------------
-Glad\Interfaces\GladSessionHandlerInterface       | Glad\Driver\Repository\NativeSession\Session
+SessionHandlerInterface       | Glad\Driver\Repository\NativeSession\Session
 
 #####path:
 PHP Session kullanıcı verilerini belirleyeceğiniz dizinde depolayacaktır. Bu dizini **path** parametresi altında tanımlamanız gerekiyor.
@@ -300,7 +320,8 @@ ses_2490537e432c2d489381934905cedf9aa7ccda0e
 		'crypt'	  => false,
 		'prefix'  => 'ses_'
 	]
-]
+],
+'provider' => ['SessionHandlerInterface' => 'Glad\Driver\Repository\NativeSession\Session']
 ```
 
 ####Memcache
@@ -316,6 +337,11 @@ timeout    | timestamp integer
 crypt      | boolean
 prefix     | string
 
+**Provider:**
+
+Interface                         | Class
+----------------------------------| --------------------------------------------
+SessionHandlerInterface       | Glad\Driver\Repository\Memcache\Memcache
 
 #####host:
 Kullanacağınız Memcached sunucunun ip adresi yada socket bağlantı yapacak iseniz socket path'ini girmeniz gerekmektedir.
@@ -363,7 +389,8 @@ ses_2490537e432c2d489381934905cedf9aa7ccda0e
 		'crypt'	  => false,
 		'name'	  => 'PHPSESID'
 	]
-]
+],
+'provider' => ['SessionHandlerInterface' => 'Glad\Driver\Repository\Memcache\Memcache']
 ```
 
 ####Memcached
@@ -379,6 +406,11 @@ timeout    | timestamp integer
 crypt      | boolean
 prefix     | string
 
+**Provider:**
+
+Interface                         | Class
+----------------------------------| --------------------------------------------
+SessionHandlerInterface       | Glad\Driver\Repository\Memcached\Memcached
 
 #####host:
 Kullanacağınız Memcached sunucunun ip adresi yada socket bağlantı yapacak iseniz socket path'ini girmeniz gerekmektedir.
@@ -424,5 +456,6 @@ ses_2490537e432c2d489381934905cedf9aa7ccda0e
 		'crypt'	  => false,
 		'name'	  => 'PHPSESID'
 	]
-]
+],
+'provider' => ['SessionHandlerInterface' => 'Glad\Driver\Repository\Memcached\Memcached']
 ```
