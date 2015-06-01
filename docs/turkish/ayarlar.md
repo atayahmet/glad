@@ -243,6 +243,13 @@ timeout    | timestamp integer
 crypt      | boolean
 prefix     | string
 
+
+**Provider:**
+
+Interface                         | Class
+----------------------------------| --------------------------------------------
+Glad\Interfaces\GladSessionHandlerInterface       | Glad\Driver\Repository\NativeSession\Session
+
 #####path:
 PHP Session kullanıcı verilerini belirleyeceğiniz dizinde depolayacaktır. Bu dizini **path** parametresi altında tanımlamanız gerekiyor.
 
@@ -311,14 +318,20 @@ prefix     | string
 
 
 #####host:
+Kullanacağınız Memcached sunucunun ip adresi yada socket bağlantı yapacak iseniz socket path'ini girmeniz gerekmektedir.
 
+Detaylı bilgi: [http://php.net/manual/en/memcache.connect.php](http://php.net/manual/en/memcache.connect.php)
+ 
 #####port:
+Memcached sunucu portu. Varsayılan port: **11211**
+
 
 #####name:
 Kullanıcı tarafında kullanacağımız çerez (cookie)'nin adını belirler. Varsayılan çerez adı: **SESSIONID**
 
 #####timeout:
-Kullanıcının sistemde ne kadar süre her hangi bir aktivitede bulunmadığında oturumunun kapanacağını belirler. Saniye cinsinden belirtilmelidir.
+Kullanıcının sistemde ne kadar süre her hangi bir aktivitede bulunmadığında oturumunun kapanacağını belirler. Saniye cinsinden belirtilmelidir. 
+Varsayılan süre: 1800 sec. (30 dakika)
 
 Örnek:
 Kullanıcının 30 dakika içinde her hangi bir işlem yapmadığında oturumunun kapatılmasını istiyorsak.
@@ -336,4 +349,80 @@ Oturum hash değerinin ön eki'dir. Varsayılan: **ses_**
 Örnek:
 ```php
 ses_2490537e432c2d489381934905cedf9aa7ccda0e
+```
+
+Örnek tanımlama:
+
+```php
+'repository' => [
+	'memcache'  => [
+		'host'	  => '127.0.0.1',
+		'port'	  => 11211,
+		'timeout' => 1800,
+		'prefix'  => 'ses_',
+		'crypt'	  => false,
+		'name'	  => 'PHPSESID'
+	]
+]
+```
+
+####Memcached
+
+**Parametreler:**
+
+Name       | Value
+-----------| ---
+host       | string
+port       | integer
+name       | string
+timeout    | timestamp integer
+crypt      | boolean
+prefix     | string
+
+
+#####host:
+Kullanacağınız Memcached sunucunun ip adresi yada socket bağlantı yapacak iseniz socket path'ini girmeniz gerekmektedir.
+
+Detaylı bilgi: [http://php.net/manual/en/memcached.addserver.php](http://php.net/manual/en/memcached.addserver.php)
+ 
+#####port:
+Memcached sunucu portu. Varsayılan port: **11211**
+
+
+#####name:
+Kullanıcı tarafında kullanacağımız çerez (cookie)'nin adını belirler. Varsayılan çerez adı: **SESSIONID**
+
+#####timeout:
+Kullanıcının sistemde ne kadar süre her hangi bir aktivitede bulunmadığında oturumunun kapanacağını belirler. Saniye cinsinden belirtilmelidir.
+Varsayılan süre: 1800 sec. (30 dakika)
+
+Örnek:
+Kullanıcının 30 dakika içinde her hangi bir işlem yapmadığında oturumunun kapatılmasını istiyorsak.
+
+```php
+'timeout' => 1800
+```
+
+#####crypt:
+Oturum verilerinin şifrelenmesini istiyorsanız bu değeri **true** olarak tanımlamanız gerekiyor. Varsayılan: **false**
+
+#####prefix:
+Oturum hash değerinin ön eki'dir. Varsayılan: **ses_**
+
+Örnek:
+```php
+ses_2490537e432c2d489381934905cedf9aa7ccda0e
+```
+
+```php
+'repository' => [
+	'memcached'  => [
+		'host'	  => '127.0.0.1',
+		'port'	  => 11211,
+		'timeout' => 1800,
+		'prefix'  => 'ses_',
+		'crypt'	  => false,
+		'name'	  => 'PHPSESID'
+	]
+]
 ```
