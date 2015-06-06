@@ -49,6 +49,7 @@ class Conditions implements ConditionsInterface
      */ 
 	public function apply(array $user, $cond = array(), Dispatcher $eventDispatcher)
 	{
+		$this->check = true;
 		$this->add($cond);
 		
 		foreach($this->conditions as $field => $value){
@@ -56,7 +57,6 @@ class Conditions implements ConditionsInterface
 			$this->checkResult[$field] = isset($user[$field]) && $value == $user[$field];
 
 			if(!isset($user[$field]) || $value != $user[$field]){
-
 				if($eventDispatcher->has($field)) {
 					$eventDispatcher->run($field);	
 				}
@@ -74,9 +74,9 @@ class Conditions implements ConditionsInterface
      *
      * @return bool
      */ 
-	public function add(array $conditions)
+	public function add(array $cond)
 	{
-		$this->conditions = array_merge($this->conditions, $conditions);
+		$this->conditions = array_merge($this->conditions, $cond);
 	}
 
 	/**

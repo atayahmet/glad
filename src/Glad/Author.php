@@ -238,7 +238,7 @@ class Author
 	{
 		static::resetCheckVariables();
 
-		if(static::guest() === true){
+		if(static::guest() === true) {
 
 			static::checkIdentityAsParameter($credentials);
 			
@@ -252,7 +252,7 @@ class Author
 				static::$registerResult = static::$model->insert($credentials);
 				static::$user = $credentials;
 
-				if(static::$registerResult){
+				if(static::$registerResult) {
 					static::$processResult = true;
 				}
 			}

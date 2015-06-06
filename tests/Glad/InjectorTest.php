@@ -1,6 +1,8 @@
 <?php
 
-require __DIR__.'/../../../../vendor/autoload.php';
+namespace Glad;
+
+require __DIR__.'/../../../../../vendor/autoload.php';
 
 use Glad\Injector;
 use Glad\Cooker;
@@ -89,22 +91,9 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     public function testInject()
     {
     	$this->injector->add('CookerInterface', 'Glad\Cooker');
-     	$result = $this->injector->inject('TestClass', 'foo');
+     	$result = $this->injector->inject('Glad\Mocks\DependsClass', 'foo');
      	$this->assertInstanceOf('Glad\Cooker', $result);
     }
 }
 
-/*
-------------------------------------------
-| TestClass Created for inject method test
-------------------------------------------
-*/
-use Glad\Interfaces\CookerInterface;
-
-class TestClass {
-	public function foo(CookerInterface $cooker)
-	{
-		return $cooker;
-	}
-}
 

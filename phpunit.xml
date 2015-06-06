@@ -1,9 +1,11 @@
 <phpunit colors="true">
   <testsuites>
     <testsuite name="Glad Authentication Tests">
-    	<file>tests/InjectorTest.php</file>
-        <file>tests/GladProviderTest.php</file>
-        <file>tests/GladTest.php</file>
+    	<file>tests/Glad/InjectorTest.php</file>
+        <file>tests/Glad/GladProviderTest.php</file>
+        <file>tests/Glad/GladTest.php</file>
+        <file>tests/Glad/ConditionsTest.php</file>
+        <file>tests/Glad/AuthorTest.php</file>
     </testsuite>
   </testsuites>
 </phpunit>
