@@ -210,16 +210,18 @@ class Glad
      *
      * @return bool
      */
-    public static function domain($domain)
+    public static function domain($domain = false)
     {
-         static::setStaticVariable(static::$constants,
-            [
-                'field' => 'cookieDomain',
-                'value' => $domain
-            ]
-        );
+        if($domain) {
+            static::setStaticVariable(static::$constants,
+                [
+                    'field' => 'cookieDomain',
+                    'value' => $domain
+                ]
+            );
 
-         return true;
+            return true;
+        }
     }
 
     /**
@@ -250,12 +252,24 @@ class Glad
      *
      * @return bool
      */
-    public static function table($table)
+    public static function table($table = false)
     {
-        static::init();
-        static::setStaticVariable(static::$constants, ['field' => 'table', 'value' => $table]);
+        if($table) {
+            static::init();
+            static::setStaticVariable(static::$constants, ['field' => 'table', 'value' => $table]);
 
-        return true;
+            return true;
+        }
+    }
+
+    public static function uniqueField($fieldName = false)
+    {
+        if($fieldName) {
+            static::init();
+            static::setStaticVariable(static::$constants, ['field' => 'id', 'value' => $fieldName]);
+
+            return true;
+        }
     }
 
     /**

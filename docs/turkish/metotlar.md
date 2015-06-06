@@ -14,7 +14,7 @@ remember | bool  | Beni Hatırla özelliğinin çalışması. Varsayılan parame
 
 
 return  | Description
---------|
+--------|------------
 instance| Glad class'sının örneği dönmektedir.
 
 **Örnek**
@@ -44,7 +44,7 @@ Name     | Type | Description
 User id  | mixed | Üyenin kullanıcılar tablosunda ki numarası (User Id)
 
 return  | Description
---------|
+--------| -------------
 instance| Glad class'sının örneği dönmektedir.
 
 **Örnek**
@@ -77,7 +77,7 @@ if(Glad::loginByUserId(1)->status() === true) {
 Normal de sisteme yeni bir üye eklendiğin de (bunu register metodu ile yaptığınızı varsayıyoruz) kullanıcı sadece kayıt edilir. Sistem de oturumda açılmasını istersek **andLogin** metodunu kullanmanız gerekiyor.
 
 return  | Description
---------|
+--------| -----------
 instance| Glad class'sının örneği dönmektedir.
 
 **Kullanım özeti:**
@@ -116,7 +116,7 @@ if(Glad::status() === true) {
 Bir kullanıcının sistemdeki oturumunu tamamen kapatır. Bununla birlikte kullanıcı Beni Hatır'la özelliğini kullanıyorsa hemen sonlandırılır. Üyenin tekrar girişi yapması istenir.
 
 return  | Description
---------|
+--------|------------
 bool    | true/false
 
 **Örnek**
@@ -136,7 +136,7 @@ Name         | Type | Description
 credentials  | array | Kayıt için gerekli bilgiler
 
 return  | Description
---------|
+--------| -----------
 instance| Glad class'sının örneği dönmektedir.
 
 **Örnek:**
@@ -161,7 +161,7 @@ if(Glad::status() === true) {
 Sistemdeki kullanıcıların bilgileri buna şifreleride dahil değiştirmek istediğimizde **change** metodu burada bize bunu sağlamaktadır.
 
 return  | Description
---------|
+--------| -----------
 instance| Glad class'sının örneği dönmektedir
 
 **Parametreler**
@@ -199,7 +199,7 @@ Name         | Type   | Description
 Closure      | object | Kontrolleri içerir
 
 return  | Description
---------|
+--------| -----------
 instance| Glad class'sının örneği dönmektedir
 
 **Örnek**
@@ -327,4 +327,36 @@ if(Glad::is('check') === true) {
 if(Glad::is('guest') === true) {
 	// do something...
 }
+```
+
+###toArray()
+Kullanıcının oturum verilerini **array** olarak döndürür.
+
+Örnek:
+```php
+Glad::toArray();
+```
+
+###toObject()
+Kullanıcının oturum verilerini **stdObject** olarak döndürür.
+
+Örnek:
+```php
+Glad::toObject();
+```
+
+###toJson()
+Kullanıcının oturum verilerini **JSON** olarak döndürür.
+
+Örnek:
+```php
+Glad::toJson();
+```
+
+###toXml()
+Kullanıcının oturum verilerini **XML** olarak döndürür.
+
+Örnek:
+```php
+Glad::toXml();
 ```

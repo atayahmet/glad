@@ -26,4 +26,5 @@ interface GladSessionHandlerInterface extends SessionHandlerInterface {
      * @return void
      */ 
 	public function openSession(array $config, CryptInterface $crypt);
+
 }

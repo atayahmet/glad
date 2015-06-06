@@ -15,45 +15,63 @@ use ReflectionClass;
  * @license http://opensource.org/licenses/MIT MIT license
  * @link https://github.com/atayahmet/glad
  */
-
 class Injector
 {
-    
     /**
-    * Provider
-    *
-    * @var array
-    */
+     * Provider
+     *
+     * @var array
+     */
     public static $providers = [];
     /**
-    * Object Container
-    *
-    * @var object
-    */
+     * Object Container
+     *
+     * @var object
+     */
     protected static $container;
 
     /**
-    * Class constructor
-    *
-    * @return void
-    */    
+     * Class constructor
+     *
+     * @return void
+     */    
     public function __construct()
     {
         //static::$gladProvider = GladProvider::get();
     }
 
     /**
-    * Inject method
-    *
-    * @param string $class
-    * @param string $method
-    * @param array $parm
-    *
-    * @return void
-    */   
+     * Inject method
+     *
+     * @param string $class
+     * @param string $method
+     * @param array $parm
+     *
+     * @return void
+     */   
     public static function inject($class, $method = null, array $parm = null)
     {
         return static::setInjectsParameters($class, $method, $parm);
+    }
+
+    /**
+     * Check the instance on container
+     *
+     * @param string|object $keyOrClass
+     *
+     * @return void
+     */ 
+    public static function has($keyOrClass)
+    {
+        if(is_object($keyOrClass)) {
+            foreach(self::$container as $key => $class) {
+                if(is_object($class) && $class instanceof $keyOrClass) {
+                    return true;
+                }
+            }
+        }else{
+            return isset(self::$container[$keyOrClass]) ? true : false;
+        }
     }
 
     /**
@@ -138,7 +156,7 @@ class Injector
                     $last = end($segments);
    
                     if(isset(static::$container[$last])){
-                        $injects[] = static::$container[$last];
+                        $injects[] = !is_object(static::$container[$last]) ? new static::$container[$last] : static::$container[$last];
                     }
                     
                     elseif(isset(static::$providers[$last])){

@@ -1,0 +1,9 @@
+<phpunit colors="true">
+  <testsuites>
+    <testsuite name="Glad Authentication Tests">
+    	<file>tests/InjectorTest.php</file>
+        <file>tests/GladProviderTest.php</file>
+        <file>tests/GladTest.php</file>
+    </testsuite>
+  </testsuites>
+</phpunit>

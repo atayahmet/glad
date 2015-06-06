@@ -37,8 +37,8 @@ class Constants
      * @var array
      */
 	protected static $remember = [
-		'cookieName' 		=> '_glad_auth', 
 		'enabled' 	=> true, 
+		'cookieName'=> '_glad_auth', 
 		'lifetime' 	=> 31536000, 
 		'field' 	=> 'remember_token'
 	];
@@ -65,7 +65,7 @@ class Constants
 				'timeout' => 1800,
 				'prefix'  => 'ses_',
 				'crypt'	  => false,
-				'name'	=> 'PHPSESID'
+				'name'	=> 'SESSIONID'
 
 			],
 			'memcached' => [
@@ -74,7 +74,7 @@ class Constants
 				'timeout' => 1800,
 				'prefix'  => 'ses_',
 				'crypt'	  => false,
-				'name'	=> 'PHPSESID',
+				'name'	=> 'SESSIONID',
 			]
 		]
 	];
