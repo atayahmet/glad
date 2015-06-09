@@ -6,7 +6,7 @@ use Glad\Interfaces\ConditionsInterface;
 use Glad\Interfaces\CryptInterface;
 use Glad\Interfaces\HashInterface;
 use Glad\Interfaces\CookerInterface;
-use Glad\Services\DatabaseService;
+use Glad\Interfaces\DatabaseServiceInterface;
 use Glad\Event\Dispatcher;
 use Glad\GladProvider;
 use Glad\Constants;
@@ -183,7 +183,7 @@ class Author
      *
      * @return void
      */ 
-	public function __construct(Constants $constants, CookerInterface $cooker, Injector $injector, CryptInterface $crypt, DatabaseService $databaseService, SessionHandlerInterface $repository, Dispatcher $eventDispatcher)
+	public function __construct(Constants $constants, CookerInterface $cooker, Injector $injector, CryptInterface $crypt, DatabaseServiceInterface $databaseService, SessionHandlerInterface $repository, Dispatcher $eventDispatcher)
 	{
 		static::$constants = $constants;
 		static::$injector = $injector;

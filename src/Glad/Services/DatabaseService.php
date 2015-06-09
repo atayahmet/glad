@@ -5,6 +5,7 @@ namespace Glad\Services;
 use InvalidArgumentException;
 use Glad\Service;
 use Glad\Interfaces\ServiceInterface;
+use Glad\Interfaces\DatabaseServiceInterface;
 
 /**
  * Database Service
@@ -16,7 +17,7 @@ use Glad\Interfaces\ServiceInterface;
  * @license http://opensource.org/licenses/MIT MIT license
  * @link https://github.com/atayahmet/glad
  */
-class DatabaseService extends Service implements ServiceInterface {
+class DatabaseService extends Service implements ServiceInterface, DatabaseServiceInterface {
 
 	/**
      * Get the active service

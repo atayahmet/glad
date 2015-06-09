@@ -38,7 +38,7 @@ class PDOAdapter extends Adapter {
      *
      * @param array $credentials
      *
-     * @return bool
+     * @return bool|mixed
      */ 
 	public function insert(array $credentials)
 	{

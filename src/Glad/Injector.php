@@ -115,7 +115,12 @@ class Injector
      */ 
     public static function get($name)
     {
-        return self::$container[$name];
+        if(static::has($name)) {
+            if(! is_object(self::$container[$name])) {
+                self::$container[$name] = new self::$container[$name];
+            }
+            return self::$container[$name];
+        }
     }
     
     /**

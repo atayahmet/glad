@@ -91,9 +91,7 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     public function testInject()
     {
     	$this->injector->add('CookerInterface', 'Glad\Cooker');
-     	$result = $this->injector->inject('Glad\Mocks\DependsClass', 'foo');
+     	$result = $this->injector->inject('Glad\Grants\DependenceClass', 'foo');
      	$this->assertInstanceOf('Glad\Cooker', $result);
     }
 }
-
-

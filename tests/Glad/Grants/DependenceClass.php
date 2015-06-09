@@ -4,7 +4,7 @@ namespace Glad\Mocks;
 
 use Glad\Interfaces\CookerInterface;
 
-class DependsClass {
+class DependenceClass {
 	public function foo(CookerInterface $cooker)
 	{
 		return $cooker;
