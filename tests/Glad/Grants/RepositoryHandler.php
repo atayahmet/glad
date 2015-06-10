@@ -31,7 +31,6 @@ class RepositoryHandler
 			if(! isset($data[$collection])) {
 				$data[$collection] = [];
 			}
-
 			$data[$collection] = array_merge($data[$collection], $newData);
 			
 			return file_put_contents($this->path . $this->file, json_encode($data));

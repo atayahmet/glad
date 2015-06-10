@@ -8,6 +8,6 @@ class DatabaseService implements DatabaseServiceInterface
 {
 	public function get($driver)
 	{
-		return $driver;
+		return new $driver;
 	}
 }

@@ -175,6 +175,8 @@ class Author
      */
 	protected static $simpleXML;
 
+	protected static $env;
+
 	/**
      * Class constructor
      *
@@ -194,6 +196,7 @@ class Author
 		static::$crypt = $crypt;
 		static::$eventDispatcher->setInstance(static::getInstance());
 		static::$model = $databaseService->get(static::$injector->get('db'));
+		static::$env = php_sapi_name();
 		static::setSession(static::$repository);
 	}
 
@@ -206,6 +209,8 @@ class Author
      */ 
 	protected static function setSession(SessionHandlerInterface $repository)
 	{
+		if(static::$env == 'cli') return false;
+
 		$activeDriver = static::$constants->repository['driver'];
 		$config = static::$constants->repository['options'][$activeDriver];
 		session_set_save_handler($repository, true);

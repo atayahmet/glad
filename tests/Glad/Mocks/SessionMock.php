@@ -4,8 +4,9 @@ namespace GLad\Mocks;
 
 use Glad\Interfaces\GladSessionHandlerInterface;
 use Glad\Interfaces\CryptInterface;
+use Glad\Driver\Repository\RepositoryAdapter;
 
-class SessionMock implements GladSessionHandlerInterface
+class SessionMock extends RepositoryAdapter implements GladSessionHandlerInterface
 {
 	/**
      * $config parameters

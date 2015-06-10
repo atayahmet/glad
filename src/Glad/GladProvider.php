@@ -24,7 +24,7 @@ class GladProvider
         'ConditionsInterface'       => 'Glad\Conditions',
         'Hash'                      => 'Glad\Hash',
         'Dispatcher'                => 'Glad\Event\Dispatcher',
-        'DatabaseServiceInterface'           => 'Glad\Services\DatabaseService'
+        'DatabaseServiceInterface'  => 'Glad\Services\DatabaseService'
     ];
 
     /**

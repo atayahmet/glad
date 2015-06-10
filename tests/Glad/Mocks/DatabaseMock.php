@@ -11,13 +11,11 @@ class DatabaseMock
 	public function __construct()
 	{
 		$this->repository = new RepositoryHandler;
-
-		$this->repository->update('users', '55773fc317897', ['name' => 'mehmet', 'surname' => 'yıldız', 'email' => 'ahmet.atay@hotmail.com']);
 	}
 
 	public function insert(array $credentials)
 	{
-		$insertId = uniqid();
+		$insertId = isset($credentials['username']) ? md5($credentials['username']) : md5($credentials['email']);
 		$this->repository->save('users', [$insertId => $credentials]);
 		return $insertId;
 	}
@@ -29,7 +27,8 @@ class DatabaseMock
 
 	public function getIdentity(array $identity)
 	{
-		
+		$userId = isset($identity['username']) ? md5($identity['username']) : md5($identity['email']);
+		return $this->repository->get('users', $userId);
 	}
 
 	/**
@@ -41,6 +40,6 @@ class DatabaseMock
      */
 	public function getIdentityWithId($userId)
 	{
-		
+		return $this->repository->get('users', $userId);
 	}
 }
