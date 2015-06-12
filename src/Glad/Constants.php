@@ -37,7 +37,7 @@ class Constants
      * @var array
      */
 	protected static $remember = [
-		'enabled' 	=> true, 
+		'enabled' 	=> false, 
 		'cookieName'=> '_glad_auth', 
 		'lifetime' 	=> 31536000, 
 		'field' 	=> 'remember_token'

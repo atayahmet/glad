@@ -1,6 +1,6 @@
 <?php
 
-namespace GLad\Mocks;
+namespace Glad\Mocks;
 
 use Glad\Interfaces\GladSessionHandlerInterface;
 use Glad\Interfaces\CryptInterface;

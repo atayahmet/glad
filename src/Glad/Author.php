@@ -105,6 +105,8 @@ class Author
      */
 	protected static $registerResult;
 
+	protected static $registerLogin = true;
+
 	/**
      * Change transaction result
      *
@@ -245,7 +247,6 @@ class Author
 		static::resetCheckVariables();
 
 		if(static::guest() === true) {
-
 			static::checkIdentityAsParameter($credentials);
 			
 			if(! static::checkIdentityForRealUser($credentials)) {
@@ -260,6 +261,7 @@ class Author
 
 				if(static::$registerResult) {
 					static::$processResult = true;
+					static::$registerLogin = false;
 				}
 			}
 		}
@@ -282,9 +284,8 @@ class Author
 
 			$credentials = static::cryptPasswordIfFieldExists($hash, $credentials);
 			$tableIncrementField = static::$constants->id;
-			
 			$where = ['and' => [$tableIncrementField => static::getUserId()]];
-			static::$changeResult = static::$model->update($where,$credentials);
+			static::$changeResult = static::$model->update($where, $credentials);
 
 			if(static::$changeResult){
 				static::$user = static::$model->getIdentityWithId(static::getUserId());
@@ -324,7 +325,6 @@ class Author
 	public static function login(HashInterface $hash, array $user, $remember = false)
 	{
 		static::resetCheckVariables();
-
 		$passField = static::$constants->authFields['password'];
 
 		if(!isset($user[$passField]) || static::check() === true){
@@ -333,7 +333,7 @@ class Author
 
 		$result = static::$model->getIdentity(static::getIdField($user));
 		static::$user = static::resolveDbResult($result);
-		
+
 		if(count(static::$user) < 1) return static::getInstance();
 
 		if(!isset(static::$user[$passField])){
@@ -365,7 +365,6 @@ class Author
 		$rememberConf = static::$constants->remember;
 
 		if($rememberConf['enabled'] === true) {
-			
 			if(! isset($userData[$rememberConf['field']])) {
 				throw new ErrorException($field . " fields is missing on database");
 			}
@@ -412,7 +411,6 @@ class Author
  				
  				$userData = static::$crypt->decrypt(static::$cooker->get($cookieName));
  				$userDataArr = json_decode($userData , true);
-
  				if(! json_last_error() && isset($userDataArr[$rememberConf['field']])) {
  					
  					$token = $userDataArr[$rememberConf['field']];
@@ -427,7 +425,6 @@ class Author
  				}
 			}
 		}
-
 		return false;
 	}
 
@@ -491,7 +488,6 @@ class Author
 		if(static::$user && static::$processResult == true && $conditions->apply(static::$user, [], static::$eventDispatcher)){
 			return static::status();
 		}
-
 		return false;
 	}
 
@@ -579,15 +575,16 @@ class Author
      */ 
 	protected static function setUserRepository(array $user)
 	{
-		$userData = [
-			'userData' => $user,
-			'auth' => ['status' => true]
-		];
-		$activeDriver = static::$constants->repository['driver'];
-		$config = static::$constants->repository['options'][$activeDriver];
-		static::$tokenId = static::$cooker->get($config['name']);
-		exit(var_dump(static::$tokenId));
-		return static::$repository->write(static::$tokenId, $userData);
+		if(static::$registerLogin) {
+			$userData = [
+				'userData' => $user,
+				'auth' => ['status' => true]
+			];
+			$activeDriver = static::$constants->repository['driver'];
+			$config = static::$constants->repository['options'][$activeDriver];
+			static::$tokenId = static::$cooker->get($config['name']);
+			return static::$repository->write(static::$tokenId, $userData);
+		}
 	}
 
 	/**
@@ -628,6 +625,7 @@ class Author
 		if(static::status()){
 			static::getInstance()->login(static::$tempUser);
 			static::$tempUser = [];
+			static::$registerLogin = true;
 		}
 		return false;
 	}
@@ -639,7 +637,7 @@ class Author
      */ 
 	public static function status()
 	{
-		if(static::$processResult === true){
+		if(static::$processResult === true) {
 			static::setUserRepository(static::$user, static::$rememberMe);
 			static::$userData = static::readSession();
 			static::$processResult = false;
@@ -717,7 +715,10 @@ class Author
 	{
 		$result = static::$model->getIdentity(static::getIdField($credentials));
 		$result = static::resolveDbResult($result);
-		
+
+		$activeDriver = static::$constants->repository['driver'];
+		$config = static::$constants->repository['options'][$activeDriver];
+		static::$tokenId = static::$cooker->get($config['name']);
 		return count($result) < 1;
 	}
 

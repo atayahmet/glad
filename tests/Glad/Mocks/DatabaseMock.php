@@ -15,19 +15,19 @@ class DatabaseMock
 
 	public function insert(array $credentials)
 	{
-		$insertId = isset($credentials['username']) ? md5($credentials['username']) : md5($credentials['email']);
+		$insertId = isset($credentials['email']) ? md5($credentials['email']) : md5($credentials['username']);
 		$this->repository->save('users', [$insertId => $credentials]);
 		return $insertId;
 	}
 
 	public function update(array $where, array $newData, $limit = 1)
 	{
-		return $this->repository->update('users', reset($where), $newData);
+		return $this->repository->update('users', reset(reset($where)), $newData);
 	}
 
 	public function getIdentity(array $identity)
 	{
-		$userId = isset($identity['username']) ? md5($identity['username']) : md5($identity['email']);
+		$userId = isset($identity['email']) ? md5($identity['email']) : md5($identity['username']);
 		return $this->repository->get('users', $userId);
 	}
 

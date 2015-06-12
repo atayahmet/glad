@@ -17,6 +17,11 @@ class CookerMock implements CookerInterface
 	public function set($name = false, $value = false, $lifeTime = '', $path = '/', $domain = '.', $secure = false, $httpOnly = false)
 	{
 		if($name && $value) {
+
+			if($value == 'glad') {
+				return true;
+			}
+
 			return $this->repositoryHandler->save('cookie', [$name => 
 					[
 						'name' 	  => $name,
