@@ -209,14 +209,15 @@ class Author
      */ 
 	protected static function setSession(SessionHandlerInterface $repository)
 	{
-		if(static::$env == 'cli') return false;
-
 		$activeDriver = static::$constants->repository['driver'];
 		$config = static::$constants->repository['options'][$activeDriver];
+		static::$tokenId = static::$cooker->get($config['name']);
+
+		if(static::$env == 'cli') return false;
+
 		session_set_save_handler($repository, true);
 		$repository->openSession($config, static::$crypt);
 
-		static::$tokenId = static::$cooker->get($config['name']);
 		
 		if(! static::$tokenId) {
 			static::$tokenId = sha1(time());
@@ -582,6 +583,10 @@ class Author
 			'userData' => $user,
 			'auth' => ['status' => true]
 		];
+		$activeDriver = static::$constants->repository['driver'];
+		$config = static::$constants->repository['options'][$activeDriver];
+		static::$tokenId = static::$cooker->get($config['name']);
+		exit(var_dump(static::$tokenId));
 		return static::$repository->write(static::$tokenId, $userData);
 	}
 

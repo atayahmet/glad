@@ -13,6 +13,7 @@ use Glad\Event\Dispatcher;
 use Glad\GladProvider;
 
 use Glad\Grants\DatabaseService;
+use Glad\Grants\RepositoryHandler;
 use Glad\Mocks\CookerMock;
 use Glad\Mocks\SessionMock;
 
@@ -21,6 +22,8 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
 	protected $glad;
 	protected $author;
 	protected $injector;
+	protected $constants;
+	protected $repositoryHandler;
 
 	public function setUp()
 	{
@@ -29,11 +32,17 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
 			'SessionHandlerInterface'  => 'Glad\Mocks\SessionMock'
 		]);
 
+		$this->constants = new Constants;
+
+		$activeDriver = $this->constants->repository['driver'];
+		$config = $this->constants->repository['options'][$activeDriver];
+
 		$this->glad = new Glad;
 		$this->injector = new Injector;
-
+		$this->repositoryHandler = new RepositoryHandler;
+		$this->repositoryHandler->save('cookie', [$config['name'] => md5(time())]);
 		$this->injector->add('db', 'Glad\Mocks\DatabaseMock');
-		$this->author = new Author(new Constants, new CookerMock, $this->injector, new Crypt, new DatabaseService, new SessionMock, new Dispatcher);
+		$this->author = new Author($this->constants, new CookerMock, $this->injector, new Crypt, new DatabaseService, new SessionMock(), new Dispatcher);
 
 		$this->glad->setup([
 			'uniqueField' => 'id',
@@ -45,16 +54,23 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
 		]);
 	}
 
+	public function tearDown()
+	{
+		//file_put_contents(__DIR__ . '/../storage.json', '');
+	}
+
 	public function testRegister()
 	{
 		$result = $this->injector->inject($this->author, 'register', [[
 				'firstname' => 'Ali',
 				'lastname'	=> 'YILDIZ',
-				'username'	=> 'yildizalixxxx',
-				'email'		=> 'aliyildizxxxx@gmail.com',
+				'username'	=> 'yildizalix',
+				'email'		=> 'aliyildix@gmail.com',
 				'password'	=> 'ali123412yildiz'
 			]]);
 
-		exit(var_dump($result->status()));
+		$user = $this->repositoryHandler->get('users', md5('yildizalix'));
+		
+		$this->assertTrue($result->status() && is_array($user) && count($user) > 0);
 	}
 }

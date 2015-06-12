@@ -4,7 +4,10 @@ namespace GLad\Mocks;
 
 use Glad\Interfaces\GladSessionHandlerInterface;
 use Glad\Interfaces\CryptInterface;
+use Glad\Driver\Security\Crypt\Crypt;
 use Glad\Driver\Repository\RepositoryAdapter;
+use Glad\Constants;
+use Glad\Grants\RepositoryHandler;
 
 class SessionMock extends RepositoryAdapter implements GladSessionHandlerInterface
 {
@@ -22,6 +25,7 @@ class SessionMock extends RepositoryAdapter implements GladSessionHandlerInterfa
      */
 	protected $crypt;
 
+	protected $repositoryHandler;
 	/**
      * start the session process
      *
@@ -30,16 +34,18 @@ class SessionMock extends RepositoryAdapter implements GladSessionHandlerInterfa
      *
      * @return bool
      */
+
+	public function __construct()
+	{
+		$this->repositoryHandler = new RepositoryHandler;
+		$this->crypt = new Crypt;
+		$constants = new Constants;
+		$this->config = $constants->repository['options'][$constants->repository['driver']];
+	}
+
 	public function openSession(array $config, CryptInterface $crypt)
 	{
-		$this->config = $config;
-    	$this->crypt  = $crypt;
-
-        if(!is_dir($this->config['path'])) {
-            mkdir($this->config['path'], 0777);
-        }
-
-        $this->gc($this->config['timeout']);
+		
 	}
 
 	/**
@@ -74,7 +80,7 @@ class SessionMock extends RepositoryAdapter implements GladSessionHandlerInterfa
      */
     public function read($id)
     {
-        $data = (string)@file_get_contents($this->config['path']."/".$this->config['prefix'].$id);
+        $data = $this->repositoryHandler->get('session', $id);
 
         if($data) {
         	$data = $this->unserializer($this->dataDecrypt($data));
@@ -96,12 +102,13 @@ class SessionMock extends RepositoryAdapter implements GladSessionHandlerInterfa
      */
     public function write($id, $data)
     {
-    	$data['timestamp'] 	= $this->now();
+    	//exit(var_dump($id));
+    	$data['timestamp'] = $this->now();
     	$data['expiration']	= $this->config['timeout'];
 
     	$sessionData = $this->dataCrypt($this->serializer($data));
 
-        return file_put_contents($this->config['path']."/".$this->config['prefix'].$id, $sessionData) === false ? false : true;
+    	return $this->repositoryHandler->save('session', [$id => $sessionData]);
     }
 
     /**
@@ -113,12 +120,7 @@ class SessionMock extends RepositoryAdapter implements GladSessionHandlerInterfa
      */
     public function destroy($id)
     {
-        $file = $this->config['path']."/".$this->config['prefix'].$id;
-        if (file_exists($file)) {
-            unlink($file);
-        }
-
-        return true;
+    	return $this->repositoryHandler->remove('session', $id);
     }
 
     /**
@@ -130,11 +132,6 @@ class SessionMock extends RepositoryAdapter implements GladSessionHandlerInterfa
      */
     public function gc($maxlifetime)
     {
-        foreach (glob($this->config['path']."/".$this->config['prefix']."*") as $file) {
-            if (filemtime($file) + $maxlifetime < $this->now() && file_exists($file)) {
-                unlink($file);
-            }
-        }
         return true;
     }
 }
