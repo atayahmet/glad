@@ -31,7 +31,9 @@ Glad::setup([
 		'cookieName'=> 'glad',
 		'lifetime'  => (3600*5),
 		'field'	    => 'remember_token'
-	]
+	],
+	cost     => 8,
+	'secret' => '[key]'
 ]);
 ```
 ###Üye tablosunda olması gereken alanlar
@@ -235,6 +237,33 @@ Kullanıcı tablonuz da kullanabileceğimiz ve bunun ismini bilmemiz gereken bir
 	'field'	    => 'remember_token'
 ]
 ```
+###cost
+Kullanıcıların şifreleri php'nin sunmuş olduğu hash metodu ile şifrelenmektedir. Cost (şifreleme maliyeti) sunucunuzun performansına göre optimize edilmelidir. Varsayılan cost: 8
+
+**Tanımlama:**
+```php
+'cost' => 8
+```
+
+Detaylı bilgi için: [password_hash](http://php.net/manual/tr/function.password-hash.php)
+
+###secret
+Kullanıcılar Beni hatırla özelliğini kullanmak istediklerinde bazı verileri php'nin mcrypt_encrypt/mcrypt_decrypt fonksiyonları ile şifrelemektedir. Bunu yaparkende sizin belirleyeceğiniz yada varsayılan olarak belirlenen secret key'i kullanabilirsiniz. Kendi secret key'inizi mutlaka oluşturmalısınız.
+
+**Tanımlama:**
+```php
+'secret' => '_|()44?'
+```
+
+Aşağıdaki tabloda şifreleme mimarisini bulabilirsiniz:
+
+Name       | Value
+-----------| ---
+MCRYPT_RIJNDAEL_128    | Algoritma
+MCRYPT_MODE_ECB | Şifreleme modu
+
+Detalı bilgi için: [PHP Mcrypt](http://php.net/manual/en/book.mcrypt.php)
+
 
 ###Cookie Domain
 Sub domain kullanıyorsanız eğer bu parametreye bunu tanımlamanız gerekmektedir. Sub domain kullanmıyorsanız boş bırakabilirsiniz.
@@ -279,7 +308,7 @@ Kullanıcı verilerini hangi türde serileştirmesi gerektiğini tanımlayabilir
 Serileştirme türleri:
 
 Name       | Description
------------|
+-----------| -------------
 json       | encode/decode
 serialize  | Php Serialize
 
