@@ -26,7 +26,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 		$this->session = new Session;
 		$this->session->openSession(
 			[
-				'path'   => __DIR__ . '/../../../../resource/',
+				'path'   => __DIR__ . '/../../../resource/',
 				'type'   => 'serialize',
 				'name' 	 => 'SESSIONID',
 				'prefix' => 'ses_',
@@ -43,7 +43,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 	public function testWrite()
 	{
 		$this->assertTrue($this->session->write('test', ['hello']));
-		$data = unserialize(file_get_contents(__DIR__ . '/../../../../resource/ses_test'));
+		$data = unserialize(file_get_contents(__DIR__ . '/../../../resource/ses_test'));
 		
 		$this->assertTrue(is_array($data));
 		$this->assertSame('hello', reset($data));

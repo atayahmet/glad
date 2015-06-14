@@ -10,6 +10,7 @@
         <file>tests/Glad/Driver/Security/Crypt/CryptTest.php</file>
         <file>tests/Glad/Driver/Security/Hash/HashTest.php</file>
         <file>tests/Glad/Driver/Repository/NativeSession/SessionTest.php</file>
+        <file>tests/Glad/Driver/Repository/Memcache/MemcacheTest.php</file>
     </testsuite>
   </testsuites>
 </phpunit>
