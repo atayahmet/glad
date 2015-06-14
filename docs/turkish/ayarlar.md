@@ -32,7 +32,7 @@ Glad::setup([
 		'lifetime'  => (3600*5),
 		'field'	    => 'remember_token'
 	],
-	cost     => 8,
+	'cost'   => 8,
 	'secret' => '[key]'
 ]);
 ```
