@@ -1,11 +1,15 @@
 <phpunit colors="true">
   <testsuites>
     <testsuite name="Glad Authentication Tests">
-    	<file>tests/Glad/InjectorTest.php</file>
         <file>tests/Glad/GladProviderTest.php</file>
+        <file>tests/Glad/AuthorTest.php</file>
         <file>tests/Glad/GladTest.php</file>
         <file>tests/Glad/ConditionsTest.php</file>
-        <file>tests/Glad/AuthorTest.php</file>
+    	<file>tests/Glad/InjectorTest.php</file>
+    	<file>tests/Glad/Event/DispatcherTest.php</file>
+        <file>tests/Glad/Driver/Security/Crypt/CryptTest.php</file>
+        <file>tests/Glad/Driver/Security/Hash/HashTest.php</file>
+        <file>tests/Glad/Driver/Repository/NativeSession/SessionTest.php</file>
     </testsuite>
   </testsuites>
 </phpunit>

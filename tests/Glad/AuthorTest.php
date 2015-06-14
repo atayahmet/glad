@@ -2,9 +2,7 @@
 
 namespace Glad;
 
-//require __DIR__.'/../../../../../vendor/autoload.php';
-
-require __DIR__.'/../../vendor/autoload.php';
+require __DIR__.'/../../../../../vendor/autoload.php';
 
 use Glad\Glad;
 use Glad\Author;
@@ -113,11 +111,11 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->author->logout();
 		
-		$this->assertFalse($this->author->check());
+		$this->assertFalse($this->glad->check());
 
-		$result = $this->injector->inject($this->author, 'login', [$this->loginData]);
+		$this->glad->login($this->loginData);
 		
-		$this->assertTrue($result->status() && $result->check() && !$result->guest());
+		$this->assertTrue($this->glad->status() && $this->glad->check() && !$this->glad->guest());
 	}
 
 	/**
@@ -128,11 +126,11 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
 	public function testChange()
 	{
 		$newData = array_merge($this->userData, ['firstname' => 'Will', 'lastname' => 'Smith']);
-		$result = $this->injector->inject($this->author, 'change', [$newData]);
 
+		$this->glad->change($newData);
 		$user = $this->repositoryHandler->get('users', md5('user@example.com'));
 		
-		$this->assertTrue($result->status() && $user['firstname'] == 'Will' && $user['lastname'] == 'Smith');
+		$this->assertTrue($this->glad->status() && $user['firstname'] == 'Will' && $user['lastname'] == 'Smith');
 	}
 
 	/**
@@ -142,13 +140,14 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testApply()
 	{
-		$this->author->logout();
-		$this->assertFalse($this->author->check());
+		$this->glad->logout();
+		$this->assertFalse($this->glad->check());
 
-		$result = $this->injector->inject($this->author, 'login', [$this->loginData]);
+		$this->glad->login($this->loginData);
 		$parent = $this;
 
-		$result->apply(function(Glad $glad) use($parent) {
+		// true scenerio
+		$this->glad->apply(function(Glad $glad) use($parent) {
 			$glad->conditions(['banned' => 0]);
 			$glad->event('banned', function(Glad $glad) use($parent) {
 				// banned will not work to be zero
@@ -162,7 +161,26 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
 			});
 		});
 
-		$this->assertTrue($result->status());
+		$this->assertTrue($this->glad->status());
+
+		// false scenerio
+		$this->glad->logout();
+
+		$this->glad->apply(function(Glad $glad) use($parent) {
+			$glad->conditions(['banned' => 1]);
+			$glad->event('banned', function(Glad $glad) use($parent) {
+				// banned will not work to be zero
+				$parent->assertTrue(true);
+			});
+
+			$glad->conditions(['activate' => 0]);
+			$glad->event('activate', function(Glad $glad) use($parent) {
+				// banned will not work to be zero
+				$parent->assertTrue(true);
+			});
+		});
+
+		$this->assertFalse($this->glad->status());
 	}
 
 	/**
@@ -172,10 +190,10 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testLoginByUserId()
 	{
-		$this->author->logout();
-		$this->assertFalse($this->author->check());
-		$result = $this->injector->inject($this->author, 'loginByUserId', [md5('user@example.com')]);
-		$this->assertTrue($result->status() && $result->check() && !$result->guest());
+		$this->glad->logout();
+		$this->assertFalse($this->glad->check());
+		$this->glad->loginByUserId(md5('user@example.com'));
+		$this->assertTrue($this->glad->status() && $this->glad->check() && !$this->glad->guest());
 	}
 
 	/**
@@ -185,7 +203,7 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testUserData()
 	{
-		$userData = $this->author->userData();
+		$userData = $this->glad->userData();
 		$this->assertTrue(is_array($userData) && count($userData) > 0);
 	}
 
@@ -196,7 +214,7 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testGetUserId()
 	{
-		$this->assertTrue($this->author->getUserId() == md5('user@example.com'));
+		$this->assertTrue($this->glad->getUserId() == md5('user@example.com'));
 	}
 
 	/**
@@ -206,8 +224,9 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testCheck()
 	{
-		$user = $this->repositoryHandler->get('session', $this->sessionId);	
-		$this->assertTrue(unserialize($user)['auth']['status'] === true && $this->author->check());
+		$user = $this->repositoryHandler->get('session', $this->sessionId);
+		
+		$this->assertTrue(unserialize($user)['auth']['status'] === true && $this->glad->check());
 	}
 
 	/**
@@ -217,12 +236,12 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testGuest()
 	{
-		$this->assertTrue($this->author->check());
-		$this->author->logout();
+		$this->assertTrue($this->glad->check());
+		$this->glad->logout();
 
 		$user = $this->repositoryHandler->get('session', $this->sessionId);	
 		$this->assertNull($user);
-		$this->assertTrue($this->author->guest());
+		$this->assertTrue($this->glad->guest());
 	}
 
 	/**
@@ -232,16 +251,17 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testIs()
 	{
-		$result = $this->injector->inject($this->author, 'loginByUserId', [md5('user@example.com')]);
+		//$result = $this->injector->inject($this->author, 'loginByUserId', [md5('user@example.com')]);
+		$this->glad->loginByUserId(md5('user@example.com'));
 		$user = $this->repositoryHandler->get('session', $this->sessionId);	
-		$this->assertTrue(unserialize($user)['auth']['status'] === true && $result->is('check'));
+		$this->assertTrue(unserialize($user)['auth']['status'] === true && $this->glad->is('check'));
 
-		$this->assertTrue($this->author->check());
-		$this->author->logout();
+		$this->assertTrue($this->glad->check());
+		$this->glad->logout();
 
 		$user = $this->repositoryHandler->get('session', $this->sessionId);	
 		$this->assertNull($user);
-		$this->assertTrue($this->author->is('guest'));
+		$this->assertTrue($this->glad->is('guest'));
 	}
 
 	/**
@@ -251,8 +271,8 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testToJson()
 	{
-		$this->injector->inject($this->author, 'loginByUserId', [md5('user@example.com')]);
-		$this->assertTrue(is_array(json_decode($this->author->toJson(), true)));
+		$this->glad->loginByUserId(md5('user@example.com'));
+		$this->assertTrue(is_array(json_decode($this->glad->toJson(), true)));
 	}
 
 	/**
@@ -262,7 +282,7 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testToArray()
 	{
-		$this->assertTrue(is_array($this->author->toArray()));
+		$this->assertTrue(is_array($this->glad->toArray()));
 	}
 
 	/**
@@ -272,7 +292,7 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testToObject()
 	{
-		$this->assertTrue(is_object($this->author->toObject()));
+		$this->assertTrue(is_object($this->glad->toObject()));
 	}
 
 	/**
@@ -283,7 +303,7 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
 	public function testToXml()
 	{
 		libxml_use_internal_errors(true);
-		$sxe = simplexml_load_string("<?xml version='1.0'>" . $this->author->toXml());
+		$sxe = simplexml_load_string("<?xml version='1.0'>" . $this->glad->toXml());
 		$this->assertFalse($sxe);
 	}
 
@@ -294,18 +314,17 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testAndLogin()
 	{
-		$this->author->logout();
-		$this->assertFalse($this->author->check());
+		$this->glad->logout();
+		$this->assertFalse($this->glad->check());
 
 		file_put_contents(__DIR__ . '/../storage.json', '');
 
-		$result = $this->injector->inject($this->author, 'register', [$this->userData]);
-		
-		$this->assertTrue($result->status());
-		$this->assertFalse($result->check());
+		$this->glad->register($this->userData);
+		$this->assertTrue($this->glad->status());
+		$this->assertFalse($this->glad->check());
 
-		$result->andLogin();
-		$this->assertTrue($result->check());
+		$this->glad->andLogin();
+		$this->assertTrue($this->glad->check());
 	}
 
 	/**
@@ -315,17 +334,16 @@ class AuthorTest extends \PHPUnit_Framework_TestCase
      */
 	public function testStatus()
 	{
-		$this->author->logout();
+		$this->glad->logout();
 
 		$this->assertFalse($this->glad->check());
 		$this->assertTrue($this->glad->guest());
 		
 		$this->assertFalse($this->glad->status());
 		
-		$result = $this->injector->inject($this->author, 'loginByUserId', [md5('user@example.com')]);
-
+		$this->glad->loginByUserId(md5('user@example.com'));
 		$this->assertTrue($this->glad->status());
 		$user = $this->repositoryHandler->get('session', $this->sessionId);	
-		$this->assertTrue(unserialize($user)['auth']['status'] === true && $this->author->check());
+		$this->assertTrue(unserialize($user)['auth']['status'] === true && $this->glad->check());
 	}
 }

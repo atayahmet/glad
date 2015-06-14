@@ -58,8 +58,8 @@ class Dispatcher
 		}
 
 		foreach($this->_events as $event){
-			$event($this->container);
-		}
+                  $event($this->container);
+            }
 	}
 
 	/**

@@ -521,10 +521,12 @@ class Author
 	/**
      * User logout
      *
-     * @return bool
+     * @return void
      */ 
 	public static function logout()
 	{
+		static::resetCheckVariables();
+
 		$expire = (static::currentTime()-static::$constants->remember['lifetime']);
 		
 		$activeDriver = static::$constants->repository['driver'];

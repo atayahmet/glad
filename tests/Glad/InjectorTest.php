@@ -80,7 +80,12 @@ class InjectorTest extends \PHPUnit_Framework_TestCase
     public function testGet()
     {
     	$this->injector->add('CookerInterface', 'Glad\Cooker');
-    	$this->assertTrue($this->injector->get('CookerInterface') == 'Glad\Cooker');
+
+        if(is_object($this->injector->get('CookerInterface'))) {
+            $this->assertInstanceOf('Glad\Cooker', $this->injector->get('CookerInterface'));
+        }else{
+            $this->assertTrue($this->injector->get('CookerInterface') =='Glad\Cooker');
+        }
     }
 
      /**

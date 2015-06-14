@@ -161,11 +161,12 @@ class GladTest extends \PHPUnit_Framework_TestCase
 	public function testProvider()
 	{
 		$oldSession = $this->provider->get('SessionHandlerInterface');
-		$this->assertFalse($oldSession === 'Glad\Deriver\Repository\Memcache\Memcache');
+		
+		$this->assertFalse($oldSession === 'Glad\Driver\Repository\NativeSession\Session');
 
-		$this->glad->provider(['SessionHandlerInterface' => 'Glad\Deriver\Repository\Memcache\Memcache']);
+		$this->glad->provider(['SessionHandlerInterface' => 'Glad\Driver\Repository\NativeSession\Session']);
 		$newSession = $this->provider->get('SessionHandlerInterface');
-		$this->assertTrue($newSession === 'Glad\Deriver\Repository\Memcache\Memcache');
+		$this->assertTrue($newSession === 'Glad\Driver\Repository\NativeSession\Session');
 	}
 
 	/**
