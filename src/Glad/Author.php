@@ -254,7 +254,7 @@ class Author
 			}else{
 				static::$tempUser = $credentials;
 
-				$credentials['password'] = $hash->make($credentials['password']);
+				$credentials['password'] = $hash->make($credentials['password'], static::$constants->cost);
 
 				static::$registerResult = static::$model->insert($credentials);
 				static::$user = $credentials;
@@ -308,7 +308,7 @@ class Author
 		$fields = static::$constants->authFields;
 
 		if(isset($credentials[$fields['password']])) {
-			$credentials['password'] = $hash->make($credentials['password']);
+			$credentials['password'] = $hash->make($credentials['password'], static::$constants->cost);
 		}
 		return $credentials;
 	}
@@ -372,11 +372,11 @@ class Author
 			$cookieName = $rememberConf['cookieName'];
 			$lifeTime = static::currentTime()+$rememberConf['lifetime'];
 
-			$token = static::$crypt->encrypt(static::currentTime()+$rememberConf['lifetime']);
-			$tokenDecrypted = static::$crypt->decrypt($token);
+			$token = static::$crypt->encrypt(static::currentTime()+$rememberConf['lifetime'], static::$constants->secret);
+			$tokenDecrypted = static::$crypt->decrypt($token, static::$constants->secret);
 			
 			$userData[$rememberConf['field']] = $token;
-			$cryptedValue = static::$crypt->encrypt(json_encode($userData));
+			$cryptedValue = static::$crypt->encrypt(json_encode($userData), static::$constants->secret);
 			
 			$setResult = static::$cooker->set(
 					$cookieName,
@@ -409,12 +409,12 @@ class Author
 
 			if(static::$cooker->has($cookieName)) {
  				
- 				$userData = static::$crypt->decrypt(static::$cooker->get($cookieName));
+ 				$userData = static::$crypt->decrypt(static::$cooker->get($cookieName), static::$constants->secret);
  				$userDataArr = json_decode($userData , true);
  				if(! json_last_error() && isset($userDataArr[$rememberConf['field']])) {
  					
  					$token = $userDataArr[$rememberConf['field']];
- 					$tokenDecrypted = static::$crypt->decrypt($token);
+ 					$tokenDecrypted = static::$crypt->decrypt($token, static::$constants->secret);
 
  					if(intval($tokenDecrypted) >= static::currentTime()) {
  						static::setRemember($userDataArr);

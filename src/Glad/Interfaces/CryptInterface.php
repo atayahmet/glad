@@ -21,7 +21,7 @@ interface CryptInterface {
      *
      * @return string
      */ 
-	public static function encrypt($string);
+	public static function encrypt($string, $secret);
 
 	/**
      * Data Decrypt
@@ -30,5 +30,5 @@ interface CryptInterface {
      *
      * @return mixed
      */ 
-	public static function decrypt($hash);
+	public static function decrypt($hash, $secret);
 }

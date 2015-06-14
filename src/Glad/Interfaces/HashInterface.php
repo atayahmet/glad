@@ -33,5 +33,5 @@ interface HashInterface {
      *
      * @return string
      */ 
-	public function make($password, $algo = PASSWORD_BCRYPT, array $options = array());
+	public function make($password, $algo = PASSWORD_BCRYPT, $cost);
 }

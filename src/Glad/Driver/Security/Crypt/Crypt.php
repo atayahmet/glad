@@ -16,8 +16,6 @@ use Glad\Interfaces\CryptInterface;
  */
 class Crypt implements CryptInterface {
 
-	protected static $secret = '|3|#__()=?';
-
 	/**
      * Data encrypt
      *
@@ -25,9 +23,9 @@ class Crypt implements CryptInterface {
      *
      * @return string
      */ 
-	public static function encrypt($string)
+	public static function encrypt($string, $secret)
 	{
-		$data = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, static::$secret, $string, MCRYPT_MODE_ECB, '');
+		$data = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $secret, $string, MCRYPT_MODE_ECB, '');
         return base64_encode($data);
 	}
 
@@ -38,8 +36,8 @@ class Crypt implements CryptInterface {
      *
      * @return mixed
      */ 
-	public static function decrypt($hash)
+	public static function decrypt($hash, $secret)
 	{
-    	return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, static::$secret, base64_decode($hash), MCRYPT_MODE_ECB, '');
+    	return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $secret, base64_decode($hash), MCRYPT_MODE_ECB, '');
 	}
 }

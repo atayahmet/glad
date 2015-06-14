@@ -41,26 +41,8 @@ class Hash implements HashInterface
      *
      * @return string
      */ 
-	public function make($password, $algo = PASSWORD_BCRYPT, array $options = array())
+	public function make($password, $algo = PASSWORD_BCRYPT, $cost)
 	{
-		$options = static::checkOptions($options);
-
-		return password_hash($password, $algo, $options);
-	}
-
-	/**
-     * Check hash option password
-     *
-     * @param array $options
-     *
-     * @return string
-     */ 
-	protected function checkOptions(array $options)
-	{
-		if(count($options) < 1) {
-			return ['cost' => $this->cost];
-		}
-
-		return $options;
+		return password_hash($password, $algo, ['cost' => $cost]);
 	}
 }

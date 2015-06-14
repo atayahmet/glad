@@ -175,6 +175,44 @@ class Glad
     }
 
     /**
+     * Set the hash cost
+     *
+     * @param $cost int
+     *
+     * @return bool
+     */
+    public static function cost($cost)
+    {
+        static::setStaticVariable(static::$constants,
+            [
+                'field' => 'cost',
+                'value' => $cost
+            ]
+        );
+
+        return true;
+    }
+
+    /**
+     * Set the crypt secret
+     *
+     * @param $secret string
+     *
+     * @return bool
+     */
+    public static function secret($secret)
+    {
+        static::setStaticVariable(static::$constants,
+            [
+                'field' => 'secret',
+                'value' => $secret
+            ]
+        );
+
+        return true;
+    }
+
+    /**
      * Set session repository parameters
      *
      * @param $repository array

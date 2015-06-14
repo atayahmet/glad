@@ -30,7 +30,21 @@ class Constants
      * @var string
      */
 	protected static $cookieDomain  = '';
-	
+
+	/**
+     * Hash cost
+     *
+     * @var int
+     */
+	protected static $cost = 8;
+
+	/**
+     * Crypt secret key
+     *
+     * @var string
+     */
+	protected static $secret = '|3|#__()=?';
+
 	/**
      * Remember process parameters
      *
