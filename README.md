@@ -5,9 +5,9 @@ Glad Authentication
 
 An ideal package for fast and easy use.
 
-add to composer.json require section:
+add to section require in composer.json:
 ```php
-"atayahmet/glad": "1.0.*@dev"
+"atayahmet/glad" : "1.0.*@dev"
 ```
 
 after run the:
@@ -16,6 +16,6 @@ $ composer update
 ```
 [Click for Documentation](http://glad.readthedocs.org/en/latest/)
 
-Gitter Chat:
+Gitter:
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/atayahmet/glad?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
