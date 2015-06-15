@@ -3,6 +3,7 @@
 namespace Glad\Driver\Security\Crypt;
 
 use Glad\Driver\Security\Crypt\Crypt;
+use Glad\Constants;
 
 /**
  * Crypt class tests
@@ -17,11 +18,13 @@ use Glad\Driver\Security\Crypt\Crypt;
 class CryptTest extends \PHPUnit_Framework_TestCase
 {
 	protected $crypt;
+	protected $constants;
 	protected $data;
 
 	public function setUp()
 	{
 		$this->crypt = new Crypt;
+		$this->constants = new Constants;
 		$this->data = ['name' => 'Ahmet', 'lastname' => 'ATAY'];
 	}
 
@@ -33,11 +36,11 @@ class CryptTest extends \PHPUnit_Framework_TestCase
 	public function testEncrypt()
 	{
 		$toJson = json_encode($this->data);
-		$encryptedData = $this->crypt->encrypt($toJson);
+		$encryptedData = $this->crypt->encrypt($toJson, $this->constants->secret);
 		json_decode($encryptedData, true);
 		$this->assertTrue(json_last_error() !== 0);
 
-		$decryptedData = json_decode($this->crypt->decrypt($encryptedData), true);
+		$decryptedData = json_decode($this->crypt->decrypt($encryptedData, $this->constants->secret), true);
 		$this->assertSame($decryptedData, $this->data);
 	}
 
@@ -49,9 +52,9 @@ class CryptTest extends \PHPUnit_Framework_TestCase
 	public function testDecrypt()
 	{
 		$toJson = json_encode($this->data);
-		$encryptedData = $this->crypt->encrypt($toJson);
+		$encryptedData = $this->crypt->encrypt($toJson, $this->constants->secret);
 
-		$decryptedData = json_decode($this->crypt->decrypt($encryptedData), true);
+		$decryptedData = json_decode($this->crypt->decrypt($encryptedData, $this->constants->secret), true);
 		$this->assertSame($decryptedData, $this->data);
 	}
 }

@@ -246,7 +246,6 @@ class Author
 	public static function register(HashInterface $hash, array $credentials)
 	{
 		static::resetCheckVariables();
-
 		if(static::guest() === true) {
 			static::checkIdentityAsParameter($credentials);
 			

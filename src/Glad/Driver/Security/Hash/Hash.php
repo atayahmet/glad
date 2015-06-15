@@ -16,9 +16,6 @@ use Glad\Interfaces\HashInterface;
  */
 class Hash implements HashInterface
 {
-	protected $cost = 8;
-	protected $algorithm = PASSWORD_BCRYPT;
-
 	/**
      * Verifying password
      *
@@ -36,12 +33,12 @@ class Hash implements HashInterface
      * Hashing password
      *
      * @param string $password
-     * @param integer $algo
      * @param array $cost
+     * @param integer $algo
      *
      * @return string
      */ 
-	public function make($password, $algo = PASSWORD_BCRYPT, $cost)
+	public function make($password, $cost, $algo = PASSWORD_BCRYPT)
 	{
 		return password_hash($password, $algo, ['cost' => $cost]);
 	}

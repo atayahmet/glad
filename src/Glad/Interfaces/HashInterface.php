@@ -28,10 +28,10 @@ interface HashInterface {
      * Hashing password
      *
      * @param string $password
-     * @param integer $algo
      * @param integer $cost
+     * @param integer $algo
      *
      * @return string
      */ 
-	public function make($password, $algo = PASSWORD_BCRYPT, $cost);
+	public function make($password, $cost, $algo = PASSWORD_BCRYPT);
 }
