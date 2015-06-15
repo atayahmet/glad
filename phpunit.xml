@@ -1,4 +1,4 @@
-<phpunit colors="true" bootstrap="../../autoload.php">
+<phpunit colors="true" bootstrap="vendor/autoload.php">
   <testsuites>
     <testsuite name="Glad Authentication Tests">
         <file>tests/Glad/GladProviderTest.php</file>

@@ -2,8 +2,6 @@
 
 namespace Glad\Driver\Security\Crypt;
 
-require __DIR__.'/../../../../../../../../vendor/autoload.php';
-
 use Glad\Driver\Security\Crypt\Crypt;
 
 /**

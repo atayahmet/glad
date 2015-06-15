@@ -2,8 +2,6 @@
 
 namespace Glad\Driver\Security\Hash;
 
-require __DIR__.'/../../../../../../../../vendor/autoload.php';
-
 use Glad\Driver\Security\Hash\Hash;
 
 /**

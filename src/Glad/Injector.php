@@ -39,7 +39,7 @@ class Injector
      *
      * @return void
      */   
-    public static function inject($class, $method = null, array $parm = null)
+    public static function inject($class, $method = null, array $parm = [])
     {
         return static::setInjectsParameters($class, $method, $parm);
     }
