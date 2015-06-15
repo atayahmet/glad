@@ -9,7 +9,7 @@ An ideal package for fast and easy use.
 composer require atayahmet/glad
 ```
 
-[![Documantation]()](http://glad.readthedocs.org/en/latest/)
+[Documantation](http://glad.readthedocs.org/en/latest/)
 
 Gitter Chat:
 
