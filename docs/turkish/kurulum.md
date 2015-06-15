@@ -3,8 +3,14 @@ Kurulum
 
 Glad Auth composer üzerinden gelmektedir. Aşağıdaki komutu terminalinizde çalıştırarak en güncel versiyona erişebilirsiniz:
 
-```sh
-$ composer require atayahmet/glad
+Aşağıdaki bloğu **composer.json** dosyasında **require** alanına ekleyin:
+```php
+"atayahmet/glad": "1.0.*@dev"
+```
+
+Sonra şu komutu çalıştırın:
+```php
+$ composer update
 ```
 
 Projenize yüklemek için:

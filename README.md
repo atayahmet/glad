@@ -5,10 +5,15 @@ Glad Authentication
 
 An ideal package for fast and easy use.
 
+add to composer.json require section:
 ```php
-composer require atayahmet/glad
+"atayahmet/glad": "1.0.*@dev"
 ```
 
+after run the:
+```php
+composer update
+```
 [Documantation](http://glad.readthedocs.org/en/latest/)
 
 Gitter Chat:
