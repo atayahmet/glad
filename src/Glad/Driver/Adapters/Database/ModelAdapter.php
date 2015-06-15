@@ -28,7 +28,7 @@ class ModelAdapter extends Adapter {
      * Data update (indirect call)
      *
      * @param array $where
-     * @param array $newData
+     * @param array $data
      *
      * @return bool
      */

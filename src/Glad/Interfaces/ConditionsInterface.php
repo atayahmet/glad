@@ -21,7 +21,7 @@ interface ConditionsInterface
      *
      * @param array $user user parameters
      * @param array $cond conditions
-     * @param object $eventDispatcher after conditions behavior manage
+     * @param object $dispatcher after conditions behavior manage
      *
      * @return bool
      */ 

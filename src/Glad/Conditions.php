@@ -70,9 +70,9 @@ class Conditions implements ConditionsInterface
 	/**
      * Append condition
      *
-     * @param array $conditions conditions
+     * @param array $cond
      *
-     * @return bool
+     * @return void
      */ 
 	public function add(array $cond)
 	{

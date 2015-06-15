@@ -31,7 +31,7 @@ class Glad
     /**
      * Author class name
      *
-     * @var object
+     * @var string
      */
     protected static $author;
   
@@ -45,7 +45,7 @@ class Glad
     /**
      * Users table fields
      *
-     * @var array
+     * @var bool
      */
     protected static $identityFields;
    
@@ -69,7 +69,6 @@ class Glad
     /**
      * Class initializer
      *
-     * @return void
      */
     protected static function init()
     {
@@ -352,8 +351,8 @@ class Glad
             $refProperty = $refObject->getProperty($parm['field']);
             $refProperty->setAccessible(true);
             $refProperty->setValue(null, $parm['value']);
-        }catch(Exception $e){
-            exit(var_dump($e));
+        }catch(\Exception $e){
+            
         }
     }
 

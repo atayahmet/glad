@@ -18,6 +18,7 @@ interface CryptInterface {
      * Data encrypt
      *
      * @param string $string
+     * @param string $secret
      *
      * @return string
      */ 
@@ -26,7 +27,8 @@ interface CryptInterface {
 	/**
      * Data Decrypt
      *
-     * @param string $string
+     * @param string $hash
+     * @param string $secret
      *
      * @return mixed
      */ 

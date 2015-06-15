@@ -36,13 +36,6 @@ class Author
 	protected static $repository;
 	
 	/**
-     * Author service class name
-     *
-     * @var string
-     */
-	protected static $author;
-
-	/**
      * Constant class instance
      *
      * @var object
@@ -101,10 +94,15 @@ class Author
 	/**
      * Register transaction result
      *
-     * @var object
+     * @var bool
      */
 	protected static $registerResult;
 
+	/**
+     * Login after register
+     *
+     * @var bool
+     */
 	protected static $registerLogin = true;
 
 	/**
@@ -182,10 +180,14 @@ class Author
 	/**
      * Class constructor
      *
+     * @param object $constants
+     * @param object $cooker
+     * @param object $injector
+     * @param object $crypt
+     * @param object $databaseService
      * @param object $repository
-     * @param object $author
+     * @param object $eventDispatcher
      *
-     * @return void
      */ 
 	public function __construct(Constants $constants, CookerInterface $cooker, Injector $injector, CryptInterface $crypt, DatabaseServiceInterface $databaseService, SessionHandlerInterface $repository, Dispatcher $eventDispatcher)
 	{
@@ -193,7 +195,6 @@ class Author
 		static::$injector = $injector;
 		static::$repository = $repository;
 		static::$cooker = $cooker;
-		static::$author = GladProvider::$author;
 		static::$eventDispatcher = $eventDispatcher;
 		static::$crypt = $crypt;
 		static::$eventDispatcher->setInstance(static::getInstance());
@@ -205,7 +206,7 @@ class Author
 	/**
      * Start session process
      *
-     * @param object $credentials SessionHandlerInterface
+     * @param object $repository SessionHandlerInterface
      *
      * @return void
      */ 
@@ -223,7 +224,7 @@ class Author
 		
 		if(! static::$tokenId) {
 			static::$tokenId = sha1(time());
-			$setResult = static::$cooker->set(
+			static::$cooker->set(
 					$config['name'],
 					static::$tokenId,
 					static::currentTime()+$config['timeout'],
@@ -254,7 +255,8 @@ class Author
 			}else{
 				static::$tempUser = $credentials;
 
-				$credentials['password'] = $hash->make($credentials['password'], static::$constants->cost);
+				$cost = static::$constants->cost;
+				$credentials['password'] = $hash->make($credentials['password'], $cost);
 
 				static::$registerResult = static::$model->insert($credentials);
 				static::$user = $credentials;
@@ -308,7 +310,8 @@ class Author
 		$fields = static::$constants->authFields;
 
 		if(isset($credentials[$fields['password']])) {
-			$credentials['password'] = $hash->make($credentials['password'], static::$constants->cost);
+			$cost = static::$constants->cost;
+			$credentials['password'] = $hash->make($credentials['password'], $cost);
 		}
 		return $credentials;
 	}
@@ -316,7 +319,7 @@ class Author
 	/**
      * User login process
      *
-     * @param object $bcrypt
+     * @param object $hash
      * @param array $user
      * @param bool $remember
      *
@@ -356,7 +359,7 @@ class Author
 	/**
      * Start remember process
      *
-     * @param array $userdata
+     * @param array $userData
      *
      * @return void
      */
@@ -373,7 +376,6 @@ class Author
 			$lifeTime = static::currentTime()+$rememberConf['lifetime'];
 
 			$token = static::$crypt->encrypt(static::currentTime()+$rememberConf['lifetime'], static::$constants->secret);
-			$tokenDecrypted = static::$crypt->decrypt($token, static::$constants->secret);
 			
 			$userData[$rememberConf['field']] = $token;
 			$cryptedValue = static::$crypt->encrypt(json_encode($userData), static::$constants->secret);
@@ -390,7 +392,7 @@ class Author
 
 			if($setResult) {
 				$where = ['and' => [static::$constants->id => $userData[static::$constants->id]]];
-				$result = static::$model->update($where,[$rememberConf['field'] => $token]);	
+				static::$model->update($where,[$rememberConf['field'] => $token]);	
 			}
 		}
 	}
@@ -498,11 +500,12 @@ class Author
      *
      * @return bool
      */ 
-	public static function loginByUserId($userId = false, $remember = false)
+	public static function loginByUserId($userId, $remember = false)
 	{
 		static::resetCheckVariables();
 
-		if(static::check() === true || ! $userId) return static::getInstance();
+		if(static::check() === true || $userId == null) return static::getInstance();
+
 		$result = static::$model->getIdentityWithId($userId);
 
 		if(count($result) > 0) {
@@ -640,7 +643,7 @@ class Author
 	public static function status()
 	{
 		if(static::$processResult === true) {
-			static::setUserRepository(static::$user, static::$rememberMe);
+			static::setUserRepository(static::$user);
 			static::$userData = static::readSession();
 			static::$processResult = false;
 			static::$status = true;
@@ -671,7 +674,7 @@ class Author
 
 			return true;
 		}
-		catch(Exception $e){
+		catch(\Exception $e){
 			throw $e;
 		}
 	}
@@ -846,7 +849,7 @@ class Author
 	/**
      * Export User data as xml
      *
-     * @return string
+     * @return string|null
      */ 
 	public static function toXml()
 	{
@@ -858,10 +861,14 @@ class Author
 			static::$simpleXML = new \SimpleXMLElement('<root/>');
 		}
 		
-		foreach(static::getData() as $field => $value) {
-			static::$simpleXML->addChild($field, $value);
+		$data = static::getData();
+
+		if(is_array($data)) {
+			foreach($data as $field => $value) {
+				static::$simpleXML->addChild($field, $value);
+			}
+			return static::$simpleXML->asXML();
 		}
-		return static::$simpleXML->asXML();
 	}
 
 	/**
@@ -877,7 +884,7 @@ class Author
 	/**
      * Detects the presence of the methods by ReflectionClass
      *
-     * @param string $methodstatic::getData()
+     * @param string $method
      *
      * @return bool
      */ 
@@ -924,8 +931,6 @@ class Author
 		}else{
 			return static::loginFromRemember();
 		}
-
-		return false;
 	}
 
 	/**

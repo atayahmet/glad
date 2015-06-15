@@ -64,11 +64,10 @@ class PDOAdapter extends Adapter {
      *
      * @param array $where
      * @param array $newData
-     * @param integer $limit
      *
      * @return bool
      */ 
-	public function update(array $where, array $newData, $limit = 1)
+	public function update(array $where, array $newData)
 	{
 		$bindWhere = $this->bindWhere($where);
 		$bindData = $this->bindUpdateData($newData);
@@ -105,8 +104,6 @@ class PDOAdapter extends Adapter {
 				foreach($w as $field => $value) {
 					$_where .= $_where == '' ? $field."=".":{$field}" : " ".strtoupper($operator)." ".$field."=".":{$field}";
 				}
-			}else{
-
 			}
 		}
 		return $_where;

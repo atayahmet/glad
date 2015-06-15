@@ -29,7 +29,7 @@ interface HashInterface {
      *
      * @param string $password
      * @param integer $algo
-     * @param array $option
+     * @param integer $cost
      *
      * @return string
      */ 

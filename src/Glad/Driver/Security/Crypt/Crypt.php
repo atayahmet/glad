@@ -32,7 +32,8 @@ class Crypt implements CryptInterface {
 	/**
      * Data Decrypt
      *
-     * @param string $string
+     * @param string $hash
+     * @param string $secret
      *
      * @return mixed
      */ 

@@ -45,7 +45,7 @@ class Memcached extends RepositoryAdapter implements GladSessionHandlerInterface
      * openning the memcached process
      *
      * @param array $config
-     * @param string $prefix
+     * @param object $crypt
      * 
      * @return bool
      */ 

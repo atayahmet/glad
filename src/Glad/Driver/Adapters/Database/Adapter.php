@@ -38,7 +38,7 @@ class Adapter {
      */ 
 	protected function checkPdoDriver($name = false, $exception = false)
 	{
-		if(! $name) {
+		if($name === false) {
 			$name = $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);	
 		}
 		

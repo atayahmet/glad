@@ -31,16 +31,6 @@ class Injector
     protected static $container;
 
     /**
-     * Class constructor
-     *
-     * @return void
-     */    
-    public function __construct()
-    {
-        //static::$gladProvider = GladProvider::get();
-    }
-
-    /**
      * Inject method
      *
      * @param string $class
@@ -132,7 +122,7 @@ class Injector
      *
      * @return all types
      */ 
-    protected static function setInjectsParameters($class, $method, array $parm = null)
+    protected static function setInjectsParameters($class, $method, array $parm = [])
     {
         $methods = array('__construct', $method);
         $instance = null;
@@ -234,7 +224,7 @@ class Injector
      *
      * @return array
      */ 
-    protected static function editParameter($depends, $params)
+    protected static function editParameter($depends, array $params)
     {
         if(count($depends) > 0 && count($params) > 0){
             foreach ($depends as $key => $value) {

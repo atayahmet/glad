@@ -37,7 +37,7 @@ class Hash implements HashInterface
      *
      * @param string $password
      * @param integer $algo
-     * @param array $option
+     * @param array $cost
      *
      * @return string
      */ 

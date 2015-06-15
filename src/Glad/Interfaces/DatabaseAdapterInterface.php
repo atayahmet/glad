@@ -27,8 +27,7 @@ interface DatabaseAdapterInterface {
      * Data update
      *
      * @param array $where
-     * @param array $newData
-     * @param integer $limit
+     * @param array $credentials
      *
      * @return bool
      */ 
