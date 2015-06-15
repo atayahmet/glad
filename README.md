@@ -12,9 +12,9 @@ add to composer.json require section:
 
 after run the:
 ```php
-composer update
+$ composer update
 ```
-[Documantation](http://glad.readthedocs.org/en/latest/)
+[Click for Documentation](http://glad.readthedocs.org/en/latest/)
 
 Gitter Chat:
 
