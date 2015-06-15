@@ -1,4 +1,4 @@
 Glad Authentication
 ===================
 
-[![Documentation Status](https://readthedocs.org/projects/glad/badge/?version=latest)](https://readthedocs.org/projects/glad/?badge=latest) [![StyleCI](https://styleci.io/repos/28698516/shield)](https://styleci.io/repos/28698516)
+[![Documentation Status](https://readthedocs.org/projects/glad/badge/?version=latest)](https://readthedocs.org/projects/glad/?badge=latest) [![Build Status](https://scrutinizer-ci.com/g/atayahmet/glad/badges/build.png?b=master)](https://scrutinizer-ci.com/g/atayahmet/glad/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/atayahmet/glad/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/atayahmet/glad/?branch=master) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/atayahmet/glad?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
