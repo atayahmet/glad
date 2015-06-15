@@ -2,8 +2,6 @@
 
 namespace Glad\Driver\Repository\NativeSession;;
 
-require __DIR__.'/../../../../../../../../vendor/autoload.php';
-
 use Glad\Driver\Repository\NativeSession\Session;
 use Glad\Driver\Security\Crypt\Crypt;
 

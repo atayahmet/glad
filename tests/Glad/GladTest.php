@@ -2,8 +2,6 @@
 
 namespace Glad;
 
-require __DIR__.'/../../../../../vendor/autoload.php';
-
 use Glad\Glad;
 use Glad\Constants;
 use Glad\Injector;

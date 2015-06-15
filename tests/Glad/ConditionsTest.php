@@ -2,9 +2,6 @@
 
 namespace Glad;
 
-require __DIR__.'/../../../../../vendor/autoload.php';
-
-
 use Glad\Conditions;
 use Glad\Event\Dispatcher;
 

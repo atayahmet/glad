@@ -2,8 +2,6 @@
 
 namespace Glad\Event;
 
-require __DIR__.'/../../../../../../vendor/autoload.php';
-
 use Glad\Glad;
 use Glad\Event\Dispatcher;
 
