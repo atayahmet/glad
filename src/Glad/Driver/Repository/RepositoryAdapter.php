@@ -2,9 +2,18 @@
 
 namespace Glad\Driver\Repository;
 
+use Glad\Constants;
+
 class RepositoryAdapter {
 
-	/**
+    protected $constants;
+
+    public function __construct()
+    {
+        $this->constants = new Constants;
+    }
+
+    /**
      * Data serializer
      *
      * @param $data array
@@ -13,10 +22,10 @@ class RepositoryAdapter {
      */
     protected function serializer(array $data)
     {
-    	if($this->config['type'] == 'serialize') {
-    		return serialize($data);
-    	}
-    	return json_encode($data);
+        if($this->config['type'] == 'serialize') {
+            return serialize($data);
+        }
+        return json_encode($data);
     }
 
     /**
@@ -28,10 +37,10 @@ class RepositoryAdapter {
      */
     protected function unserializer($data)
     {
-    	if($this->config['type'] == 'serialize') {
-    		return unserialize($data);
-    	}
-    	return json_decode($data, true);
+        if($this->config['type'] == 'serialize' && preg_match('/[a-z]\:[0-9]/', $data)) {
+            return unserialize($data);
+        }
+        return json_decode($data, true);
     }
 
     /**
@@ -41,7 +50,7 @@ class RepositoryAdapter {
      */
     protected function now()
     {
-    	return time();
+        return time();
     }
 
     /**
@@ -53,10 +62,10 @@ class RepositoryAdapter {
      */
     protected function dataCrypt($data)
     {
-    	if($this->config['crypt'] === true) {
-    		$data = $this->crypt->encrypt($data);	
-    	}
-    	return $data;
+        if($this->config['crypt'] === true) {
+            $data = $this->crypt->encrypt($data, $this->constants->secret); 
+        }
+        return $data;
     }
 
     /**
@@ -68,9 +77,11 @@ class RepositoryAdapter {
      */
     protected function dataDecrypt($data)
     {
-    	if($this->config['crypt'] === true) {
-    		$data = $this->crypt->decrypt($data);	
-    	}
-    	return $data;
+        if(! preg_match('/\{.*?\}/', $data)) {
+            if($this->config['crypt'] === true) {
+                $data = $this->crypt->decrypt($data, $this->constants->secret); 
+            }
+        }
+        return $data;
     }
 }
