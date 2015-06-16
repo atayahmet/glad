@@ -2,13 +2,19 @@
   "name": "atayahmet/glad",
   "type": "library",
   "description": "Authentication package for php",
+  "homepage": "https://github.com/atayahmet/glad",
   "keywords": ["auth","library","php","authentication"],
   "license": "MIT",
   "authors": [
     {
-      "name": "Ahmet ATAY"
+      "name": "Ahmet ATAY",
+      "email": "ahmet.atay@hotmail.com",
+      "homepage": "http://www.atayahmet.com"
     }
   ],
+  "support": {
+    "issues": "https://github.com/atayahmet/glad/issues"
+  },
   "require": {
       "php": ">=5.4"
   },
@@ -26,6 +32,5 @@
     "branch-alias": {
       "dev-master": "1.0.0-dev"
     }
-  },
-  "minimum-stability" : "dev"
+  }
 }
