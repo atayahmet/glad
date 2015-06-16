@@ -367,31 +367,38 @@ class Author
 		$rememberConf = static::$constants->remember;
 
 		if($rememberConf['enabled'] === true) {
-			if(! isset($userData[$rememberConf['field']])) {
-				throw new ErrorException($field . " fields is missing on database");
+			
+			if(array_key_exists($rememberConf['field'], $userData) === false) {
+				throw new ErrorException($rememberConf['field'] . " fields is missing on database");
 			}
 
-			$cookieName = $rememberConf['cookieName'];
-			$lifeTime = static::currentTime()+$rememberConf['lifetime'];
+			$cookieData  = static::$cooker->get($rememberConf['cookieName']);
+			$userOldData = static::$crypt->decrypt($cookieData, static::$constants->secret);
 
-			$token = static::$crypt->encrypt(static::currentTime()+$rememberConf['lifetime'], static::$constants->secret);
-			
-			$userData[$rememberConf['field']] = $token;
-			$cryptedValue = static::$crypt->encrypt(json_encode($userData), static::$constants->secret);
-			
-			$setResult = static::$cooker->set(
-					$cookieName,
-					$cryptedValue,
-					$lifeTime,
-					"/",
-					static::$constants->cookieDomain,
-					false,
-					true
-				);
+			if(is_array($userOldData) && array_key_exists($rememberConf['field'], $userOldData)) {
+				
+				$cookieName = $rememberConf['cookieName'];
+				$lifeTime = static::currentTime()+$rememberConf['lifetime'];
 
-			if($setResult) {
-				$where = ['and' => [static::$constants->id => $userData[static::$constants->id]]];
-				static::$model->update($where,[$rememberConf['field'] => $token]);	
+				$token = static::$crypt->encrypt(static::currentTime()+$rememberConf['lifetime'], static::$constants->secret);
+				
+				$userData[$rememberConf['field']] = $token;
+				$cryptedValue = static::$crypt->encrypt(json_encode($userData), static::$constants->secret);
+				
+				$setResult = static::$cooker->set(
+						$cookieName,
+						$cryptedValue,
+						$lifeTime,
+						"/",
+						static::$constants->cookieDomain,
+						false,
+						true
+					);
+
+				if($setResult) {
+					$where = ['and' => [static::$constants->id => $userData[static::$constants->id]]];
+					static::$model->update($where,[$rememberConf['field'] => $token]);	
+				}
 			}
 		}
 	}
