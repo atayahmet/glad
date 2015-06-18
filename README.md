@@ -20,6 +20,8 @@ $ composer update
 
 [- Laravel 5.1](https://github.com/atayahmet/Glad-Demos/tree/master/Laravel5.1)
 
+[- FulPHP 1.7](https://github.com/atayahmet/Glad-Demos/tree/master/Fuel1.7)
+
 Gitter:
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/atayahmet/glad?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge)
