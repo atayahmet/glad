@@ -22,6 +22,38 @@ after run the:
 $ composer update
 ```
 
+**login:**
+```php
+use Glad\Glad;
+
+Glad::login(['email' => 'ali.yildiz@example.com', 'password' => '1234123']);
+
+if(Glad::status() === true) {
+	
+	// do something...
+
+}
+```
+
+**register**
+
+```php
+use Glad\Glad;
+
+Glad::register([
+	'firstname' => 'Can',
+	'lastname'	=> 'ÖZTÜRK',
+	'email'		=> can.ozturk@example.com,
+	'password'	=> '123412'
+]);
+
+if(Glad::status() === true) {
+	
+	// do something...
+
+}
+
+```
 # Features
 - Simple and permanent method names in mind.
 - It can be used quickly with a few small configuration.
@@ -29,6 +61,8 @@ $ composer update
 - The flexible structure can create their own provider you can encode several classes again on this occasion.
 - Cache flexibility in the structure and to provide a quick start with the hosting service in the current cache.
 - All classes with attentive and intelligent testing scenarios to be written.
+
+
 
 
 #Documentation
