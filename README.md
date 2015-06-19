@@ -3,9 +3,17 @@ Glad Authentication
 
 [![Documentation Status](https://readthedocs.org/projects/glad/badge/?version=latest)](https://readthedocs.org/projects/glad/?badge=latest) [![Build Status](https://scrutinizer-ci.com/g/atayahmet/glad/badges/build.png?b=master)](https://scrutinizer-ci.com/g/atayahmet/glad/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/atayahmet/glad/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/atayahmet/glad/?branch=master)  [![Total Downloads](https://img.shields.io/packagist/dt/atayahmet/glad.svg?style=flat-square)](https://packagist.org/packages/atayahmet/glad) [![License](https://img.shields.io/packagist/l/atayahmet/glad.svg?style=flat-square)](https://packagist.org/packages/atayahmet/glad) [![Code Climate](https://codeclimate.com/github/atayahmet/glad/badges/gpa.svg)](https://codeclimate.com/github/atayahmet/glad)
 
-Basit kullanımı ve akılda kalıcı method isimleriyle projelerinize hızlı entegre edebileceğiniz kim doğrulama paketidir. İster composer destekli herhangi bir framework'te kullanın yada native php projelerinize composer'ı kurarak kullanın.
+It is an authentication package for your project you can quickly and simply integrated. Whether composer supported the use of any framework or use native PHP projects, establishing the Composer.
 
 Below you will find links on how to use a few framework.
+
+# Features
+- Simple and permanent method names in mind.
+- It can be used quickly with a few small configuration.
+- Customizable usage.
+- The flexible structure can create their own provider you can encode several classes again on this occasion.
+- Cache flexibility in the structure and to provide a quick start with the hosting service in the current cache.
+- All classes with attentive and intelligent testing scenarios to be written.
 
 
 # Install
@@ -43,7 +51,7 @@ use Glad\Glad;
 Glad::register([
 	'firstname' => 'Can',
 	'lastname'	=> 'ÖZTÜRK',
-	'email'		=> can.ozturk@example.com,
+	'email'		=> 'can.ozturk@example.com',
 	'password'	=> '123412'
 ]);
 
@@ -54,16 +62,6 @@ if(Glad::status() === true) {
 }
 
 ```
-# Features
-- Simple and permanent method names in mind.
-- It can be used quickly with a few small configuration.
-- Customizable usage.
-- The flexible structure can create their own provider you can encode several classes again on this occasion.
-- Cache flexibility in the structure and to provide a quick start with the hosting service in the current cache.
-- All classes with attentive and intelligent testing scenarios to be written.
-
-
-
 
 #Documentation
 Documentation is written in readthedocs.org.
