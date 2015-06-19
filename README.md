@@ -20,7 +20,7 @@ $ composer update
 
 [- Laravel 5.1](https://github.com/atayahmet/Glad-Demos/tree/master/Laravel5.1)
 
-[- FuelPHP 1.7](https://github.com/atayahmet/Glad-Demos/tree/master/Fuel1.7)
+[- FuelPHP 1.7](https://github.com/atayahmet/Glad-Demos/tree/master/FuelPHP1.7)
 
 Gitter:
 
