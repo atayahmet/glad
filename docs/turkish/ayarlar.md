@@ -293,7 +293,7 @@ Fazlası elbette mümkün, [Glad Provider](http://glad.readthedocs.org/en/latest
 
 Sırasıyla default yöntemleri inceleyelim:
 
-#PHP Session
+##PHP Session
 
 **Parametreler:**
 
@@ -338,18 +338,18 @@ serialize  | Php Serialize
 'provider' => ['SessionHandlerInterface' => 'Glad\Driver\Repository\NativeSession\Session']
 ```
 
-#Memcache
+##Memcache
 
 **Parametreler:**
 
-Name       | Value
------------| ---
-host       | string
-port       | integer
-name       | string
-timeout    | timestamp integer
-crypt      | boolean
-prefix     | string
+Name       | Value              | Description
+-----------| ------------------ | --------------------
+host       | string             | Memcache sunucu ip (default: **127.0.0.1**)
+port       | integer            | Memcache sunucu port (default: **11211**)
+name       | string             | Çerez adı (default: **SESSIONID**)
+timeout    | timestamp integer  | Oturum yaşam süresi (default: **30 dk.**)
+crypt      | boolean            | Verilerin şifrelenmesi (default: **false**)
+prefix     | string             | Oturum dosyası ön adı (default: **ses_**)
 
 **Provider:**
 
@@ -357,41 +357,7 @@ Interface                         | Class
 ----------------------------------| --------------------------------------------
 SessionHandlerInterface       | Glad\Driver\Repository\Memcache\Memcache
 
-#####host:
-Kullanacağınız Memcached sunucunun ip adresi yada socket bağlantı yapacak iseniz socket path'ini girmeniz gerekmektedir.
-
-Detaylı bilgi: [http://php.net/manual/en/memcache.connect.php](http://php.net/manual/en/memcache.connect.php)
- 
-#####port:
-Memcached sunucu portu. Varsayılan port: **11211**
-
-
-#####name:
-Kullanıcı tarafında kullanacağımız çerez (cookie)'nin adını belirler. Varsayılan çerez adı: **SESSIONID**
-
-#####timeout:
-Kullanıcının sistemde ne kadar süre her hangi bir aktivitede bulunmadığında oturumunun kapanacağını belirler. Saniye cinsinden belirtilmelidir. 
-Varsayılan süre: 1800 sec. (30 dakika)
-
-Örnek:
-Kullanıcının 30 dakika içinde her hangi bir işlem yapmadığında oturumunun kapatılmasını istiyorsak.
-
-```php
-'timeout' => 1800
-```
-
-#####crypt:
-Oturum verilerinin şifrelenmesini istiyorsanız bu değeri **true** olarak tanımlamanız gerekiyor. Varsayılan: **false**
-
-#####prefix:
-Oturum hash değerinin ön eki'dir. Varsayılan: **ses_**
-
-Örnek:
-```php
-ses_2490537e432c2d489381934905cedf9aa7ccda0e
-```
-
-Örnek tanımlama:
+**Örnek tanımlama:**
 
 ```php
 'repository' => [
@@ -407,18 +373,18 @@ ses_2490537e432c2d489381934905cedf9aa7ccda0e
 'provider' => ['SessionHandlerInterface' => 'Glad\Driver\Repository\Memcache\Memcache']
 ```
 
-#Memcached
+##Memcached
 
 **Parametreler:**
 
-Name       | Value
------------| ---
-host       | string
-port       | integer
-name       | string
-timeout    | timestamp integer
-crypt      | boolean
-prefix     | string
+Name       | Value               | Description
+-----------| ------------------- | ------------------
+host       | string             | Memcache sunucu ip (default: **127.0.0.1**)
+port       | integer            | Memcache sunucu port (default: **11211**)
+name       | string             | Çerez adı (default: **SESSIONID**)
+timeout    | timestamp integer  | Oturum yaşam süresi (default: **30 dk.**)
+crypt      | boolean            | Verilerin şifrelenmesi (default: **false**)
+prefix     | string             | Oturum dosyası ön adı (default: **ses_**)
 
 **Provider:**
 
@@ -426,39 +392,7 @@ Interface                         | Class
 ----------------------------------| --------------------------------------------
 SessionHandlerInterface       | Glad\Driver\Repository\Memcached\Memcached
 
-#####host:
-Kullanacağınız Memcached sunucunun ip adresi yada socket bağlantı yapacak iseniz socket path'ini girmeniz gerekmektedir.
-
-Detaylı bilgi: [http://php.net/manual/en/memcached.addserver.php](http://php.net/manual/en/memcached.addserver.php)
- 
-#####port:
-Memcached sunucu portu. Varsayılan port: **11211**
-
-
-#####name:
-Kullanıcı tarafında kullanacağımız çerez (cookie)'nin adını belirler. Varsayılan çerez adı: **SESSIONID**
-
-#####timeout:
-Kullanıcının sistemde ne kadar süre her hangi bir aktivitede bulunmadığında oturumunun kapanacağını belirler. Saniye cinsinden belirtilmelidir.
-Varsayılan süre: 1800 sec. (30 dakika)
-
-Örnek:
-Kullanıcının 30 dakika içinde her hangi bir işlem yapmadığında oturumunun kapatılmasını istiyorsak.
-
-```php
-'timeout' => 1800
-```
-
-#####crypt:
-Oturum verilerinin şifrelenmesini istiyorsanız bu değeri **true** olarak tanımlamanız gerekiyor. Varsayılan: **false**
-
-#####prefix:
-Oturum hash değerinin ön eki'dir. Varsayılan: **ses_**
-
-Örnek:
-```php
-ses_2490537e432c2d489381934905cedf9aa7ccda0e
-```
+**Örnek tanımlama:**
 
 ```php
 'repository' => [
