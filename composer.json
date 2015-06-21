@@ -3,7 +3,7 @@
   "type": "library",
   "description": "Authentication package for php",
   "homepage": "https://github.com/atayahmet/glad",
-  "keywords": ["auth","library","php","authentication"],
+  "keywords": ["auth","library","php","authentication", "simple", "fast", "supports all database"],
   "license": "MIT",
   "authors": [
     {
