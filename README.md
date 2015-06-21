@@ -66,7 +66,7 @@ if(Glad::status() === true) {
 #Documentation
 Documentation is written in readthedocs.org.
 
-[- Click for Documentation](http://glad.readthedocs.org/en/latest/)
+[- Click for Documentation](http://glad.readthedocs.org/en/master/)
 
 #Use in Frameworks
 
