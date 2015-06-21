@@ -36,7 +36,7 @@ class Constants
      *
      * @var int
      */
-	protected static $cost = 8;
+	protected static $cost = 5;
 
 	/**
      * Crypt secret key
