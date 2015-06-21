@@ -1,7 +1,12 @@
 Ayarlar
 ======
 
-Bu bölümde database ve repository ayarları, user tablosunda bulunması gereken bazı alanların ve beni hatırla (remember) ayarlarını yapacağız.
+İlk yapacağımız yapılandırmalar;
+
+	- Veritabanı
+	- Kullanıcı oturum verilerini depolama
+	- Kullanıcı tablosu
+	- Beni hatırla (Remember Me)
 
 **Örnek yapılandırma:**
 ```php
@@ -36,17 +41,23 @@ Glad::setup([
 	'secret' => '[key]'
 ]);
 ```
-###Üye tablosunda olması gereken alanlar
+###Üye tablosu ayarları
 
 Name     | Value
 -------- | ---
 idenity  | string/array
 password | string
 
-Kullanıcıları bulunduracağınız tablonuzda sütun olarak bulunması ve tanımlamanız gereken alanlar var.
+Kullanıcı tablosunda mutlaka eklemeniz gereken bazı alanlar var.
 
-Bunlardan birincisi kullanıcının kimliğinin yani bir kullanıcı adının saklanacağı alan ikincisi ise şifre alanının adının tanımlanması.
+Birincisi kullanıcının giriş yaparken kullanacağı email yada username alanı. 
+Bu alan birden fazla olabilir.
 
+**Not:**
+>Kullanıcının giriş yaparken aynı anda hem eposta adresi hemde bir kullanıcı adı ile giriş yapmasını isteyebilirsiniz. Yada her her ikisinden en az biriyle giriş yapmasınıda isteyebilirsiniz.
+
+
+**Örnek tanımlama:**
 ```php
 'fields' => [
 	'identity' => ['username','email'], 
@@ -69,9 +80,17 @@ Birinci yol PDO driver'ı kullanmak. Ayalarınızda PDO instance'ı servisler de
 ```
 
 ####DatabaseAdapterInterface
-İkinci yol ise adapter yöntemi ile dilediğiniz veritabanını kullanabilirsiniz.
+İkinci yol ise adapter yöntemi ile dilediğiniz veritabanını kullanma imkanınız bulunuyor.
 
-Servis ayarlarına tanımlayacağınız sınıfınızı DatabaseAdapterInterface arayüzüne implemente ederek methodları entegre ederek ve Glad auth'un istediği formatta return'lerini ayarlamanız gerekmektedir.
+**Not:**
+> Bazı framework'ler için bununla ilgili yazılmış örnekler mevcut. Şayet bir framework içinde kullanıyorsanız bu paketi mutlaka göz atmalısınız. [Örnekler için tıklayınız](https://github.com/atayahmet/Glad-Demos)
+
+
+İlk olarak yapmanız gereken sınıfınızı DatabaseAdapterInterface implemente etmek. Sonrasında DatabaseAdapterInterface'de sunulan methodları projenizde kullanmak istediğiniz veritabanı sistemine entegre ediniz. 
+
+Dikkat etmeniz gereken konu methodların return'leri mutlaka Glad Auth ile uyumlu olmalıdır. Aksi takdirde hatalar ile karşılaşabilirsiniz.
+
+Aşağıda örnek bir kullanım bulunuyor.
 
 **Örnek Kullanım:**
 
@@ -197,38 +216,20 @@ interface DatabaseAdapterInterface {
 ```
 
 
-###Beni Hatırla yapılandırması
-Üyelik sistemlerinde sıkça kullanılan Beni Hatırla yöntemi Glad auth'ta basit bir kaç ayara tabi.
+###Beni Hatırla (Remember Me)
+Üyelik sistemlerinin vazgeçilmezi Beni Hatırla yöntemini bir kaç ayar ile hızlıca faaliyete sokabilirsiniz.
 
 **Aşağıda bu ayarlarla ilgili tabloyu görüyorsunuz:**
 
-Name       | Value
------------| ---
-enabled    | true/false
-cookieName | string
-lifetime   | timestamp integer
-field      | string
+Name       | Value               | Description
+-----------| ------------------- |-------------
+enabled    | true/false          | Aktif/Pasif durumunu belirler
+cookieName | string              | Oturum verilerinin yazılacağı çerez adı
+lifetime   | timestamp integer   | Çerez yaşam süresi
+field      | string              | Kullanıcı tablosunda anahtarın yazılacağı alan adı
 
-#####enable:
-Beni hatırla uygulamasının projenizde aktif/pasif durumunu belirlemektedir.
 
-#####cookieName:
-Glad auth bu uygulama için çerezleri kullanmaktadır. Burada çereze kendi belirleyeceğiniz ismi atayabilirsiniz. Varsayılan isim:  **_glad_auth**
-
-#####lifetime:
-Çerezin kullanılamaz hale geleceği (expire) zamanı tanımlayabilirsiniz. Değeri timestamp integer olmalıdır. 
-
-**Örnek:**
-
-Bu çerezin 1 yıl kullanıcının siteminde kalmasını istiyorsanız değer olarak **31536000** tanımlamanız gerekiyor.
-
-[Timestamp integer hakkında daha fazla bilgi için tıklayınız.](http://en.wikipedia.org/wiki/Unix_time)
-
-#####field:
-
-Kullanıcı tablonuz da kullanabileceğimiz ve bunun ismini bilmemiz gereken bir alan olması gerekiyor. Bu alanda Beni Hatırla uygulaması içni üreteceğimiz anahtar (token)'ı barındıracağız. Örnek olarak **remember_token** olabilir.
-
-**Tanımlama:**
+**Örnek tanımlama:**
 ```php
 'remember' => [
 	'enabled'   => true,
@@ -238,17 +239,19 @@ Kullanıcı tablonuz da kullanabileceğimiz ve bunun ismini bilmemiz gereken bir
 ]
 ```
 ###cost
-Kullanıcıların şifreleri php'nin sunmuş olduğu hash metodu ile şifrelenmektedir. Cost (şifreleme maliyeti) sunucunuzun performansına göre optimize edilmelidir. Varsayılan cost: 8
+Kullanıcı giriş parolaları güvenlik adına şifrelenmektedir. Bu şifreleme php deki **password_hash** fonksiyonu ile yapılmaktadır. 
+
+Cost değerinin yüksek olması sunucu performansını ciddi anlamda etkileyebilir. Bu konu hakkında detaylı bilgiye şu linkten ulabilirsiniz: [password_hash](http://php.net/manual/tr/function.password-hash.php)
+
+Varsayılan cost: 5
 
 **Tanımlama:**
 ```php
-'cost' => 8
+'cost' => 5
 ```
 
-Detaylı bilgi için: [password_hash](http://php.net/manual/tr/function.password-hash.php)
-
 ###secret
-Kullanıcılar Beni hatırla özelliğini kullanmak istediklerinde bazı verileri php'nin mcrypt_encrypt/mcrypt_decrypt fonksiyonları ile şifrelemektedir. Bunu yaparkende sizin belirleyeceğiniz yada varsayılan olarak belirlenen secret key'i kullanabilirsiniz. Kendi secret key'inizi mutlaka oluşturmalısınız.
+Secret key güvenlik adına şifreleme işlemleri için bir çok alanda kullanılmaktadır. Burada mutlaka kendi Secret key'inizi oluşturmalısınız.
 
 **Tanımlama:**
 ```php
@@ -266,31 +269,42 @@ Detalı bilgi için: [PHP Mcrypt](http://php.net/manual/en/book.mcrypt.php)
 
 
 ###Cookie Domain
-Sub domain kullanıyorsanız eğer bu parametreye bunu tanımlamanız gerekmektedir. Sub domain kullanmıyorsanız boş bırakabilirsiniz.
+Sub domain kullanıyorsanız eğer bu parametreye bunu tanımlamanız gerekmektedir. Kullanmıyorsanız boş bırakabilirsiniz.
 
 ```php
 'domain' => 'sub.domain.com'
 ```
 
 ###Session Repository
-Üyelik sistemlerimizde kullanıcı oturumlarını muhafaza etmek istediğimizde genelde PHP'nin sunmuş olduğu Session yöntemini kullanırız. Küçük projelerimizde bu fazlasıyla işimizi görüyor. Ama daha yoğun sistemlerde PHP Session performans açısından yetersiz kalıyor. 
+PHP projelerde üyelik sistemleri genelde native session kullanmaktadır. Orta halli projelerde bu yöntem iş görebilmektedir. 
 
-Bu durumlarda bize performans açısından avantaj kazandıracak farklı uygulamalar tercih edilir. Bunlara örnek olarak Memcache, Memcached, Redis, Mongo yada Database destekli session yöntemleri verilebilir.
+Fakat daha yoğun sistemlerde native session yetersiz kalabilir. Bu gibi durumlarla karşılaşıldığında tercih edilen bazı yöntemlere örnek olarak şunlar verilebilir:
 
-Glad Authentication'da PHP Session, Memcache, Memcached dahili olarak mevcut bulunuyor. Bunların dışında Glad Provider aracılığıyla istediğiniz farklı yöntemleri entegre edebilirsiniz.
+- Memcache
+- Redis
+- Mongo
+- Database
 
-####PHP Session
+Glad Auth içinde default olarak gelen yöntemler:
+- PHP Native Session
+- Memcache
+
+Fazlası elbette mümkün, [Glad Provider](http://glad.readthedocs.org/en/latest/turkish/provider/) yardımıyla dilediğiniz ön bellekleme yöntemlerini kullanabilirsiniz.
+
+Sırasıyla default yöntemleri inceleyelim:
+
+#PHP Session
 
 **Parametreler:**
 
-Name       | Value
------------| ---
-path       | string
-type       | json
-name       | string
-timeout    | timestamp integer
-crypt      | boolean
-prefix     | string
+Name       | Value               | Description
+-----------| ------------------- | --------------
+path       | string              | Oturum bilgilerinin depolanacağı dizin
+type       | string           | Veri serileştirme türü (default: **serialize**) 
+name       | string              | Çerez adı (default: **SESSIONID**)
+timeout    | timestamp integer   | Oturum yaşam süresi (default: **30 dk.**)
+crypt      | boolean             | Verilerin şifrelenmesi (default: **false**)
+prefix     | string              | Oturum dosyası ön adı (default: **ses_**)
 
 
 **Provider:**
@@ -299,43 +313,14 @@ Interface                         | Class
 ----------------------------------| --------------------------------------------
 SessionHandlerInterface       | Glad\Driver\Repository\NativeSession\Session
 
-#####path:
-PHP Session kullanıcı verilerini belirleyeceğiniz dizinde depolayacaktır. Bu dizini **path** parametresi altında tanımlamanız gerekiyor.
 
-#####type:
-Kullanıcı verilerini hangi türde serileştirmesi gerektiğini tanımlayabilirsiniz. Varsayılan: **serialize**
-
-Serileştirme türleri:
+**Serileştirme türleri:**
 
 Name       | Description
 -----------| -------------
 json       | encode/decode
 serialize  | Php Serialize
 
-
-#####name:
-Kullanıcı tarafında kullanacağımız çerez (cookie)'nin adını belirler. Varsayılan çerez adı: **SESSIONID**
-
-#####timeout:
-Kullanıcının sistemde ne kadar süre her hangi bir aktivitede bulunmadığında oturumunun kapanacağını belirler. Saniye cinsinden belirtilmelidir.
-
-Örnek:
-Kullanıcının 30 dakika içinde her hangi bir işlem yapmadığında oturumunun kapatılmasını istiyorsak.
-
-```php
-'timeout' => 1800
-```
-
-#####crypt:
-Oturum verilerinin şifrelenmesini istiyorsanız bu değeri **true** olarak tanımlamanız gerekiyor. Varsayılan: **false**
-
-#####prefix:
-Oturum hash değerinin ön eki'dir. Varsayılan: **ses_**
-
-Örnek:
-```php
-ses_2490537e432c2d489381934905cedf9aa7ccda0e
-```
 
 Örnek tanımlama:
 
@@ -353,7 +338,7 @@ ses_2490537e432c2d489381934905cedf9aa7ccda0e
 'provider' => ['SessionHandlerInterface' => 'Glad\Driver\Repository\NativeSession\Session']
 ```
 
-####Memcache
+#Memcache
 
 **Parametreler:**
 
@@ -422,7 +407,7 @@ ses_2490537e432c2d489381934905cedf9aa7ccda0e
 'provider' => ['SessionHandlerInterface' => 'Glad\Driver\Repository\Memcache\Memcache']
 ```
 
-####Memcached
+#Memcached
 
 **Parametreler:**
 
