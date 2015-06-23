@@ -68,13 +68,15 @@ Documentation is written in readthedocs.org.
 
 [- Click for Documentation](http://glad.readthedocs.org/en/master/)
 
-#Use in Frameworks
+#Use in Frameworks (Demos)
 
 In terms of the integration it is made by way of example below with a few framework.
 
 We hope that is helpful.
 
 [- Laravel 5.1](https://github.com/atayahmet/Glad-Demos/tree/master/Laravel5.1)
+
+[- CodeIgniter 3](https://github.com/atayahmet/Glad-Demos/tree/master/CodeIgniter3)
 
 [- FuelPHP 1.7](https://github.com/atayahmet/Glad-Demos/tree/master/FuelPHP1.7)
 
