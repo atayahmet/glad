@@ -230,7 +230,7 @@ lifetime   | timestamp integer   | Cookie lifetime
 field      | string              | Field name that should be written key in user table
 
 
-**Example Define:**
+**Example:**
 ```php
 'remember' => [
 	'enabled'   => true,
@@ -272,42 +272,42 @@ Read more information: [PHP Mcrypt](http://php.net/manual/en/book.mcrypt.php)
 
 
 ###Cookie Domain
-Sub domain kullanıyorsanız eğer bu parametreye bunu tanımlamanız gerekmektedir. Kullanmıyorsanız boş bırakabilirsiniz.
+If you are using sub domain you have to define this to parameter. If you are not using it just leave it empty.
 
 ```php
 'domain' => 'sub.domain.com'
 ```
 
 ###Session Repository
-PHP projelerde üyelik sistemleri genelde native session kullanmaktadır. Orta halli projelerde bu yöntem iş görebilmektedir. 
+Mostly in PHP projects membership systems native session is used. In mid-class projects with this method job can be done. But in high demand systems the native session wouldn't be enough. 
 
-Fakat daha yoğun sistemlerde native session yetersiz kalabilir. Bu gibi durumlarla karşılaşıldığında tercih edilen bazı yöntemlere örnek olarak şunlar verilebilir:
+In this kind of cases these are the methods can be given:
 
 - Memcache
 - Redis
 - Mongo
 - Database
 
-Glad Auth içinde default olarak gelen yöntemler:
+Methods that comes with default in Glad Auth.
 - PHP Native Session
 - Memcache
 
-Fazlası elbette mümkün, [Glad Provider](http://glad.readthedocs.org/en/latest/turkish/provider/) yardımıyla dilediğiniz ön bellekleme yöntemlerini kullanabilirsiniz.
+For sure more methods are possible , with help of [Glad Provider](http://glad.readthedocs.org/en/latest/turkish/provider/) you can use the method you prefer.
 
-Sırasıyla default yöntemleri inceleyelim:
+Let's check up by order the methods of default:
 
 ##PHP Session
 
-**Parametreler:**
+**Parameters:**
 
 Name       | Value               | Description
 -----------| ------------------- | --------------
-path       | string              | Oturum bilgilerinin depolanacağı dizin
-type       | string           | Veri serileştirme türü (default: **serialize**) 
-name       | string              | Çerez adı (default: **SESSIONID**)
-timeout    | timestamp integer   | Oturum yaşam süresi (default: **30 dk.**)
-crypt      | boolean             | Verilerin şifrelenmesi (default: **false**)
-prefix     | string              | Oturum dosyası ön adı (default: **ses_**)
+path       | string              | Directory of session storage
+type       | string              | Data serialization type (default: **serialize**) 
+name       | string              | Cookie name (default: **SESSIONID**)
+timeout    | timestamp integer   | Session lifetime (default: **30 dk.**)
+crypt      | boolean             | Encryption of Data (default: **false**)
+prefix     | string              | Session file prefix (default: **ses_**)
 
 
 **Provider:**
@@ -317,7 +317,7 @@ Interface                         | Class
 SessionHandlerInterface       | Glad\Driver\Repository\NativeSession\Session
 
 
-**Serileştirme türleri:**
+**Serialization Types:**
 
 Name       | Description
 -----------| -------------
@@ -325,7 +325,7 @@ json       | encode/decode
 serialize  | Php Serialize
 
 
-Örnek tanımlama:
+**Example:**
 
 ```php
 'repository' => [
@@ -343,16 +343,16 @@ serialize  | Php Serialize
 
 ##Memcache
 
-**Parametreler:**
+**Parameters:**
 
 Name       | Value              | Description
 -----------| ------------------ | --------------------
-host       | string             | Memcache sunucu ip (default: **127.0.0.1**)
-port       | integer            | Memcache sunucu port (default: **11211**)
-name       | string             | Çerez adı (default: **SESSIONID**)
-timeout    | timestamp integer  | Oturum yaşam süresi (default: **30 dk.**)
-crypt      | boolean            | Verilerin şifrelenmesi (default: **false**)
-prefix     | string             | Oturum dosyası ön adı (default: **ses_**)
+host       | string             | Memcache server IP (default: **127.0.0.1**)
+port       | integer            | Memcache server port (default: **11211**)
+name       | string             | Cookie name (default: **SESSIONID**)
+timeout    | timestamp integer  | Session lifetime (default: **30 dk.**)
+crypt      | boolean            | Encryption of Data (default: **false**)
+prefix     | string             | Session key prefix (default: **ses_**)
 
 **Provider:**
 
@@ -360,7 +360,7 @@ Interface                         | Class
 ----------------------------------| --------------------------------------------
 SessionHandlerInterface       | Glad\Driver\Repository\Memcache\Memcache
 
-**Örnek tanımlama:**
+**Example:**
 
 ```php
 'repository' => [
@@ -378,16 +378,16 @@ SessionHandlerInterface       | Glad\Driver\Repository\Memcache\Memcache
 
 ##Memcached
 
-**Parametreler:**
+**Parameters:**
 
 Name       | Value               | Description
 -----------| ------------------- | ------------------
-host       | string             | Memcache sunucu ip (default: **127.0.0.1**)
-port       | integer            | Memcache sunucu port (default: **11211**)
-name       | string             | Çerez adı (default: **SESSIONID**)
-timeout    | timestamp integer  | Oturum yaşam süresi (default: **30 dk.**)
-crypt      | boolean            | Verilerin şifrelenmesi (default: **false**)
-prefix     | string             | Oturum dosyası ön adı (default: **ses_**)
+host       | string             | Memcache server IP (default: **127.0.0.1**)
+port       | integer            | Memcache server port  (default: **11211**)
+name       | string             | Cookie name (default: **SESSIONID**)
+timeout    | timestamp integer  | Session lifetime (default: **30 dk.**)
+crypt      | boolean            | Encryption of Data (default: **false**)
+prefix     | string             | Session key prefix (default: **ses_**)
 
 **Provider:**
 
@@ -395,7 +395,7 @@ Interface                         | Class
 ----------------------------------| --------------------------------------------
 SessionHandlerInterface       | Glad\Driver\Repository\Memcached\Memcached
 
-**Örnek tanımlama:**
+**Example:**
 
 ```php
 'repository' => [
