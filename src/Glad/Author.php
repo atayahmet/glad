@@ -694,9 +694,10 @@ class Author
 	{
 		$userData = static::getData();
 
+		$tableIncrementField = static::$constants->id;
+		
 		if(isset($userData[$tableIncrementField])) {
 			
-			$tableIncrementField = static::$constants->id;
 			$userId = $userData[$tableIncrementField];
 
 			return is_numeric($userId) ? (int)$userId : $userId;
