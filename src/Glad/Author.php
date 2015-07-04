@@ -688,13 +688,14 @@ class Author
 	/**
      * Return the user id
      *
-     * @return int|null
+     * @return userId|null
      */ 
 	public static function getUserId()
 	{
 		$userData = static::getData();
 
-		if($userData) {
+		if(isset($userData[$tableIncrementField])) {
+			
 			$tableIncrementField = static::$constants->id;
 			$userId = $userData[$tableIncrementField];
 
