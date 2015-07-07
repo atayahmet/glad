@@ -191,9 +191,11 @@ if(Glad::status() === true) {
 
 ###apply()
 
-Üyelik sistemlerinde detaylı çapraz kontroller olmazsa olmazlardan diyebiliriz. Glad auth burada sizlere apply metoduyla detaylı kontroller ve bu kontoller sonrası davranışları yönetmenizi sağlıyor. 
+We can say that the detailed cross- checks essential system of the membership is very important. Glad author lets you manage after the behavior controls by using apply method.
 
-**apply** method take **Closure** method in parameter.
+
+**apply** method take **Closure**  method in parameter.
+
 
 Name         | Type   | Description
 ------------ | -------|------------
@@ -204,7 +206,7 @@ return  | Description
 instance| 
 Return instance of Glad container class
 
-**Örnek**
+**Example**
 
 ```php
 Glad::login(['username' => 'exampleuser', 'password' => '1234'], true)
@@ -221,35 +223,38 @@ Glad::login(['username' => 'exampleuser', 'password' => '1234'], true)
 		});
 ```
 
-Yukarıdaki kod bloğunu sırasıyla inceleyelim.
+Let us examine the above code block.
 
-İlk olarak **login** metodumuzu çalıştırdık ve hemen sonrasında **apply** metodunu chain yöntemiyle çalıştırdık.
+First we have run the **login** method and then we run the **apply** method by using chain method.
 
-Burada bir Closure metodunu kurguladığımızı görüyoruz. Ve bu metoda Glad class'sının instance'ı injekt ediliyor.
+Here you can see that we have done the Closure method,and this method injects instance to Glad class.
 
 ###conditions()
 
-Üyelik sistemlerin de kullanıcıların durumlarıyla ilgili bir takım sınıflandırmalar yapılmaktadır. Mesela üyeliğini henüz aktifleştirmemiş olan kullanıcılar için burada bir filtre uygulayabilirsiniz. 
+In membership system there are some classification should be done. For example you can apply filter to users that are not activated in the system.
 
 ```php
 $glad->conditions(['banned' => 0, 'activate' => 1]);
 ```
-Örnekte **banned** ve **activate** alanlarının kontrol edildiğini görüyoruz.
 
-> Not: Bu alanların üye tablonuzda bulunması gerekiyor.
+Example by **banned** and **activate** fields you can control them.
+
+
+> Note: This fields should be available in your members table.
 
 
 ###event()
 
-**apply** metodu içinde **conditions** metodunun sonucuna göre işlem akışlarına yön vermemize imkan sağlıyor.
+Inside the  **apply** method according to the **conditions** methods result it flows the process. 
+
 
 ```php
 $glad->conditions(['banned' => 0, 'activate' => 0]);
 ```
 
-Kullanıcı başarılı bir giriş yaptığında ikinci aşama hesabının durumuyla ilgili kontrol yapıyoruz.
+After user login in to the system in the second stage we are making account statu checkups.
 
-Eğer hesabında **banned** alanı **0** ise şu event çalışacaktır:
+If the **banned** section in the account is **0**  this event will work.
 
 ```php
 $glad->event('banned', function() {
@@ -257,7 +262,7 @@ $glad->event('banned', function() {
 });
 ```
 
-Eğer hesabında **activate** alanı **0** ise şu event çalışacaktır:
+If the **activate**  section in the account is **0**  this event will work:
 
 ```php
 $glad->event('activate', function() {
@@ -267,35 +272,36 @@ $glad->event('activate', function() {
 
 ###status()
 
-Gerek üye girişi gerekse yeni bir üyelik kaydında işlemlerin sonucunu kontrol etmek için kullanabileceğimiz metodtur.
+This methods can be use in members and new registered users
 
-**Örnek**
+**Example**
 ```php
 Glad::login(['email' => 'example@email.com', 'password' => '1234'], true);
 ```
 
-Bu işlemin sonucunu kontrol etmek için:
+This is the process use to status method:
+
 ```php
 if(Glad::status() === true) {
 	// do something...
 }
 ```
 
-**status** metodunu kullanabileceğimiz işlemler:
+This is the process use to status method:
 
 Name         | Description
 ------------ | -------
-login        | Üye girişi sonrası
-loginByUserId| Üye numarası ile giriş sonrası 
-andLogin     | Kayıt sonrası üye giriş işleminden sonra
-register     | Kayıt işlemi sonrası
-change       | Kullanıcı bilgileri değiştirme işlemi sonrası
+login        | After user login
+loginByUserId| After user number login
+andLogin     | After user registry login process
+register     | After register process
+change       | After user change account information process
 
 ###check()
 
-Kullanıcının sistemdeki oturumunu kontrol eder. Eğer oturumu aktif sonuç **true** döner. Aksi takdir de **false** döner.
+It checks the user session in the system.If the session is active the result turns to **true** and if not turns to **false**.
 
-**Örnek**
+**Example**
 
 ```php
 if(Glad::check() === true) {
@@ -305,9 +311,10 @@ if(Glad::check() === true) {
 
 ###guest()
 
-Kullanıcının sistemdeki oturumunu kontrol eder. Eğer oturum aktif değilse sonuç **true** dönecektir. Aksi takdir de **false** döner.
+It checks the user session in the system.If the session is active the result turns to **true** and if not turns to **false**.
 
-**Örnek**
+
+**Example**
 ```php
 if(Glad::guest() === true) {
 	// do something...
@@ -316,15 +323,15 @@ if(Glad::guest() === true) {
 
 ###is()
 
-Kapsayıcı bir metodtur. Check ve guest metodlarını kullanabilmektedir.
+With this method you can use check and guest methods.
 
-**Örnek 1**
+**Example 1**
 ```php
 if(Glad::is('check') === true) {
 	// do something...
 }
 ```
-**Örnek 2**
+**Example 2**
 ```php
 if(Glad::is('guest') === true) {
 	// do something...
@@ -332,33 +339,37 @@ if(Glad::is('guest') === true) {
 ```
 
 ###toArray()
-Kullanıcının oturum verilerini **array** olarak döndürür.
 
-Örnek:
+Turns the data of  user session to **array**.
+
+Example:
 ```php
 Glad::toArray();
 ```
 
 ###toObject()
-Kullanıcının oturum verilerini **stdObject** olarak döndürür.
 
-Örnek:
+Turns the data of  user session to **stdObject**.
+
+Example:
 ```php
 Glad::toObject();
 ```
 
 ###toJson()
-Kullanıcının oturum verilerini **JSON** olarak döndürür.
 
-Örnek:
+Turns the data of  user session to **JSON**.
+
+Example:
 ```php
 Glad::toJson();
 ```
 
 ###toXml()
-Kullanıcının oturum verilerini **XML** olarak döndürür.
 
-Örnek:
+Turns the data of  user session to **XML**.
+
+Example:
 ```php
 Glad::toXml();
 ```

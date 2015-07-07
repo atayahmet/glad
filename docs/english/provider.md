@@ -1,24 +1,24 @@
 Provider
 ======
 
-Glad Authentication dahili bir kaç sınıfı user interface ile implemente ederek yeniden tasarlamanıza imkan veriyor. Bunu da Provider yardımıyla yapabiliyoruz.
+Glad Authentication built in some class allows you to implement by redesigning the user interface . We can do this with the help of the Provider.
 
-Aşağıda müdahale edebileceğiniz sınıfların arayüz listesi bulunmakltadır:
+Below is a list of classes that you can intervene interface provided :
 
 Name                     | Class(es)                         | Description
 ------------------------ |-----------------------------------| ---------------
-CookerInterface          | Glad\Cooker                       | Cookie sınıfı
-CryptInterface           | Glad\Driver\Security\Crypt\Crypt  | Veri şifreleme sınıfı
-HashInterface            | Glad\Driver\Security\Hash\Hash    | Kullanıcı şifresi şifreleme
-ConditionsInterface      | Glad\Driver\Security\Conditions   | Kullanıcı girişi kural belirleyici
-SessionHandlerInterface  | Glad\Driver\Repository\~          | Session driver sınıfları
-DatabaseAdapterInterface | Model adapter                     | Database adapter sınıfı
+CookerInterface          | Glad\Cooker                       | Cookie class
+CryptInterface           | Glad\Driver\Security\Crypt\Crypt  | Data encryption class
+HashInterface            | Glad\Driver\Security\Hash\Hash    | User password encryption
+ConditionsInterface      | Glad\Driver\Security\Conditions   | User login decisive rules
+SessionHandlerInterface  | Glad\Driver\Repository\~          | Session driver classes
+DatabaseAdapterInterface | Model adapter                     | Database adapter classes
 
-**Örnek kullanım:**
+**Example usage:**
 
-Diyelim Cooker sınıfını kendinizin yazmış olduğu başka bir sınıf ile değiştirmek istiyorsunuz.
+Let's say if you wrote Cooker that you want to replace it with another class.
 
-Öncelikle sınıfımı oluşturuyorum ve CookerInterface arayüzüne implemente ediyorum:
+First of all  create class and cooker interface  of interface to implement :
 
 ```php
 
@@ -49,13 +49,13 @@ class NewCooker implements CookerInterface {
 }
 ```
 
-Daha sonra sınıfımı provider'a kayıt ediyorum:
+Then record class providers to :
 
 ```php
 Glad::provider(['CookerInterface' => 'Your\Class\Path\NewCooker']);
 ```
 
-ya da **setup"" metodu ile tüm ayarların kaydedilmesi esnasında yapabilirsiniz:
+or can be save later with **setup** method later with all the settings.
 
 ```php
 Glad::setup([
