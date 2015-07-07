@@ -71,12 +71,12 @@ class Constants
 				'name' 	 => 'SESSIONID',
 				'prefix' => 'ses_',
 				'crypt'	 => false,
-				'timeout'=> 1800
+				'timeout'=> 3600
 			],
 			'memcache' 	=> [
 				'host'	  => '127.0.0.1',
 				'port'	  => 11211,
-				'timeout' => 1800,
+				'timeout' => 3600,
 				'prefix'  => 'ses_',
 				'crypt'	  => false,
 				'name'	=> 'SESSIONID'
@@ -85,7 +85,7 @@ class Constants
 			'memcached' => [
 				'host'	  => '127.0.0.1',
 				'port'	  => 11211,
-				'timeout' => 1800,
+				'timeout' => 3600,
 				'prefix'  => 'ses_',
 				'crypt'	  => false,
 				'name'	=> 'SESSIONID',
